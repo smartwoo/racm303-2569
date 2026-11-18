@@ -58,9 +58,69 @@
         <div class="cal-export-group">
           <button class="btn cal-ics-btn" id="exportIcsBtn" type="button" title="มาตรฐาน iCalendar สำหรับ Apple Calendar (iPhone/iPad/Mac), Outlook และ Google Calendar">ดาวน์โหลด iCal / Apple (.ics)</button>
           <button class="btn cal-gcal-btn" id="exportGcalCsvBtn" type="button" title="ไฟล์ CSV มาตรฐานสำหรับนำเข้า Google Calendar พร้อมฝังลิงก์ Zoom">ดาวน์โหลด Google Calendar (.csv)</button>
-          <button class="btn zoom-pill-btn" id="toggleZoomDrawerBtn" type="button" aria-expanded="false">ห้องเรียน Zoom &amp; วิธีนำเข้าปฏิทิน</button>
+          <button class="btn zoom-pill-btn" id="toggleZoomDrawerBtn" type="button" aria-expanded="false">รวมลิงก์ห้องเรียน Zoom (3 ห้อง)</button>
           <a class="btn" id="dlScheduleExcelBtn" href="downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx" download>Excel (.xlsx)</a>
           <button class="btn primary" id="printScheduleBtn" type="button">พิมพ์ / PDF</button>
+        </div>
+      </div>
+
+      <!-- Calendar Personalize, Download & Subscribe Studio -->
+      <div class="cal-studio-card" id="calendarDownloadStudio">
+        <div class="cal-studio-grid">
+          <div>
+            <h3 class="cal-studio-step-title"><span class="cal-step-badge">1</span>เลือกตารางของตัวเอง หรือ เฉพาะกลุ่มภาคสนาม (ผูกวัน-เวลาลงภาคสนามอัตโนมัติ)</h3>
+            <div class="cal-scope-tabs" role="tablist" aria-label="เลือกรูปแบบตารางปฏิทิน">
+              <button class="cal-scope-tab" id="calScopeStudentBtn" data-cal-scope="student" role="tab" aria-selected="true" type="button">เฉพาะตัวนักศึกษาเอง</button>
+              <button class="cal-scope-tab" id="calScopeGroupBtn" data-cal-scope="group" role="tab" aria-selected="false" type="button">เฉพาะกลุ่มภาคสนาม (9 กลุ่ม)</button>
+              <button class="cal-scope-tab" id="calScopeAllBtn" data-cal-scope="all" role="tab" aria-selected="false" type="button">ตารางรวมทั้งชั้นปี (169 คน)</button>
+            </div>
+
+            <div id="calScopeStudentPane">
+              <div class="cal-studio-input-row">
+                <input id="studioStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล (เช่น 6702006)…" aria-label="ค้นหารหัสนักศึกษาหรือชื่อเพื่อสร้างปฏิทินส่วนตัว">
+                <button class="btn sm" id="studioClearSelectionBtn" type="button" hidden>ล้างค่าที่เลือก</button>
+              </div>
+              <p style="margin:6px 0 0;font-size:12.6px;color:var(--muted)">ผูกครบทั้ง <strong>ห้อง Discussion 1–6</strong> + <strong>กลุ่มภาคสนาม 1–9</strong> (เวลาออกเดินทาง คาบศุกร์ 11 ธ.ค. เฉพาะกลุ่มที่ยังไม่เดินทาง และวันเดินทางกลับ)</p>
+            </div>
+
+            <div id="calScopeGroupPane" hidden>
+              <div class="cal-group-pills-grid" id="studioGroupPillsGrid"></div>
+            </div>
+
+            <div id="calScopeAllPane" hidden>
+              <p style="margin:4px 0 0;font-size:13.4px;color:var(--muted)">ส่งออกตารางเรียนรวมทั้งชั้นปี 169 คนครบทุกคาบ (หากต้องการให้ตัดคาบวันศุกร์ที่ 11 ธ.ค. และปรับวันไป-กลับภาคสนามตามกลุ่มตัวเอง แนะนำเลือกโหมด <strong>เฉพาะตัวนักศึกษาเอง</strong> หรือ <strong>เฉพาะกลุ่มภาคสนาม</strong>)</p>
+            </div>
+
+            <div class="cal-target-summary" id="calTargetSummaryBox">กำลังโหลดข้อมูลตารางเรียน…</div>
+          </div>
+
+          <div class="cal-export-actions-stack">
+            <h3 class="cal-studio-step-title"><span class="cal-step-badge">2</span>นำเข้า Google Calendar / Apple Calendar (iCal) พร้อมฝังลิงก์ Zoom</h3>
+
+            <div class="cal-dl-btn-row">
+              <button class="btn cal-ics-btn" id="studioDownloadIcsBtn" type="button">ดาวน์โหลดไฟล์ .ics (Google / Apple iCal)</button>
+              <button class="btn cal-gcal-btn" id="studioDownloadCsvBtn" type="button">ดาวน์โหลดไฟล์ .csv (Google Calendar)</button>
+            </div>
+
+            <div class="cal-sub-box">
+              <div class="cal-sub-label">สมัครรับผ่านลิงก์ .ics (Subscribe URL — อัปเดตข้อมูลอัตโนมัติเมื่อตารางมีการแก้ไข)</div>
+              <div class="cal-sub-url-row">
+                <input class="cal-sub-url-input" id="studioSubscribeUrlInput" type="text" readonly aria-label="ลิงก์สมัครรับปฏิทิน .ics">
+                <button class="btn sm teal" id="studioCopySubUrlBtn" type="button">คัดลอกลิงก์ .ics</button>
+                <a class="btn sm" id="studioWebcalLink" href="webcal://smartwoo.github.io/racm303-2569/calendars/all.ics">สมัครรับใน Apple iCal ↗</a>
+              </div>
+            </div>
+
+            <details class="cal-howto-details">
+              <summary>วิธีนำเข้า Google Calendar ทั้ง 2 รูปแบบ (นำเข้าไฟล์ .ics/.csv ครั้งเดียว vs เพิ่มผ่านลิงก์ URL)</summary>
+              <div class="cal-howto-body">
+                <ol>
+                  <li><strong>เพิ่มผ่านลิงก์ (Subscribe / จาก URL) เพื่อให้อัปเดตอัตโนมัติ:</strong> กด <em>คัดลอกลิงก์ .ics</em> ด้านบน → เปิด Google Calendar บนคอมพิวเตอร์ → คลิกไอคอนเฟือง <strong>การตั้งค่า &gt; เพิ่มปฏิทิน &gt; จาก URL</strong> → วางลิงก์ `.ics` แล้วคลิก <strong>เพิ่มปฏิทิน</strong> (สำหรับ iPhone / iPad / Mac กดปุ่ม <em>สมัครรับใน Apple iCal</em> ได้ทันที)</li>
+                  <li><strong>นำเข้าไฟล์ .ics หรือ .csv ครั้งเดียว:</strong> กดดาวน์โหลดไฟล์ `.ics` (หรือ `.csv`) → เปิด Google Calendar บนคอมพิวเตอร์ → ไอคอนเฟือง <strong>การตั้งค่า &gt; ตั้งค่า &gt; นำเข้าและส่งออก</strong> → เลือกไฟล์จากคอมพิวเตอร์ เลือกปฏิทินปลายทาง แล้วคลิก <strong>นำเข้า</strong> <em>(ข้อควรทราบ: การนำเข้าแบบไฟล์จะเป็นข้อมูล ณ เวลาที่นำเข้า ไม่อัปเดตอัตโนมัติหากมีการแก้ไขภายหลัง)</em></li>
+                </ol>
+              </div>
+            </details>
+          </div>
         </div>
       </div>
 

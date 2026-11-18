@@ -27,3 +27,19 @@
 | ศุกร์ที่ 27 พ.ย. 2569 (`09.00 – 16.30 น.`) | `EP1–EP3`, `EXERCISE 1–2`, `EX-SDL` | https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1 | `910 2256 1292` | `346256` |
 | พุธที่ 2 ธ.ค. 2569 (`09.00 – 16.30 น.`) | `EP4–EP5`, `EXERCISE 3–4` | https://zoom.us/j/94317626613?pwd=0M6tElkd5gdbRjjdMQ1wYUmThR7Bla.1 | `943 1762 6613` | `547989` |
 | พฤหัสบดีที่ 3 ธ.ค. 2569 (`09.00 – 16.30 น.`) | `EP6–EP8`, `EP9 + EXERCISE 5–6` | https://zoom.us/j/92940953542?pwd=95C9xFpBvOFg8gtuaXkDBkc4ivtFGU.1 | `929 4095 3542` | `165796` |
+
+### ลิงก์สมัครรับปฏิทินรายกลุ่มภาคสนาม (.ics Subscribe URL สำหรับ Google Calendar “จาก URL” & Apple Calendar)
+
+สามารถนำลิงก์ `.ics` ด้านล่างไปวางใน **Google Calendar > การตั้งค่า > เพิ่มปฏิทิน > จาก URL** เพื่อให้ซิงค์อัปเดตอัตโนมัติตามเวลาลงภาคสนามจริงของแต่ละกลุ่ม (หรือเลือกเฉพาะตัวนักศึกษาเองบนหน้าเว็บพอร์ทัลเพื่อผูกห้อง Discussion 1–6 ร่วมด้วย):
+
+| กลุ่มพื้นที่ภาคสนาม | ช่วงวันลงภาคสนาม | ลิงก์ Subscribe `.ics` (อัปเดตอัตโนมัติ) |
+|---|---|---|
+| **1. รพร.กุฉินารายณ์** จ.กาฬสินธุ์ | พฤ. 10 เย็น (รถไฟ) – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_1_kuchinarai.ics` |
+| **2. รพร.ด่านซ้าย** จ.เลย | ส. 12 – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_2_dansai.ics` |
+| **3. รพ.ตะกั่วป่า** จ.พังงา | พฤ. 10 เย็น (รถไฟ) – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_3_takuapa.ics` |
+| **4. รพ.ท่าวังผา** จ.น่าน | ส. 12 – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_4_thawangpha.ics` |
+| **5. รพ.เพชรบูรณ์ (กลุ่ม 1)** | พฤ. 10 – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_5_phetchabun1.ics` |
+| **6. รพ.เพชรบูรณ์ (กลุ่ม 2)** | พฤ. 10 – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_6_phetchabun2.ics` |
+| **7. รพ.อุบลรัตน์** จ.ขอนแก่น | ส. 12 เย็น (รถไฟ) – อา. 20 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_7_ubonrat.ics` |
+| **8. รพ.ท่าสองยาง** จ.ตาก | ศ. 11 เย็น – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_8_thasongyang.ics` |
+| **9. รพ.อุ้มผาง** จ.ตาก | คืน พ. 9 (23:00 น.) – ศ. 18 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_9_umphang.ics` |
