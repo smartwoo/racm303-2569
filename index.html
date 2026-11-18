@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RACM 303 (ปีการศึกษา 2569) · พอร์ทัลนักศึกษาแพทย์ชั้นปีที่ 3 — ตารางสอน คู่มือ และเอกสารคำสอน HS1–HS6</title>
-  <meta name="description" content="พอร์ทัลการเรียนรู้รายวิชา RACM 303 เวชศาสตร์ชุมชนและวิทยาศาสตร์ระบบสุขภาพ ปีการศึกษา 2569 สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี">
+  <title>RACM 303 (ปีการศึกษา 2569) · พอร์ทัลนักศึกษาแพทย์ชั้นปีที่ 3 — ปฏิทินเรียน คู่มือรายวิชา และเอกสารคำสอน HS1–HS6</title>
+  <meta name="description" content="พอร์ทัลการเรียนรู้รายวิชา RACM 303 เวชศาสตร์ชุมชนและวิทยาศาสตร์ระบบสุขภาพ ปีการศึกษา 2569 สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี พร้อมปฏิทิน iCal (.ics) และ Google Calendar (.csv) ลิงก์ Zoom คู่มือรายวิชา และเอกสารคำสอน HS1–HS6 ฉบับเต็มและฉบับย่อ">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,16 +20,17 @@
           <p class="head-subtitle">พุธที่ 25 พฤศจิกายน – พุธที่ 30 ธันวาคม 2569 · สถาบันการแพทย์จักรีนฤบดินทร์ (CNMI) และโรงพยาบาลชุมชน 9 พื้นที่</p>
         </div>
         <div class="head-links">
+          <a class="ghost-link" id="studentManualQuickLink" href="คู่มือรายวิชา_RACM303_2569.md" download>ดาวน์โหลดคู่มือรายวิชา (.md)</a>
           <a class="ghost-link" id="studentElearningLink" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">ส่งงาน E-learning</a>
           <a class="ghost-link" id="studentSurveyFormLink" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey</a>
           <a class="ghost-link" id="studentAppsScriptTopLink" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec" target="_blank" rel="noopener">ตาราง &amp; รูปถ่าย (Apps Script)</a>
         </div>
       </div>
 
-      <div class="personal-bar" aria-label="ตั้งค่าตารางเรียนเฉพาะบุคคล">
+      <div class="personal-bar" aria-label="ตั้งค่าตารางเรียนและปฏิทินเฉพาะบุคคล">
         <label for="personalStudentInput">ค้นหาตารางของฉัน:</label>
         <div class="personal-input-wrap">
-          <input id="personalStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล…">
+          <input id="personalStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล เพื่อผูกห้องเรียนและดาวน์โหลดปฏิทินส่วนตัว…">
           <datalist id="studentLookupList"></datalist>
         </div>
         <div class="personal-summary" id="personalSummary"></div>
@@ -37,97 +38,142 @@
       </div>
 
       <nav class="nav-tabs" role="tablist" aria-label="หมวดเนื้อหาหลัก">
-        <button class="nav-tab" id="tabBtnSchedule" role="tab" data-tab="schedule" aria-selected="true" type="button">ตารางสอน 6 สัปดาห์</button>
+        <button class="nav-tab" id="tabBtnSchedule" role="tab" data-tab="schedule" aria-selected="true" type="button">ปฏิทิน &amp; ตารางสอน 6 สัปดาห์</button>
         <button class="nav-tab" id="tabBtnStudents" role="tab" data-tab="students" aria-selected="false" type="button">รายชื่อกลุ่ม &amp; ส่งงาน SRN <span class="tab-count">169</span></button>
         <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" aria-selected="false" type="button">คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
-        <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" aria-selected="false" type="button">บทเรียน HS1–HS6 &amp; Workbook <span class="tab-count">9 เล่ม</span></button>
+        <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" aria-selected="false" type="button">บทเรียน HS1–HS6 &amp; ฉบับย่อ <span class="tab-count">11 เล่ม</span></button>
         <button class="nav-tab" id="tabBtnPractice" role="tab" data-tab="practice" aria-selected="false" type="button">ทบทวนเร็ว · คำศัพท์ · โจทย์ <span class="tab-count">82 ข้อ</span></button>
       </nav>
     </div>
   </header>
 
   <main class="portal-main">
-    <!-- TAB 1: SCHEDULE -->
+    <!-- TAB 1: GOOGLE CALENDAR & APPLE ICAL SCHEDULE -->
     <section class="tab-panel" id="panel-schedule" aria-labelledby="tabBtnSchedule">
       <div class="section-header">
         <div>
-          <h2>ตารางกิจกรรมการเรียนการสอน ปีการศึกษา 2569</h2>
-          <p>ลงชื่อเข้าเรียนได้ 15 นาทีก่อนเวลาเรียน และเริ่มนับว่าสายเมื่อเกิน 15 นาทีหลังเวลาเริ่มคาบ (เวลาเรียนรวมต้องไม่น้อยกว่า 80%)</p>
+          <h2>ปฏิทินและตารางกิจกรรมการเรียนการสอน ปีการศึกษา 2569</h2>
+          <p>ลงชื่อเข้าเรียนได้ 15 นาทีก่อนเวลาเรียน และเริ่มนับว่าสายเมื่อเกิน 15 นาทีหลังเวลาเริ่มคาบ · ดาวน์โหลดลงเครื่องได้ทั้ง <strong>Apple iCal (.ics)</strong> และ <strong>Google Calendar (.csv)</strong> พร้อมฝังลิงก์ Zoom ในตัว</p>
         </div>
-        <div class="header-actions">
-          <button class="btn" id="exportIcsBtn" type="button">บันทึกเข้าปฏิทิน (.ics)</button>
-          <a class="btn" id="dlScheduleExcelBtn" href="downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx" download>ดาวน์โหลด Excel</a>
+        <div class="cal-export-group">
+          <button class="btn cal-ics-btn" id="exportIcsBtn" type="button" title="มาตรฐาน iCalendar สำหรับ Apple Calendar (iPhone/iPad/Mac), Outlook และ Google Calendar">ดาวน์โหลด iCal / Apple (.ics)</button>
+          <button class="btn cal-gcal-btn" id="exportGcalCsvBtn" type="button" title="ไฟล์ CSV มาตรฐานสำหรับนำเข้า Google Calendar พร้อมฝังลิงก์ Zoom">ดาวน์โหลด Google Calendar (.csv)</button>
+          <button class="btn zoom-pill-btn" id="toggleZoomDrawerBtn" type="button" aria-expanded="false">ห้องเรียน Zoom &amp; วิธีนำเข้าปฏิทิน</button>
+          <a class="btn" id="dlScheduleExcelBtn" href="downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx" download>Excel (.xlsx)</a>
           <button class="btn primary" id="printScheduleBtn" type="button">พิมพ์ / PDF</button>
         </div>
       </div>
 
-      <div class="subnav" role="group" aria-label="รูปแบบการแสดงตารางสอน">
-        <button class="subnav-btn" id="schedSubDailyBtn" data-sched-sub="daily" aria-pressed="true" type="button">คาบเรียนรายวัน &amp; ห้องกลุ่มย่อย</button>
-        <button class="subnav-btn" id="schedSubMasterBtn" data-sched-sub="master" aria-pressed="false" type="button">ผังภาพรวม 6 สัปดาห์</button>
-        <button class="subnav-btn" id="schedSubSpecBtn" data-sched-sub="spec" aria-pressed="false" type="button">ตารางหมุนเวียน HS1–HS6 &amp; สัดส่วนข้อสอบ</button>
+      <!-- Collapsible Zoom Classroom Hub & Dual-Format Import Guide -->
+      <div class="zoom-sync-drawer" id="zoomSyncDrawer" hidden>
+        <div class="zoom-sync-grid">
+          <div>
+            <h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:16.5px;color:var(--brand-deep)">รวมลิงก์ห้องเรียนออนไลน์ Zoom ประจำรายวิชา (ฝังอยู่ในไฟล์ปฏิทินทั้ง .ics และ .csv แล้ว)</h3>
+            <div class="zoom-rooms-list" id="zoomRoomsHubList"></div>
+          </div>
+          <div class="sync-guide-box">
+            <h4>วิธีนำเข้าปฏิทินลงเครื่องส่วนตัว (Personal Calendar Sync)</h4>
+            <ol>
+              <li><strong>แนะนำก่อนดาวน์โหลด:</strong> พิมพ์รหัสนักศึกษา 7 หลักในแถบด้านบนก่อน เพื่อให้ระบบผูกห้อง Discussion 1–6 ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของคุณเข้าในปฏิทินอัตโนมัติ</li>
+              <li><strong>Apple Calendar / iCal (iPhone, iPad, Mac) &amp; Outlook:</strong> กดปุ่ม <strong>ดาวน์โหลด iCal / Apple (.ics)</strong> แล้วเปิดไฟล์ ระบบจะเพิ่มทุกคาบพร้อมแจ้งเตือนล่วงหน้า 15 นาทีและลิงก์กดเข้า Zoom ทันที</li>
+              <li><strong>Google Calendar (ผ่านไฟล์ .csv หรือ .ics):</strong> เปิด Google Calendar บนคอมพิวเตอร์ → ฟันเฟือง <em>Settings</em> → <em>Import &amp; export</em> → เลือกไฟล์ <strong>.csv</strong> หรือ <strong>.ics</strong> ที่ดาวน์โหลดแล้วกด <em>Import</em> (หรือคลิกที่แต่ละคาบเพื่อกด <em>+ เพิ่มใน Google Calendar</em> รายคาบ)</li>
+            </ol>
+          </div>
+        </div>
       </div>
 
-      <div id="schedDailyWrap">
-        <div class="milestone-strip" id="milestoneStrip"></div>
+      <div class="milestone-strip" id="milestoneStrip"></div>
 
-        <div class="filter-panel">
-          <div class="filter-field">
-            <label for="schedWeekFilter">สัปดาห์การเรียน</label>
-            <select id="schedWeekFilter">
-              <option value="">ทุกสัปดาห์ (สัปดาห์ที่ 1–6)</option>
-              <option value="1">สัปดาห์ที่ 1 (25–27 พ.ย. 69)</option>
-              <option value="2">สัปดาห์ที่ 2 (30 พ.ย. – 4 ธ.ค. 69)</option>
-              <option value="3">สัปดาห์ที่ 3 (7–12 ธ.ค. 69 · สอบ EP &amp; เดินทาง)</option>
-              <option value="4">สัปดาห์ที่ 4 (14–20 ธ.ค. 69 · ภาคสนาม)</option>
-              <option value="5">สัปดาห์ที่ 5 (21–25 ธ.ค. 69 · สอบ HS &amp; สังเคราะห์)</option>
-              <option value="6">สัปดาห์ที่ 6 (28–30 ธ.ค. 69 · นำเสนอภาคสนาม)</option>
-            </select>
+      <!-- Shared Filter Bar (Applies across Month, Week & Agenda + Personalizes Calendar Downloads) -->
+      <div class="filter-panel">
+        <div class="filter-field">
+          <label for="schedWeekFilter">สัปดาห์การเรียน</label>
+          <select id="schedWeekFilter">
+            <option value="">ทุกสัปดาห์ (สัปดาห์ที่ 1–6)</option>
+            <option value="1">สัปดาห์ที่ 1 (25–27 พ.ย. 69)</option>
+            <option value="2">สัปดาห์ที่ 2 (30 พ.ย. – 4 ธ.ค. 69)</option>
+            <option value="3">สัปดาห์ที่ 3 (7–12 ธ.ค. 69 · สอบ EP &amp; เดินทาง)</option>
+            <option value="4">สัปดาห์ที่ 4 (14–20 ธ.ค. 69 · ภาคสนาม)</option>
+            <option value="5">สัปดาห์ที่ 5 (21–25 ธ.ค. 69 · สอบ HS &amp; สังเคราะห์)</option>
+            <option value="6">สัปดาห์ที่ 6 (28–30 ธ.ค. 69 · นำเสนอภาคสนาม)</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="schedCatFilter">หมวดกิจกรรม</label>
+          <select id="schedCatFilter">
+            <option value="">ทุกหมวดกิจกรรม</option>
+            <option value="HS">วิทยาศาสตร์ระบบสุขภาพ (HS1–HS6)</option>
+            <option value="EP">ระบาดวิทยาและสถิติ (EP1–EP9 · มี Zoom)</option>
+            <option value="SG">กลุ่มย่อย &amp; ฝึกภาคสนาม (ครั้งที่ 1–13)</option>
+            <option value="PANEL">เวทีเสวนา &amp; Workshop เชิงระบบ</option>
+            <option value="EXAM">การสอบ &amp; กำหนดส่งงาน</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="schedDiscFilter">กลุ่มอภิปราย HS (1–6)</label>
+          <select id="schedDiscFilter">
+            <option value="">ทุกกลุ่ม Discussion</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="schedAreaFilter">กลุ่มพื้นที่ภาคสนาม (9 แห่ง)</label>
+          <select id="schedAreaFilter">
+            <option value="">ทุกกลุ่มพื้นที่ภาคสนาม</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="schedTeacherFilter">อาจารย์ผู้สอน</label>
+          <select id="schedTeacherFilter">
+            <option value="">อาจารย์ทั้งหมด</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="schedSearchInput">ค้นหาหัวข้อ / ห้องเรียน / รหัสคาบ</label>
+          <input id="schedSearchInput" type="search" placeholder="เช่น Zoom, COM-B, 2C2-03, Outbreak, SRN…">
+        </div>
+      </div>
+
+      <!-- Google Calendar & Apple iCal Navigation Bar -->
+      <div class="cal-topbar">
+        <div class="cal-nav-left">
+          <div class="cal-stepper" id="calWeekStepper" aria-label="เลื่อนสัปดาห์">
+            <button type="button" id="calPrevBtn" title="สัปดาห์ก่อนหน้า">◀</button>
+            <button type="button" id="calStartWeekBtn">สัปดาห์เปิดวิชา</button>
+            <button type="button" id="calNextBtn" title="สัปดาห์ถัดไป">▶</button>
           </div>
-          <div class="filter-field">
-            <label for="schedCatFilter">หมวดกิจกรรม</label>
-            <select id="schedCatFilter">
-              <option value="">ทุกหมวดกิจกรรม</option>
-              <option value="HS">วิทยาศาสตร์ระบบสุขภาพ (HS1–HS6)</option>
-              <option value="EP">ระบาดวิทยาและสถิติ (EP1–EP9)</option>
-              <option value="SG">กลุ่มย่อย &amp; ฝึกภาคสนาม (ครั้งที่ 1–13)</option>
-              <option value="PANEL">เวทีเสวนา &amp; Workshop เชิงระบบ</option>
-              <option value="EXAM">การสอบ &amp; กำหนดส่งงาน</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="schedDiscFilter">กลุ่มอภิปราย HS (1–6)</label>
-            <select id="schedDiscFilter">
-              <option value="">ทุกกลุ่ม Discussion</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="schedAreaFilter">กลุ่มพื้นที่ภาคสนาม (9 แห่ง)</label>
-            <select id="schedAreaFilter">
-              <option value="">ทุกกลุ่มพื้นที่ภาคสนาม</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="schedTeacherFilter">อาจารย์ผู้สอน</label>
-            <select id="schedTeacherFilter">
-              <option value="">อาจารย์ทั้งหมด</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="schedSearchInput">ค้นหาหัวข้อ / ห้องเรียน / รหัสคาบ</label>
-            <input id="schedSearchInput" type="search" placeholder="เช่น COM-B, 2C2-03, Outbreak, SRN…">
-          </div>
+          <h3 class="cal-period-title" id="calPeriodTitle">พฤศจิกายน – ธันวาคม 2569 (ครบ 6 สัปดาห์)</h3>
         </div>
 
-        <div class="toolbar-row">
-          <span class="status-text" id="schedStatusText" role="status">กำลังโหลดตารางสอน…</span>
-          <button class="btn sm" id="resetSchedFiltersBtn" type="button">ล้างตัวกรองตารางสอน</button>
+        <div class="cal-segmented" role="group" aria-label="มุมมองปฏิทิน">
+          <button class="cal-seg-btn" id="schedSubMonthBtn" data-sched-sub="month" aria-pressed="true" type="button">ปฏิทินรายเดือน</button>
+          <button class="cal-seg-btn" id="schedSubWeekBtn" data-sched-sub="week" aria-pressed="false" type="button">ตารางรายสัปดาห์</button>
+          <button class="cal-seg-btn" id="schedSubDailyBtn" data-sched-sub="daily" aria-pressed="false" type="button">กำหนดการรายคาบ</button>
+          <button class="cal-seg-btn" id="schedSubSpecBtn" data-sched-sub="spec" aria-pressed="false" type="button">หมุนเวียน HS &amp; ข้อสอบ</button>
         </div>
+      </div>
 
+      <div class="toolbar-row">
+        <span class="status-text" id="schedStatusText" role="status">กำลังโหลดตารางสอน…</span>
+        <div class="cal-legend" aria-label="สัญลักษณ์สีหมวดหมู่">
+          <span class="cal-legend-item"><i class="cal-dot cat-HS"></i>ระบบสุขภาพ (HS)</span>
+          <span class="cal-legend-item"><i class="cal-dot cat-EP"></i>ระบาดวิทยา (EP/Zoom)</span>
+          <span class="cal-legend-item"><i class="cal-dot cat-SG"></i>กลุ่มย่อย &amp; ภาคสนาม</span>
+          <span class="cal-legend-item"><i class="cal-dot cat-PANEL"></i>เสวนาเชิงระบบ</span>
+          <span class="cal-legend-item"><i class="cal-dot cat-EXAM"></i>สอบ &amp; ส่งงาน</span>
+        </div>
+        <button class="btn sm" id="resetSchedFiltersBtn" type="button">ล้างตัวกรอง</button>
+      </div>
+
+      <div id="schedMonthWrap">
+        <div id="schedMonthContent"></div>
+      </div>
+
+      <div id="schedWeekWrap" hidden>
+        <div id="schedWeekContent"></div>
+      </div>
+
+      <div id="schedDailyWrap" hidden>
         <div id="scheduleSessionsContainer"></div>
-      </div>
-
-      <div id="schedMasterWrap" hidden>
-        <div id="schedMasterContent"></div>
       </div>
 
       <div id="schedSpecWrap" hidden>
@@ -223,12 +269,12 @@
     <section class="tab-panel" id="panel-manual" aria-labelledby="tabBtnManual" hidden>
       <div class="section-header">
         <div>
-          <h2>คู่มือการจัดการเรียนการสอน RACM 303 ปีการศึกษา 2569</h2>
-          <p>ฉบับสมบูรณ์ครบ 17 บท วงจรการเรียนรู้เชิงประสบการณ์ของ Kolb และภาคผนวกแบบฟอร์มการประเมิน 1A–4A</p>
+          <h2>คู่มือการจัดการเรียนการสอน RACM 303 ปีการศึกษา 2569 (ฉบับนักศึกษา)</h2>
+          <p>ครบทั้ง 17 บท ระเบียบการฝึกภาคสนาม ลิงก์ห้องเรียน Zoom เกณฑ์การสอบ Open Note วงจรการเรียนรู้ของ Kolb และแบบฟอร์มการประเมิน 1A–4A</p>
         </div>
         <div class="header-actions">
-          <a class="btn" id="dlManualBtn" href="downloads/คู่มือการเรียนการสอน_RACM303_2569.md" download>ดาวน์โหลดคู่มือ (.md)</a>
-          <button class="btn primary" id="printManualBtn" type="button" onclick="document.body.classList.remove('print-students-mode');window.print();">พิมพ์คู่มือ</button>
+          <a class="btn teal" id="dlManualRootBtn" href="คู่มือรายวิชา_RACM303_2569.md" download>ดาวน์โหลดคู่มือรายวิชา (.md)</a>
+          <button class="btn primary" id="printManualBtn" type="button">พิมพ์คู่มือ</button>
         </div>
       </div>
 
@@ -236,15 +282,15 @@
         <aside class="reader-sidebar" aria-label="สารบัญคู่มือรายวิชา">
           <div class="filter-field" style="margin-bottom:12px">
             <label for="manualSearchInput">ค้นหาในคู่มือ</label>
-            <input id="manualSearchInput" type="search" placeholder="เช่น Open Note, เวลาลา, ฟอร์ม 3A…">
+            <input id="manualSearchInput" type="search" placeholder="เช่น Open Note, เวลาลา, Zoom, ฟอร์ม 3A…">
           </div>
-          <p class="sidebar-label">สารบัญบทในคู่มือ</p>
+          <p class="sidebar-label">สารบัญบทในคู่มือ (17 บท &amp; ภาคผนวก)</p>
           <ul class="doc-picker-list" id="manualChapterList"></ul>
         </aside>
 
         <div class="reader-paper">
           <div class="reader-toolbar">
-            <span style="font-size:13.5px;color:var(--muted)">คู่มือรายวิชา RACM 303 ปีการศึกษา 2569 (ฉบับปรับปรุงตามตารางสอนปี 2569)</span>
+            <span style="font-size:13.5px;color:var(--muted)">คู่มือรายวิชา RACM 303 ปีการศึกษา 2569 · คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี</span>
             <div class="font-Controls" aria-label="ปรับขนาดตัวอักษร">
               <button type="button" id="manFontDecBtn" data-font-delta="-1">ก-</button>
               <button type="button" id="manFontResetBtn" data-font-delta="0">มาตรฐาน</button>
@@ -256,22 +302,23 @@
       </div>
     </section>
 
-    <!-- TAB 4: HS1-HS6 TEXTBOOKS & WORKBOOKS -->
+    <!-- TAB 4: HS1-HS6 TEXTBOOKS, CONCISE SUMMARIES & WORKBOOKS -->
     <section class="tab-panel" id="panel-textbooks" aria-labelledby="tabBtnTextbooks" hidden>
       <div class="section-header">
         <div>
-          <h2>คลังเอกสารคำสอนแบบชี้นำ (Guided Learning HS1–HS6) &amp; สมุดแบบฝึกหัด</h2>
-          <p>เอกสารประกอบการเรียนรู้ด้วยตนเองฉบับเต็ม พร้อมแผนภาพ กรณีศึกษาเปรียบเทียบ และแนวคำตอบแบบซ่อนเปิดได้</p>
+          <h2>คลังเอกสารคำสอนแบบชี้นำ (HS1–HS6) · ฉบับสรุปกระชับ &amp; สมุดแบบฝึกหัด</h2>
+          <p>รวมเอกสารฉบับเต็ม ฉบับสรุปกระชับพร้อมอินโฟกราฟิกชุดใหม่ (HS1–HS3) และสมุดแบบฝึกหัดพร้อมแนวคำตอบแบบซ่อนเปิดได้</p>
         </div>
         <div class="header-actions">
+          <a class="btn teal" id="activeTextbookMdBtn" href="#" download hidden>ดาวน์โหลดไฟล์ .md บทนี้</a>
           <button class="btn" id="toggleAllAnswersBtn" type="button">เปิดแนวคำตอบทั้งหมด</button>
-          <button class="btn primary" id="printTextbookBtn" type="button" onclick="document.body.classList.remove('print-students-mode');window.print();">พิมพ์บทเรียนนี้</button>
+          <button class="btn primary" id="printTextbookBtn" type="button">พิมพ์บทเรียนนี้</button>
         </div>
       </div>
 
       <div class="reader-shell">
         <aside class="reader-sidebar" aria-label="เลือกเอกสารคำสอนและหัวข้อ">
-          <p class="sidebar-label">เลือกเอกสาร (9 ฉบับ)</p>
+          <p class="sidebar-label">เลือกเอกสาร (11 ฉบับ)</p>
           <ul class="doc-picker-list" id="textbookDocList"></ul>
           <hr style="border:0;border-top:1px solid var(--line-soft);margin:14px 0">
           <p class="sidebar-label">หัวข้อย่อยในบทนี้</p>
@@ -338,6 +385,11 @@
       <div id="practiceQaWrap" hidden></div>
     </section>
   </main>
+
+  <!-- Calendar Event Detail Popover Modal (Google Calendar / Apple iCal Style) -->
+  <div class="cal-modal-backdrop" id="calendarEventModal" role="dialog" aria-modal="true" aria-labelledby="calModalTitle" hidden>
+    <div class="cal-modal-card" id="calendarEventModalCard"></div>
+  </div>
 
   <!-- Image Zoom Lightbox -->
   <div class="lightbox" id="imageLightbox" role="dialog" aria-modal="true" aria-label="ขยายภาพประกอบ" hidden>

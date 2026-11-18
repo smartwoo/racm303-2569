@@ -1,4 +1,3 @@
-/* RACM 303 (ปีการศึกษา 2569) — Student Teaching Schedule & Course Parameters */
 window.RACM_SCHEDULE_DATA = {
   "courseMeta": {
     "code": "RACM 303",
@@ -13,7 +12,27 @@ window.RACM_SCHEDULE_DATA = {
     "campus": "สถาบันการแพทย์จักรีนฤบดินทร์ (CNMI)",
     "attendanceRule": "ลงชื่อเข้าเรียนได้ 15 นาทีก่อนเวลาเรียน และเริ่มนับว่าสายเมื่อเกิน 15 นาทีหลังเวลาเรียนตามตารางสอน (มีสิทธิ์เข้าสอบเมื่อเวลาเรียน ≥ 80%; ลาช่วงก่อน/หลังภาคสนามรวมไม่เกิน 3 วัน และช่วงภาคสนามไม่เกิน 1.5 วัน)",
     "elearningUrl": "https://elearning.ra.mahidol.ac.th/ramed/login/index.php",
-    "fieldworkFormUrl": "https://forms.gle/1Gsg2SmSfuuEwmcE9"
+    "fieldworkFormUrl": "https://forms.gle/1Gsg2SmSfuuEwmcE9",
+    "zoomRooms": [
+      {
+        "url": "https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1",
+        "id": "910 2256 1292",
+        "pass": "346256",
+        "label": "ระบาดวิทยา วันศุกร์ที่ 27 พ.ย. 2569 (09.00–16.30 น.) · EP1–EP3 & Exercise 1–2"
+      },
+      {
+        "url": "https://zoom.us/j/94317626613?pwd=0M6tElkd5gdbRjjdMQ1wYUmThR7Bla.1",
+        "id": "943 1762 6613",
+        "pass": "547989",
+        "label": "ระบาดวิทยา วันพุธที่ 2 ธ.ค. 2569 (09.00–16.30 น.) · EP4–EP5 & Exercise 3–4"
+      },
+      {
+        "url": "https://zoom.us/j/92940953542?pwd=95C9xFpBvOFg8gtuaXkDBkc4ivtFGU.1",
+        "id": "929 4095 3542",
+        "pass": "165796",
+        "label": "ระบาดวิทยา วันพฤหัสบดีที่ 3 ธ.ค. 2569 (09.00–16.30 น.) · EP6–EP9 & Exercise 5–6"
+      }
+    ]
   },
   "hsGroups": [
     {
@@ -242,7 +261,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "พฤ. 10 – ส. 19 ธ.ค. 2569 (9 คืน 10 วัน)",
       "travelNote": "ออกเดินทางโดยรถไฟเย็นวันพฤหัสบดีที่ 10 ธ.ค. 2569 (ไม่มีกลุ่มย่อยวันศุกร์ที่ 11 ธ.ค.)",
       "hasFri11Dec": false,
-      "staffRef": "คุณวิลาสิณี (ฟลุ๊ค)"
+      "staffRef": "คุณวิลาสิณี (ฟลุ๊ค)",
+      "startDateISO": "2026-12-10",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 2,
@@ -255,7 +276,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "ส. 12 – ส. 19 ธ.ค. 2569 (7 คืน 8 วัน)",
       "travelNote": "มีกิจกรรมกลุ่มย่อยครั้งที่ 5–6 วันศุกร์ที่ 11 ธ.ค. และเดินทางวันเสาร์ที่ 12 ธ.ค. 2569",
       "hasFri11Dec": true,
-      "staffRef": "คุณปิยะนาถ (อ้อย) / คุณภัสสภร (แพรว)"
+      "staffRef": "คุณปิยะนาถ (อ้อย) / คุณภัสสภร (แพรว)",
+      "startDateISO": "2026-12-12",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 3,
@@ -268,7 +291,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "พฤ. 10 – ส. 19 ธ.ค. 2569 (9 คืน 10 วัน)",
       "travelNote": "ออกเดินทางโดยรถไฟเย็นวันพฤหัสบดีที่ 10 ธ.ค. 2569 (ไม่มีกลุ่มย่อยวันศุกร์ที่ 11 ธ.ค.)",
       "hasFri11Dec": false,
-      "staffRef": "คุณสุวรรณา (หมวย)"
+      "staffRef": "คุณสุวรรณา (หมวย)",
+      "startDateISO": "2026-12-10",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 4,
@@ -281,7 +306,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "ส. 12 – ส. 19 ธ.ค. 2569 (7 คืน 8 วัน)",
       "travelNote": "มีกิจกรรมกลุ่มย่อยครั้งที่ 5–6 วันศุกร์ที่ 11 ธ.ค. และเดินทางวันเสาร์ที่ 12 ธ.ค. 2569",
       "hasFri11Dec": true,
-      "staffRef": "คุณวลัยลักษณ์ (อ้อม) / คุณนฤมล (ฤมล)"
+      "staffRef": "คุณวลัยลักษณ์ (อ้อม) / คุณนฤมล (ฤมล)",
+      "startDateISO": "2026-12-12",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 5,
@@ -294,7 +321,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "พฤ. 10 – ส. 19 ธ.ค. 2569 (9 คืน 10 วัน)",
       "travelNote": "ออกเดินทางวันพฤหัสบดีที่ 10 ธ.ค. 2569 (ไม่มีกลุ่มย่อยวันศุกร์ที่ 11 ธ.ค.)",
       "hasFri11Dec": false,
-      "staffRef": "คุณพรปวีณ์ (ทิพย์)"
+      "staffRef": "คุณพรปวีณ์ (ทิพย์)",
+      "startDateISO": "2026-12-10",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 6,
@@ -307,7 +336,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "พฤ. 10 – ส. 19 ธ.ค. 2569 (9 คืน 10 วัน)",
       "travelNote": "วันที่ 8–9 ธ.ค. พบอาจารย์ที่ปรึกษาทาง Online; ออกเดินทางวันพฤหัสบดีที่ 10 ธ.ค. 2569",
       "hasFri11Dec": false,
-      "staffRef": "ประสานงานผ่านภาควิชาฯ"
+      "staffRef": "ประสานงานผ่านภาควิชาฯ",
+      "startDateISO": "2026-12-10",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 7,
@@ -320,7 +351,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "ส. 12 – อา. 20 ธ.ค. 2569 (8 คืน 9 วัน)",
       "travelNote": "วันที่ 8 ธ.ค. พบ อ.ที่ปรึกษา Online; มีกลุ่มย่อยศุกร์ 11 ธ.ค.; เดินทางรถไฟเย็นเสาร์ 12 ธ.ค.",
       "hasFri11Dec": true,
-      "staffRef": "คุณนิตยา (มะปราง)"
+      "staffRef": "คุณนิตยา (มะปราง)",
+      "startDateISO": "2026-12-12",
+      "endDateISO": "2026-12-20"
     },
     {
       "id": 8,
@@ -333,7 +366,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "ศ. 11 – ส. 19 ธ.ค. 2569 (8 คืน 9 วัน)",
       "travelNote": "มีกิจกรรมกลุ่มย่อยครั้งที่ 5–6 วันศุกร์ที่ 11 ธ.ค. และออกเดินทางช่วงเย็นวันเดียวกัน",
       "hasFri11Dec": true,
-      "staffRef": "คุณมงคล (หมง)"
+      "staffRef": "คุณมงคล (หมง)",
+      "startDateISO": "2026-12-11",
+      "endDateISO": "2026-12-19"
     },
     {
       "id": 9,
@@ -346,7 +381,9 @@ window.RACM_SCHEDULE_DATA = {
       "datesTH": "พ. 9 – ศ. 18 ธ.ค. 2569 (9 คืน 10 วัน)",
       "travelNote": "ออกเดินทางคืนวันพุธที่ 9 ธ.ค. 2569 เวลา 23.00 น. และเดินทางกลับถึงวันศุกร์ที่ 18 ธ.ค.",
       "hasFri11Dec": false,
-      "staffRef": "คุณสุพรรณี (กระแต)"
+      "staffRef": "คุณสุพรรณี (กระแต)",
+      "startDateISO": "2026-12-09",
+      "endDateISO": "2026-12-18"
     }
   ],
   "masterGrid": [
@@ -620,7 +657,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "อ. พญ.วริษา สุนทรวินิต",
       "format": "Onsite · ห้องใหญ่ 169 คน",
       "room": "2C2-03 ชั้น 2 อาคารพรีคลินิก (จัด 180 ที่นั่ง)",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS1-CONCISE"
     },
     {
       "id": "w1-d2-hs1-disc",
@@ -640,7 +678,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "คณาจารย์ประจำกลุ่มอภิปราย HS ทั้ง 6 กลุ่มย่อย",
       "format": "Onsite · แยก 6 กลุ่มย่อย (28–29 คน/กลุ่ม)",
       "room": "กลุ่ม 1–6: ห้อง 1C1-02 ถึง 1C1-07 ชั้น 1 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS1-CONCISE"
     },
     {
       "id": "w1-d2-sg1",
@@ -719,7 +758,12 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "นักศึกษาทำแบบฝึกหัดด้วยตนเอง",
       "format": "Online / SDL",
       "room": "Online",
-      "checkIn": "ไม่เช็คชื่อ"
+      "checkIn": "ไม่เช็คชื่อ",
+      "zoom": {
+        "url": "https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1",
+        "id": "910 2256 1292",
+        "pass": "346256"
+      }
     },
     {
       "id": "w2-d1-hs2-lec",
@@ -738,7 +782,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "อ. นพ.ณัฐวุฒิ เอี่ยงธนรัตน์",
       "format": "Onsite · ห้องใหญ่ 169 คน",
       "room": "2C2-03 ชั้น 2 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS2-CONCISE"
     },
     {
       "id": "w2-d1-hs2-disc",
@@ -758,7 +803,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "คณาจารย์ประจำกลุ่มอภิปราย HS ทั้ง 6 กลุ่มย่อย",
       "format": "Onsite · แยก 6 กลุ่มย่อย",
       "room": "กลุ่ม 1–6: ห้อง 1C1-02 ถึง 1C1-07 ชั้น 1 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS2-CONCISE"
     },
     {
       "id": "w2-d1-hs3-lec",
@@ -776,7 +822,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "อ. นพ.ภูษิต ประคองสาย",
       "format": "Onsite · ห้องใหญ่ 169 คน",
       "room": "2C2-03 ชั้น 2 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS3-CONCISE"
     },
     {
       "id": "w2-d1-hs3-disc",
@@ -795,7 +842,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "คณาจารย์ประจำกลุ่มอภิปราย HS ทั้ง 6 กลุ่มย่อย",
       "format": "Onsite · แยก 6 กลุ่มย่อย",
       "room": "กลุ่ม 1–6: ห้อง 1C1-02 ถึง 1C1-07 ชั้น 1 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS3-CONCISE"
     },
     {
       "id": "w2-d2-hs4-lec",
@@ -1133,7 +1181,9 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "นักศึกษาทุกคน",
       "format": "Online (E-learning)",
       "room": "ระบบ E-learning รามาธิบดี",
-      "checkIn": "กำหนดส่งงาน"
+      "checkIn": "กำหนดส่งงาน",
+      "actionUrl": "https://elearning.ra.mahidol.ac.th/ramed/login/index.php",
+      "actionLabel": "ส่งงานในระบบ E-learning"
     },
     {
       "id": "w3-d4-holiday",
@@ -1513,7 +1563,9 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "นักศึกษาทุกคน / ทุกกลุ่มย่อย",
       "format": "Online Submission",
       "room": "E-learning & Google Form (forms.gle/1Gsg2SmSfuuEwmcE9)",
-      "checkIn": "กำหนดส่งงานวันสุดท้าย"
+      "checkIn": "กำหนดส่งงานวันสุดท้าย",
+      "actionUrl": "https://forms.gle/1Gsg2SmSfuuEwmcE9",
+      "actionLabel": "ส่งสไลด์ & Health Survey (Google Form)"
     }
   ]
 };
