@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RACM 303 (ปีการศึกษา 2569) · พอร์ทัลนักศึกษาแพทย์ชั้นปีที่ 3 — ตารางสอน คู่มือ และเอกสารคำสอน HS1–HS6</title>
+  <meta name="description" content="พอร์ทัลการเรียนรู้รายวิชา RACM 303 เวชศาสตร์ชุมชนและวิทยาศาสตร์ระบบสุขภาพ ปีการศึกษา 2569 สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <header class="masthead">
+    <div class="head-inner">
+      <div class="head-top">
+        <div>
+          <p class="dept-line">RACM 303 · COMMUNITY MEDICINE &amp; HEALTH SYSTEMS SCIENCE · ปีการศึกษา 2569</p>
+          <h1>เวชศาสตร์ชุมชนและวิทยาศาสตร์ระบบสุขภาพ (สำหรับนักศึกษาแพทย์ชั้นปีที่ 3)</h1>
+          <p class="head-subtitle">พุธที่ 25 พฤศจิกายน – พุธที่ 30 ธันวาคม 2569 · สถาบันการแพทย์จักรีนฤบดินทร์ (CNMI) และโรงพยาบาลชุมชน 9 พื้นที่</p>
+        </div>
+        <div class="head-links">
+          <a class="ghost-link" id="studentElearningLink" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">ส่งงาน E-learning</a>
+          <a class="ghost-link" id="studentSurveyFormLink" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey</a>
+          <a class="ghost-link" id="studentAppsScriptTopLink" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec" target="_blank" rel="noopener">ตาราง &amp; รูปถ่าย (Apps Script)</a>
+        </div>
+      </div>
+
+      <div class="personal-bar" aria-label="ตั้งค่าตารางเรียนเฉพาะบุคคล">
+        <label for="personalStudentInput">ค้นหาตารางของฉัน:</label>
+        <div class="personal-input-wrap">
+          <input id="personalStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล…">
+          <datalist id="studentLookupList"></datalist>
+        </div>
+        <div class="personal-summary" id="personalSummary"></div>
+        <button class="personal-clear" id="clearPersonalBtn" type="button" hidden>ล้างค่าของฉัน</button>
+      </div>
+
+      <nav class="nav-tabs" role="tablist" aria-label="หมวดเนื้อหาหลัก">
+        <button class="nav-tab" id="tabBtnSchedule" role="tab" data-tab="schedule" aria-selected="true" type="button">ตารางสอน 6 สัปดาห์</button>
+        <button class="nav-tab" id="tabBtnStudents" role="tab" data-tab="students" aria-selected="false" type="button">รายชื่อกลุ่ม &amp; ส่งงาน SRN <span class="tab-count">169</span></button>
+        <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" aria-selected="false" type="button">คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
+        <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" aria-selected="false" type="button">บทเรียน HS1–HS6 &amp; Workbook <span class="tab-count">9 เล่ม</span></button>
+        <button class="nav-tab" id="tabBtnPractice" role="tab" data-tab="practice" aria-selected="false" type="button">ทบทวนเร็ว · คำศัพท์ · โจทย์ <span class="tab-count">82 ข้อ</span></button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-main">
+    <!-- TAB 1: SCHEDULE -->
+    <section class="tab-panel" id="panel-schedule" aria-labelledby="tabBtnSchedule">
+      <div class="section-header">
+        <div>
+          <h2>ตารางกิจกรรมการเรียนการสอน ปีการศึกษา 2569</h2>
+          <p>ลงชื่อเข้าเรียนได้ 15 นาทีก่อนเวลาเรียน และเริ่มนับว่าสายเมื่อเกิน 15 นาทีหลังเวลาเริ่มคาบ (เวลาเรียนรวมต้องไม่น้อยกว่า 80%)</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="exportIcsBtn" type="button">บันทึกเข้าปฏิทิน (.ics)</button>
+          <a class="btn" id="dlScheduleExcelBtn" href="downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx" download>ดาวน์โหลด Excel</a>
+          <button class="btn primary" id="printScheduleBtn" type="button">พิมพ์ / PDF</button>
+        </div>
+      </div>
+
+      <div class="subnav" role="group" aria-label="รูปแบบการแสดงตารางสอน">
+        <button class="subnav-btn" id="schedSubDailyBtn" data-sched-sub="daily" aria-pressed="true" type="button">คาบเรียนรายวัน &amp; ห้องกลุ่มย่อย</button>
+        <button class="subnav-btn" id="schedSubMasterBtn" data-sched-sub="master" aria-pressed="false" type="button">ผังภาพรวม 6 สัปดาห์</button>
+        <button class="subnav-btn" id="schedSubSpecBtn" data-sched-sub="spec" aria-pressed="false" type="button">ตารางหมุนเวียน HS1–HS6 &amp; สัดส่วนข้อสอบ</button>
+      </div>
+
+      <div id="schedDailyWrap">
+        <div class="milestone-strip" id="milestoneStrip"></div>
+
+        <div class="filter-panel">
+          <div class="filter-field">
+            <label for="schedWeekFilter">สัปดาห์การเรียน</label>
+            <select id="schedWeekFilter">
+              <option value="">ทุกสัปดาห์ (สัปดาห์ที่ 1–6)</option>
+              <option value="1">สัปดาห์ที่ 1 (25–27 พ.ย. 69)</option>
+              <option value="2">สัปดาห์ที่ 2 (30 พ.ย. – 4 ธ.ค. 69)</option>
+              <option value="3">สัปดาห์ที่ 3 (7–12 ธ.ค. 69 · สอบ EP &amp; เดินทาง)</option>
+              <option value="4">สัปดาห์ที่ 4 (14–20 ธ.ค. 69 · ภาคสนาม)</option>
+              <option value="5">สัปดาห์ที่ 5 (21–25 ธ.ค. 69 · สอบ HS &amp; สังเคราะห์)</option>
+              <option value="6">สัปดาห์ที่ 6 (28–30 ธ.ค. 69 · นำเสนอภาคสนาม)</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="schedCatFilter">หมวดกิจกรรม</label>
+            <select id="schedCatFilter">
+              <option value="">ทุกหมวดกิจกรรม</option>
+              <option value="HS">วิทยาศาสตร์ระบบสุขภาพ (HS1–HS6)</option>
+              <option value="EP">ระบาดวิทยาและสถิติ (EP1–EP9)</option>
+              <option value="SG">กลุ่มย่อย &amp; ฝึกภาคสนาม (ครั้งที่ 1–13)</option>
+              <option value="PANEL">เวทีเสวนา &amp; Workshop เชิงระบบ</option>
+              <option value="EXAM">การสอบ &amp; กำหนดส่งงาน</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="schedDiscFilter">กลุ่มอภิปราย HS (1–6)</label>
+            <select id="schedDiscFilter">
+              <option value="">ทุกกลุ่ม Discussion</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="schedAreaFilter">กลุ่มพื้นที่ภาคสนาม (9 แห่ง)</label>
+            <select id="schedAreaFilter">
+              <option value="">ทุกกลุ่มพื้นที่ภาคสนาม</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="schedTeacherFilter">อาจารย์ผู้สอน</label>
+            <select id="schedTeacherFilter">
+              <option value="">อาจารย์ทั้งหมด</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="schedSearchInput">ค้นหาหัวข้อ / ห้องเรียน / รหัสคาบ</label>
+            <input id="schedSearchInput" type="search" placeholder="เช่น COM-B, 2C2-03, Outbreak, SRN…">
+          </div>
+        </div>
+
+        <div class="toolbar-row">
+          <span class="status-text" id="schedStatusText" role="status">กำลังโหลดตารางสอน…</span>
+          <button class="btn sm" id="resetSchedFiltersBtn" type="button">ล้างตัวกรองตารางสอน</button>
+        </div>
+
+        <div id="scheduleSessionsContainer"></div>
+      </div>
+
+      <div id="schedMasterWrap" hidden>
+        <div id="schedMasterContent"></div>
+      </div>
+
+      <div id="schedSpecWrap" hidden>
+        <div id="schedSpecContent"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: STUDENTS, FIELDWORK SITES & SRN GENERATOR -->
+    <section class="tab-panel" id="panel-students" aria-labelledby="tabBtnStudents" hidden>
+      <div class="section-header">
+        <div>
+          <h2>รายชื่อสมาชิกกลุ่ม Discussion · 9 พื้นที่ภาคสนาม &amp; การส่งงาน SRN</h2>
+          <p>ตรวจสอบเพื่อนร่วมกลุ่ม ห้องประจำกลุ่มย่อย วันเดินทางภาคสนาม และสร้างชื่อไฟล์ PDF มาตรฐานสำหรับส่ง E-learning</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="toggleSitesOverviewBtn" type="button">ดูรายละเอียดโรงพยาบาลและวันเดินทาง 9 พื้นที่</button>
+          <a class="btn" id="openAppsScriptRosterBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students" target="_blank" rel="noopener">เปิดโหมดรูปถ่ายเต็มใน Apps Script</a>
+        </div>
+      </div>
+
+      <div class="context-banner" id="classContextBanner" hidden></div>
+      <div class="sites-grid" id="sitesOverviewGrid" hidden></div>
+
+      <div class="srn-box" id="srnGeneratorBox">
+        <h3>เครื่องมือตั้งชื่อไฟล์บันทึกสะท้อนคิด Self-Reflection Note (SRN 1 &amp; SRN 2)</h3>
+        <p style="margin:0;font-size:13.8px;color:var(--muted)">
+          ความยาวไม่เกิน 5 หน้า A4 (ฟอนต์ TH Sarabun New ขนาด 16) บันทึกเป็น PDF · ส่ง <strong>SRN 1</strong> ภายในวันพุธที่ 9 ธ.ค. 2569 เวลา 17.00 น. และ <strong>SRN 2</strong> ภายในวันพุธที่ 30 ธ.ค. 2569 เวลา 17.00 น.
+        </p>
+        <div class="srn-grid">
+          <div class="filter-field">
+            <label for="srnRoundSelect">ครั้งที่ส่ง</label>
+            <select id="srnRoundSelect">
+              <option value="SRN1">SRN 1 (9 ธ.ค. 69)</option>
+              <option value="SRN2">SRN 2 (30 ธ.ค. 69)</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label for="srnAreaSelect">กลุ่มพื้นที่ภาคสนาม</label>
+            <select id="srnAreaSelect"></select>
+          </div>
+          <div class="filter-field">
+            <label for="srnStudentId">รหัสนักศึกษา</label>
+            <input id="srnStudentId" type="text" placeholder="เช่น 6702006">
+          </div>
+          <div class="filter-field">
+            <label for="srnStudentName">คำนำหน้า + ชื่อ-นามสกุล</label>
+            <input id="srnStudentName" type="text" placeholder="เช่น น.ส.จิดาภา ขันทอง">
+          </div>
+          <div>
+            <button class="btn teal" id="copySrnFilenameBtn" type="button" style="height:41px">คัดลอกชื่อไฟล์</button>
+          </div>
+        </div>
+        <div class="srn-output">
+          <span id="srnFilenamePreview">SRN1_กุฉินารายณ์_6702xxx_ชื่อ-นามสกุล.pdf</span>
+          <div class="header-actions">
+            <a class="btn sm primary" id="srnGoElearningBtn" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">อัปโหลดใน E-learning</a>
+            <a class="btn sm" id="srnGoFormBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey (Google Form)</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <div class="filter-field">
+          <label for="studentSearchInput">ค้นหานักศึกษา</label>
+          <input id="studentSearchInput" type="search" placeholder="รหัสนักศึกษา ชื่อ-นามสกุล หรืออาจารย์ที่ปรึกษา…">
+        </div>
+        <div class="filter-field">
+          <label for="studentAreaFilter">กลุ่มพื้นที่ · อาจารย์ที่ปรึกษา</label>
+          <select id="studentAreaFilter">
+            <option value="">ทุกกลุ่มพื้นที่ภาคสนาม (9 กลุ่ม)</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="studentDiscFilter">กลุ่มอภิปราย Discussion (HS1–HS6)</label>
+          <select id="studentDiscFilter">
+            <option value="">ทุกกลุ่ม Discussion (1–6)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="toolbar-row">
+        <span class="status-text" id="studentStatusText" role="status">กำลังโหลดรายชื่อ…</span>
+        <button class="btn sm" id="togglePhotosBtn" type="button">แสดงรูปถ่ายนักศึกษา</button>
+        <button class="btn sm" id="clearStudentFiltersBtn" type="button">ล้างตัวกรอง</button>
+        <button class="btn sm primary" id="printStudentsBtn" type="button">พิมพ์ใบรายชื่อ 1 หน้า A4</button>
+      </div>
+
+      <div class="print-heading" id="printHeading"></div>
+      <div class="student-cards" id="studentCardsContainer"></div>
+    </section>
+
+    <!-- TAB 3: COURSE MANUAL 2569 -->
+    <section class="tab-panel" id="panel-manual" aria-labelledby="tabBtnManual" hidden>
+      <div class="section-header">
+        <div>
+          <h2>คู่มือการจัดการเรียนการสอน RACM 303 ปีการศึกษา 2569</h2>
+          <p>ฉบับสมบูรณ์ครบ 17 บท วงจรการเรียนรู้เชิงประสบการณ์ของ Kolb และภาคผนวกแบบฟอร์มการประเมิน 1A–4A</p>
+        </div>
+        <div class="header-actions">
+          <a class="btn" id="dlManualBtn" href="downloads/คู่มือการเรียนการสอน_RACM303_2569.md" download>ดาวน์โหลดคู่มือ (.md)</a>
+          <button class="btn primary" id="printManualBtn" type="button" onclick="document.body.classList.remove('print-students-mode');window.print();">พิมพ์คู่มือ</button>
+        </div>
+      </div>
+
+      <div class="reader-shell">
+        <aside class="reader-sidebar" aria-label="สารบัญคู่มือรายวิชา">
+          <div class="filter-field" style="margin-bottom:12px">
+            <label for="manualSearchInput">ค้นหาในคู่มือ</label>
+            <input id="manualSearchInput" type="search" placeholder="เช่น Open Note, เวลาลา, ฟอร์ม 3A…">
+          </div>
+          <p class="sidebar-label">สารบัญบทในคู่มือ</p>
+          <ul class="doc-picker-list" id="manualChapterList"></ul>
+        </aside>
+
+        <div class="reader-paper">
+          <div class="reader-toolbar">
+            <span style="font-size:13.5px;color:var(--muted)">คู่มือรายวิชา RACM 303 ปีการศึกษา 2569 (ฉบับปรับปรุงตามตารางสอนปี 2569)</span>
+            <div class="font-Controls" aria-label="ปรับขนาดตัวอักษร">
+              <button type="button" id="manFontDecBtn" data-font-delta="-1">ก-</button>
+              <button type="button" id="manFontResetBtn" data-font-delta="0">มาตรฐาน</button>
+              <button type="button" id="manFontIncBtn" data-font-delta="1">ก+</button>
+            </div>
+          </div>
+          <article class="editorial-prose" id="manualProseContainer"></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: HS1-HS6 TEXTBOOKS & WORKBOOKS -->
+    <section class="tab-panel" id="panel-textbooks" aria-labelledby="tabBtnTextbooks" hidden>
+      <div class="section-header">
+        <div>
+          <h2>คลังเอกสารคำสอนแบบชี้นำ (Guided Learning HS1–HS6) &amp; สมุดแบบฝึกหัด</h2>
+          <p>เอกสารประกอบการเรียนรู้ด้วยตนเองฉบับเต็ม พร้อมแผนภาพ กรณีศึกษาเปรียบเทียบ และแนวคำตอบแบบซ่อนเปิดได้</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="toggleAllAnswersBtn" type="button">เปิดแนวคำตอบทั้งหมด</button>
+          <button class="btn primary" id="printTextbookBtn" type="button" onclick="document.body.classList.remove('print-students-mode');window.print();">พิมพ์บทเรียนนี้</button>
+        </div>
+      </div>
+
+      <div class="reader-shell">
+        <aside class="reader-sidebar" aria-label="เลือกเอกสารคำสอนและหัวข้อ">
+          <p class="sidebar-label">เลือกเอกสาร (9 ฉบับ)</p>
+          <ul class="doc-picker-list" id="textbookDocList"></ul>
+          <hr style="border:0;border-top:1px solid var(--line-soft);margin:14px 0">
+          <p class="sidebar-label">หัวข้อย่อยในบทนี้</p>
+          <ul class="toc-list" id="textbookHeadingToc"></ul>
+        </aside>
+
+        <div class="reader-paper">
+          <div class="reader-toolbar">
+            <span id="activeTextbookMeta" style="font-size:13.5px;color:var(--teal-deep);font-weight:600"></span>
+            <div class="font-Controls" aria-label="ปรับขนาดตัวอักษร">
+              <button type="button" id="tbFontDecBtn" data-font-delta="-1">ก-</button>
+              <button type="button" id="tbFontResetBtn" data-font-delta="0">มาตรฐาน</button>
+              <button type="button" id="tbFontIncBtn" data-font-delta="1">ก+</button>
+            </div>
+          </div>
+          <article class="editorial-prose" id="textbookProseContainer"></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: PRACTICE, FLASHCARDS & SELF-CHECK Q&A -->
+    <section class="tab-panel" id="panel-practice" aria-labelledby="tabBtnPractice" hidden>
+      <div class="section-header">
+        <div>
+          <h2>คลังทบทวนเร็ว · บัตรคำศัพท์ 2 ภาษา &amp; โจทย์ฝึกดึงความรู้ (Active Recall)</h2>
+          <p>ใช้เตรียมความพร้อมก่อนอภิปรายกลุ่มย่อย และใช้คัดเลือกประเด็นสำคัญลงกระดาษ A4 เขียนลายมือ 1 แผ่นสำหรับการสอบ Open Note</p>
+        </div>
+      </div>
+
+      <div class="subnav" role="group" aria-label="เครื่องมือทบทวนความรู้">
+        <button class="subnav-btn" id="pracSubRapidBtn" data-practice-sub="rapid" aria-pressed="true" type="button">ตารางทบทวนเร็ว (Rapid Review)</button>
+        <button class="subnav-btn" id="pracSubFcBtn" data-practice-sub="flashcards" aria-pressed="false" type="button">บัตรคำศัพท์สำคัญ (111 คำ)</button>
+        <button class="subnav-btn" id="pracSubQaBtn" data-practice-sub="qa" aria-pressed="false" type="button">โจทย์ตรวจสอบความเข้าใจ (82 ข้อ)</button>
+      </div>
+
+      <div class="filter-panel">
+        <div class="filter-field">
+          <label for="practiceModuleFilter">กรองตามบทเรียน (HS1–HS6)</label>
+          <select id="practiceModuleFilter">
+            <option value="">ครบทุกบทเรียน (HS1–HS6)</option>
+            <option value="HS1">HS1: สุขภาพ ปัจจัยกำหนดสุขภาพ &amp; การป้องกันโรค</option>
+            <option value="HS2">HS2: โครงสร้าง/หน้าที่ระบบสุขภาพ &amp; กรอบ 6W</option>
+            <option value="HS3">HS3: คุณลักษณะระบบบริการที่พึงประสงค์ (EQESaRR)</option>
+            <option value="HS4">HS4: พฤติกรรมสุขภาพ &amp; การปรับเปลี่ยนพฤติกรรม (COM-B)</option>
+            <option value="HS5">HS5: ระบบบริการสุขภาพปฐมภูมิ &amp; บริการปฐมภูมิ</option>
+            <option value="HS6">HS6: การประกันสุขภาพ &amp; กลไกการจ่ายเงิน</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="practiceSearchInput">ค้นหาคำสำคัญ / แนวคิด / โจทย์</label>
+          <input id="practiceSearchInput" type="search" placeholder="เช่น Capitation, Quaternary, Effective Coverage, COM-B…">
+        </div>
+      </div>
+
+      <div class="toolbar-row">
+        <span class="status-text" id="practiceStatusText" role="status"></span>
+        <button class="btn sm" id="shuffleFlashcardsBtn" type="button" hidden>สุ่มลำดับบัตรคำศัพท์</button>
+      </div>
+
+      <div id="practiceRapidWrap"></div>
+      <div id="practiceFlashcardsWrap" hidden>
+        <div class="flashcard-grid" id="flashcardsGrid"></div>
+      </div>
+      <div id="practiceQaWrap" hidden></div>
+    </section>
+  </main>
+
+  <!-- Image Zoom Lightbox -->
+  <div class="lightbox" id="imageLightbox" role="dialog" aria-modal="true" aria-label="ขยายภาพประกอบ" hidden>
+    <div class="lightbox-inner">
+      <img id="lightboxImg" src="assets/images/hs1_fig_1.jpg" alt="">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <span id="lightboxCaption" style="font-size:13.5px;color:var(--muted)"></span>
+        <button class="btn sm primary" id="closeLightboxBtn" type="button">ปิดภาพขยาย (Esc)</button>
+      </div>
+    </div>
+  </div>
+
+  <script>window.PORTAL_ROLE = "student";</script>
+  <script src="assets/data_schedule.js"></script>
+  <script src="assets/data_roster.js"></script>
+  <script src="assets/data_manual.js"></script>
+  <script src="assets/data_hs_docs.js"></script>
+  <script src="assets/portal.js"></script>
+</body>
+</html>
