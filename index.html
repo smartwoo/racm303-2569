@@ -38,8 +38,10 @@
       </div>
 
       <nav class="nav-tabs" role="tablist" aria-label="หมวดเนื้อหาหลัก">
-        <button class="nav-tab" id="tabBtnSchedule" role="tab" data-tab="schedule" aria-selected="true" type="button">ปฏิทิน &amp; ตารางสอน 6 สัปดาห์</button>
-        <button class="nav-tab" id="tabBtnStudents" role="tab" data-tab="students" aria-selected="false" type="button">รายชื่อกลุ่ม &amp; ส่งงาน SRN <span class="tab-count">169</span></button>
+        <button class="nav-tab" id="tabBtnSchedule" role="tab" data-tab="schedule" aria-selected="true" type="button">ปฏิทิน &amp; ตารางสอน</button>
+        <button class="nav-tab" id="tabBtnDiscussion" role="tab" data-tab="discussion" aria-selected="false" type="button">รายชื่อกลุ่ม Discussion <span class="tab-count">6 กลุ่ม</span></button>
+        <button class="nav-tab" id="tabBtnFieldwork" role="tab" data-tab="fieldwork" aria-selected="false" type="button">9 พื้นที่ภาคสนาม <span class="tab-count">9 พื้นที่</span></button>
+        <button class="nav-tab" id="tabBtnSubmissions" role="tab" data-tab="submissions" aria-selected="false" type="button">การส่งงาน &amp; E-learning <span class="tab-count">4 งาน</span></button>
         <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" aria-selected="false" type="button">คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
         <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" aria-selected="false" type="button">บทเรียน HS1–HS6 &amp; ฉบับย่อ <span class="tab-count">11 เล่ม</span></button>
         <button class="nav-tab" id="tabBtnPractice" role="tab" data-tab="practice" aria-selected="false" type="button">ทบทวนเร็ว · คำศัพท์ · โจทย์ <span class="tab-count">82 ข้อ</span></button>
@@ -241,88 +243,218 @@
       </div>
     </section>
 
-    <!-- TAB 2: STUDENTS, FIELDWORK SITES & SRN GENERATOR -->
-    <section class="tab-panel" id="panel-students" aria-labelledby="tabBtnStudents" hidden>
+    <!-- TAB 2: SEPARATED DISCUSSION GROUP ROSTER (HS1–HS6 · 6 GROUPS) -->
+    <section class="tab-panel" id="panel-discussion" aria-labelledby="tabBtnDiscussion" hidden>
       <div class="section-header">
         <div>
-          <h2>รายชื่อสมาชิกกลุ่ม Discussion · 9 พื้นที่ภาคสนาม &amp; การส่งงาน SRN</h2>
-          <p>ตรวจสอบเพื่อนร่วมกลุ่ม ห้องประจำกลุ่มย่อย วันเดินทางภาคสนาม และสร้างชื่อไฟล์ PDF มาตรฐานสำหรับส่ง E-learning</p>
+          <h2>รายชื่อสมาชิกกลุ่มอภิปราย Discussion (HS1–HS6 · 6 กลุ่มย่อย)</h2>
+          <p>แยกเฉพาะสมาชิกกลุ่มอภิปรายระบบสุขภาพ 6 กลุ่มย่อย (กลุ่มละ 28–29 คน · รวม 169 คน) พร้อมห้องเรียนประจำกลุ่มและตารางหมุนเวียนอาจารย์ครบทั้ง HS1–HS6</p>
         </div>
         <div class="header-actions">
-          <button class="btn" id="toggleSitesOverviewBtn" type="button">ดูรายละเอียดโรงพยาบาลและวันเดินทาง 9 พื้นที่</button>
-          <a class="btn" id="openAppsScriptRosterBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students" target="_blank" rel="noopener">เปิดโหมดรูปถ่ายเต็มใน Apps Script</a>
+          <a class="btn teal" id="openAppsScriptDiscBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students&amp;type=discussion" target="_blank" rel="noopener">เปิดโหมดรูปถ่ายใน Apps Script ↗</a>
+          <button class="btn primary" id="discPrintTopBtn" type="button">พิมพ์ใบรายชื่อ Discussion 1 หน้า A4</button>
         </div>
       </div>
 
-      <div class="context-banner" id="classContextBanner" hidden></div>
-      <div class="sites-grid" id="sitesOverviewGrid" hidden></div>
-
-      <div class="srn-box" id="srnGeneratorBox">
-        <h3>เครื่องมือตั้งชื่อไฟล์บันทึกสะท้อนคิด Self-Reflection Note (SRN 1 &amp; SRN 2)</h3>
-        <p style="margin:0;font-size:13.8px;color:var(--muted)">
-          ความยาวไม่เกิน 5 หน้า A4 (ฟอนต์ TH Sarabun New ขนาด 16) บันทึกเป็น PDF · ส่ง <strong>SRN 1</strong> ภายในวันพุธที่ 9 ธ.ค. 2569 เวลา 17.00 น. และ <strong>SRN 2</strong> ภายในวันพุธที่ 30 ธ.ค. 2569 เวลา 17.00 น.
-        </p>
-        <div class="srn-grid">
-          <div class="filter-field">
-            <label for="srnRoundSelect">ครั้งที่ส่ง</label>
-            <select id="srnRoundSelect">
-              <option value="SRN1">SRN 1 (9 ธ.ค. 69)</option>
-              <option value="SRN2">SRN 2 (30 ธ.ค. 69)</option>
-            </select>
-          </div>
-          <div class="filter-field">
-            <label for="srnAreaSelect">กลุ่มพื้นที่ภาคสนาม</label>
-            <select id="srnAreaSelect"></select>
-          </div>
-          <div class="filter-field">
-            <label for="srnStudentId">รหัสนักศึกษา</label>
-            <input id="srnStudentId" type="text" placeholder="เช่น 6702006">
-          </div>
-          <div class="filter-field">
-            <label for="srnStudentName">คำนำหน้า + ชื่อ-นามสกุล</label>
-            <input id="srnStudentName" type="text" placeholder="เช่น น.ส.จิดาภา ขันทอง">
-          </div>
-          <div>
-            <button class="btn teal" id="copySrnFilenameBtn" type="button" style="height:41px">คัดลอกชื่อไฟล์</button>
-          </div>
-        </div>
-        <div class="srn-output">
-          <span id="srnFilenamePreview">SRN1_กุฉินารายณ์_6702xxx_ชื่อ-นามสกุล.pdf</span>
-          <div class="header-actions">
-            <a class="btn sm primary" id="srnGoElearningBtn" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">อัปโหลดใน E-learning</a>
-            <a class="btn sm" id="srnGoFormBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey (Google Form)</a>
-          </div>
-        </div>
-      </div>
+      <div class="context-banner" id="discContextBanner" hidden></div>
+      <div class="disc-overview-grid" id="discOverviewGrid"></div>
+      <div class="disc-rotation-banner" id="discRotationDetailBox" hidden></div>
 
       <div class="filter-panel">
         <div class="filter-field">
-          <label for="studentSearchInput">ค้นหานักศึกษา</label>
-          <input id="studentSearchInput" type="search" placeholder="รหัสนักศึกษา ชื่อ-นามสกุล หรืออาจารย์ที่ปรึกษา…">
-        </div>
-        <div class="filter-field">
-          <label for="studentAreaFilter">กลุ่มพื้นที่ · อาจารย์ที่ปรึกษา</label>
-          <select id="studentAreaFilter">
-            <option value="">ทุกกลุ่มพื้นที่ภาคสนาม (9 กลุ่ม)</option>
+          <label for="discGroupSelect">เลือกกลุ่มอภิปราย Discussion (HS1–HS6)</label>
+          <select id="discGroupSelect">
+            <option value="">ทุกกลุ่ม Discussion 1–6 (แสดงทั้งหมด 169 คน)</option>
           </select>
         </div>
         <div class="filter-field">
-          <label for="studentDiscFilter">กลุ่มอภิปราย Discussion (HS1–HS6)</label>
-          <select id="studentDiscFilter">
-            <option value="">ทุกกลุ่ม Discussion (1–6)</option>
-          </select>
+          <label for="discSearchInput">ค้นหาสมาชิกในกลุ่ม Discussion</label>
+          <input id="discSearchInput" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก ชื่อ-นามสกุล หรือชื่อเล่น…">
         </div>
       </div>
 
       <div class="toolbar-row">
-        <span class="status-text" id="studentStatusText" role="status">กำลังโหลดรายชื่อ…</span>
-        <button class="btn sm" id="togglePhotosBtn" type="button">แสดงรูปถ่ายนักศึกษา</button>
-        <button class="btn sm" id="clearStudentFiltersBtn" type="button">ล้างตัวกรอง</button>
-        <button class="btn sm primary" id="printStudentsBtn" type="button">พิมพ์ใบรายชื่อ 1 หน้า A4</button>
+        <span class="status-text" id="discStatusText" role="status">กำลังโหลดรายชื่อสมาชิกกลุ่ม Discussion…</span>
+        <button class="btn sm" id="discTogglePhotosBtn" type="button">แสดงรูปถ่ายนักศึกษา</button>
+        <button class="btn sm" id="discClearFiltersBtn" type="button">ล้างตัวกรอง</button>
+        <button class="btn sm primary" id="discPrintBtn" type="button">พิมพ์ใบรายชื่อ 1 หน้า A4</button>
       </div>
 
-      <div class="print-heading" id="printHeading"></div>
-      <div class="student-cards" id="studentCardsContainer"></div>
+      <div class="print-heading" id="discPrintHeading"></div>
+      <div class="student-cards" id="discCardsContainer"></div>
+    </section>
+
+    <!-- TAB 3: SEPARATED 9 FIELDWORK SITES & COMMUNITY HOSPITAL ROSTER -->
+    <section class="tab-panel" id="panel-fieldwork" aria-labelledby="tabBtnFieldwork" hidden>
+      <div class="section-header">
+        <div>
+          <h2>ข้อมูลโรงพยาบาลชุมชนและรายชื่อสมาชิก 9 พื้นที่ภาคสนาม</h2>
+          <p>รายละเอียดโรงพยาบาลชุมชน อาจารย์ที่ปรึกษา ห้องประชุมกลุ่มย่อย กำหนดการเดินทางไป-กลับ และรายชื่อสมาชิกแยกตาม 9 พื้นที่ฝึกปฏิบัติงานภาคสนาม (169 คน)</p>
+        </div>
+        <div class="header-actions">
+          <button class="btn" id="toggleSitesOverviewBtn" type="button">ซ่อนการ์ดข้อมูล 9 พื้นที่</button>
+          <a class="btn teal" id="openAppsScriptFieldBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students" target="_blank" rel="noopener">เปิดโหมดรูปถ่ายใน Apps Script ↗</a>
+          <button class="btn primary" id="fieldPrintTopBtn" type="button">พิมพ์ใบรายชื่อพื้นที่ 1 หน้า A4</button>
+        </div>
+      </div>
+
+      <div class="context-banner" id="fieldContextBanner" hidden></div>
+      <div class="sites-grid" id="sitesOverviewGrid"></div>
+
+      <div class="filter-panel">
+        <div class="filter-field">
+          <label for="fieldAreaSelect">เลือกกลุ่มพื้นที่ภาคสนาม (9 แห่ง)</label>
+          <select id="fieldAreaSelect">
+            <option value="">ทุกกลุ่มพื้นที่ภาคสนาม 9 แห่ง (169 คน)</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label for="fieldSearchInput">ค้นหาสมาชิกกลุ่มภาคสนาม / อาจารย์ที่ปรึกษา</label>
+          <input id="fieldSearchInput" type="search" placeholder="พิมพ์รหัสนักศึกษา ชื่อ-นามสกุล พื้นที่ หรืออาจารย์ที่ปรึกษา…">
+        </div>
+      </div>
+
+      <div class="toolbar-row">
+        <span class="status-text" id="fieldStatusText" role="status">กำลังโหลดรายชื่อกลุ่มพื้นที่ภาคสนาม…</span>
+        <button class="btn sm" id="fieldTogglePhotosBtn" type="button">แสดงรูปถ่ายนักศึกษา</button>
+        <button class="btn sm" id="fieldClearFiltersBtn" type="button">ล้างตัวกรอง</button>
+        <button class="btn sm primary" id="fieldPrintBtn" type="button">พิมพ์ใบรายชื่อ 1 หน้า A4</button>
+      </div>
+
+      <div class="print-heading" id="fieldPrintHeading"></div>
+      <div class="student-cards" id="fieldCardsContainer"></div>
+    </section>
+
+    <!-- TAB 4: SEPARATED SUBMISSIONS HUB & RAMED E-LEARNING BACKEND INTEGRATION -->
+    <section class="tab-panel" id="panel-submissions" aria-labelledby="tabBtnSubmissions" hidden>
+      <div class="section-header">
+        <div>
+          <h2>ศูนย์การส่งงานรายวิชา &amp; เชื่อมต่อระบบหลังบ้าน RAMED E-learning</h2>
+          <p>เตรียมไฟล์ ตรวจความถูกต้อง ตั้งชื่อไฟล์มาตรฐานอัตโนมัติ และเชื่อมต่อส่งงานเข้าสู่ระบบ E-learning คณะแพทยศาสตร์โรงพยาบาลรามาธิบดีโดยตรง</p>
+        </div>
+        <div class="header-actions">
+          <a class="btn primary" id="subHeaderRamedLoginBtn" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">เข้าสู่ระบบ RAMED E-learning ↗</a>
+          <a class="btn teal" id="subHeaderGoogleFormBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">Google Form ส่งสไลด์ &amp; Health Survey ↗</a>
+        </div>
+      </div>
+
+      <!-- RAMED E-learning Backend Connection Bridge -->
+      <div class="elearning-bridge-card" id="ramedBackendBridge">
+        <div class="elearning-bridge-top">
+          <div>
+            <h3 class="elearning-bridge-title">เชื่อมต่อระบบหลังบ้าน RAMED E-learning (Moodle คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี)</h3>
+            <p class="elearning-bridge-url">ปลายทางระบบรับงาน: https://elearning.ra.mahidol.ac.th/ramed/login/index.php</p>
+          </div>
+          <span class="elearning-status-pill is-checking" id="ramedBackendStatusBadge">● กำลังตรวจสอบการเชื่อมต่อ elearning.ra.mahidol.ac.th…</span>
+        </div>
+
+        <div class="elearning-cta-row">
+          <a class="btn primary" id="openRamedLoginPrimaryBtn" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">เข้าสู่ระบบหลังบ้าน E-learning (login/index.php) ↗</a>
+          <button class="btn teal" id="openRamedPopupWorkspaceBtn" type="button">เปิดหน้าต่าง E-learning คู่ขนาน (ลากไฟล์วางอัปโหลดได้ทันที)</button>
+          <a class="btn" id="openPinnedRamedCourseBtn" href="#" target="_blank" rel="noopener" hidden>เปิดห้องส่งงาน RACM 303 ที่ปักหมุดไว้ ↗</a>
+          <a class="btn" id="openGoogleFormBridgeBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ 29–30 ธ.ค. &amp; Health Survey (Google Form) ↗</a>
+        </div>
+
+        <div class="elearning-deep-links" aria-label="ทางลัดเข้าสู่เมนูหลังบ้าน RAMED E-learning">
+          <a class="elearning-endpoint-link" id="ramedLinkLogin" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">
+            <strong>1. หน้าเข้าสู่ระบบหลัก (Login)</strong>
+            <small>/ramed/login/index.php · Mahidol Account / RAMED</small>
+          </a>
+          <a class="elearning-endpoint-link" id="ramedLinkSearchCourse" href="https://elearning.ra.mahidol.ac.th/ramed/course/search.php?search=RACM+303" target="_blank" rel="noopener">
+            <strong>2. ค้นหาห้องรายวิชา RACM 303</strong>
+            <small>ล็อกอินผ่าน login/index.php แล้วเข้าหน้าค้นหา RACM 303 ทันที</small>
+          </a>
+          <a class="elearning-endpoint-link" id="ramedLinkDashboard" href="https://elearning.ra.mahidol.ac.th/ramed/my/" target="_blank" rel="noopener">
+            <strong>3. แดชบอร์ดรายวิชาของฉัน</strong>
+            <small>/ramed/my/ · ดูรายวิชาและกล่องส่งงานที่เปิดอยู่</small>
+          </a>
+          <a class="elearning-endpoint-link" id="ramedLinkUpcoming" href="https://elearning.ra.mahidol.ac.th/ramed/calendar/view.php?view=upcoming" target="_blank" rel="noopener">
+            <strong>4. ปฏิทินกำหนดส่งงานในระบบ</strong>
+            <small>/ramed/calendar/ · ตรวจสอบสถานะงานค้างส่งใน Moodle</small>
+          </a>
+        </div>
+
+        <details class="elearning-pin-details" id="ramedPinDetails">
+          <summary>ปักหมุดลิงก์ตรงของห้องรายวิชา / กล่องส่งงาน SRN ใน E-learning (คลิกเดียวเข้าห้องส่งงานหลังล็อกอิน)</summary>
+          <div class="elearning-pin-body">
+            <p style="margin:0;font-size:13px;color:var(--muted)">เมื่อเข้าสู่ระบบ <code>elearning.ra.mahidol.ac.th/ramed/login/index.php</code> แล้วเปิดหน้ารายวิชา RACM 303 หรือกล่องส่งงาน SRN สามารถคัดลอก URL (เช่น <code>.../ramed/course/view.php?id=...</code> หรือ <code>.../ramed/mod/assign/view.php?id=...</code>) มาบันทึกไว้ที่นี่เพื่อกดเข้าตรงในครั้งถัดไป</p>
+            <div class="elearning-pin-row">
+              <input id="ramedCustomCourseUrlInput" type="url" placeholder="วางลิงก์ https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=... หรือ mod/assign/view.php?id=...">
+              <button class="btn sm teal" id="saveRamedCustomUrlBtn" type="button">บันทึกลิงก์ห้องส่งงาน</button>
+              <button class="btn sm" id="clearRamedCustomUrlBtn" type="button" hidden>ล้างลิงก์ที่ปักหมุด</button>
+            </div>
+            <div id="ramedPinFeedback" style="font-size:12.6px;color:var(--teal-deep)"></div>
+          </div>
+        </details>
+      </div>
+
+      <!-- Smart SRN 1 & SRN 2 Filename Builder + Local PDF Validator & Auto-Renamer -->
+      <div class="srn-studio-card" id="srnGeneratorBox">
+        <h3>เตรียมไฟล์และตรวจเช็กก่อนอัปโหลด Self-Reflection Note (SRN 1 &amp; SRN 2)</h3>
+        <p style="margin:0;font-size:14px;color:var(--muted)">
+          เกณฑ์คู่มือรายวิชา บทที่ 11: ความยาว <strong>ไม่เกิน 5 หน้า A4</strong> (ฟอนต์ TH Sarabun New ขนาด 16) บันทึกเป็นไฟล์ <strong>.pdf</strong> เท่านั้น · ส่ง <strong>SRN 1</strong> ภายในพุธที่ 9 ธ.ค. 2569 เวลา 17.00 น. และ <strong>SRN 2</strong> ภายในพุธที่ 30 ธ.ค. 2569 เวลา 17.00 น. ทางระบบ RAMED E-learning
+        </p>
+
+        <div class="srn-two-col">
+          <div>
+            <div class="srn-form-grid">
+              <div class="filter-field span-2">
+                <label for="subStudentQuickInput">ดึงข้อมูลอัตโนมัติจากรหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล</label>
+                <input id="subStudentQuickInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัส 7 หลัก (เช่น 6702006) เพื่อกรอกชื่อและกลุ่มพื้นที่อัตโนมัติ…">
+              </div>
+              <div class="filter-field">
+                <label for="srnRoundSelect">ครั้งที่ส่งงาน</label>
+                <select id="srnRoundSelect">
+                  <option value="SRN1">SRN 1 (ส่ง พ. 9 ธ.ค. 69 · 17.00 น.)</option>
+                  <option value="SRN2">SRN 2 (ส่ง พ. 30 ธ.ค. 69 · 17.00 น.)</option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label for="srnAreaSelect">กลุ่มพื้นที่ภาคสนาม</label>
+                <select id="srnAreaSelect"></select>
+              </div>
+              <div class="filter-field">
+                <label for="srnStudentId">รหัสนักศึกษา</label>
+                <input id="srnStudentId" type="text" placeholder="เช่น 6702006">
+              </div>
+              <div class="filter-field">
+                <label for="srnStudentName">คำนำหน้า + ชื่อ-นามสกุล</label>
+                <input id="srnStudentName" type="text" placeholder="เช่น น.ส.จิดาภา ขันทอง">
+              </div>
+            </div>
+
+            <div class="srn-output">
+              <span id="srnFilenamePreview">SRN1_กุฉินารายณ์_6702xxx_ชื่อ-นามสกุล.pdf</span>
+              <div class="header-actions">
+                <button class="btn sm" id="copySrnFilenameBtn" type="button">คัดลอกชื่อไฟล์</button>
+                <button class="btn sm primary" id="copyAndLaunchRamedBtn" type="button">คัดลอกชื่อไฟล์ + เปิด E-learning ↗</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="pdf-dropzone" id="srnPdfDropzone">
+              <p class="pdf-dropzone-title">ตรวจไฟล์ PDF &amp; เปลี่ยนชื่อไฟล์อัตโนมัติพร้อมส่ง</p>
+              <p class="pdf-dropzone-sub">ลากไฟล์ .pdf มาวางที่นี่ หรือกดเลือกไฟล์ (ตรวจสอบในเบราว์เซอร์ 100% ไม่อัปโหลดออกนอกเครื่อง)</p>
+              <input id="srnPdfFileInput" type="file" accept=".pdf,application/pdf" hidden>
+              <div class="header-actions" style="justify-content:center">
+                <button class="btn sm" id="pickSrnPdfBtn" type="button">เลือกไฟล์ PDF จากเครื่อง…</button>
+                <button class="btn sm teal" id="downloadRenamedPdfBtn" type="button" hidden>ดาวน์โหลดไฟล์ที่เปลี่ยนชื่อถูกต้องแล้ว</button>
+              </div>
+              <div class="pdf-check-result" id="srnPdfCheckResult" hidden></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- All 4 Course Deliverables & Personal Submission Status Tracker -->
+      <div class="section-header" style="margin-top:6px;margin-bottom:12px">
+        <div>
+          <h3 style="margin:0;font-family:var(--font-display);font-size:19px;color:var(--brand-deep)">รายการส่งงานทั้งหมดของรายวิชา RACM 303 (ครบ 4 ชิ้นงาน) &amp; เช็กลิสต์ของฉัน</h3>
+          <p style="margin:3px 0 0;font-size:13.8px;color:var(--muted)">ทำเครื่องหมายติดตามสถานะการส่งงานของตนเอง พร้อมลิงก์ตรงสู่ระบบหลังบ้านของแต่ละชิ้นงานและเกณฑ์การประเมินในคู่มือ</p>
+        </div>
+      </div>
+      <div class="deliverables-grid" id="deliverablesCardsGrid"></div>
     </section>
 
     <!-- TAB 3: COURSE MANUAL 2569 -->

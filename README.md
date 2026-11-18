@@ -5,6 +5,10 @@
 ## เข้าใช้งานเว็บพอร์ทัลสำหรับนักศึกษา
 
 - **เว็บไซต์พอร์ทัลนักศึกษา (GitHub Pages):** https://smartwoo.github.io/racm303-2569/
+  - **รายชื่อสมาชิกกลุ่ม Discussion (`HS1–HS6` · 6 กลุ่มย่อย แยกอิสระ):** https://smartwoo.github.io/racm303-2569/#discussion
+  - **ข้อมูลโรงพยาบาลชุมชน & รายชื่อ 9 พื้นที่ภาคสนาม:** https://smartwoo.github.io/racm303-2569/#fieldwork
+  - **ศูนย์การส่งงาน (`SRN 1` · `SRN 2` · สไลด์ · Health Survey) & เชื่อมหลังบ้าน RAMED E-learning:** https://smartwoo.github.io/racm303-2569/#submissions
+- **ระบบหลังบ้านส่งงาน RAMED E-learning:** https://elearning.ra.mahidol.ac.th/ramed/login/index.php
 
 ## เอกสารหลักในคลัง GitHub สำหรับนักศึกษา
 
