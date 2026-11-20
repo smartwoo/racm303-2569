@@ -58,6 +58,7 @@
     hsdHideScenario: false,
     hsdTheater: false,
     hsdFacultyMode: "teacher", // teacher | projector | student
+    hsdLiveWallMode: localStorage.getItem("racm303_hsd_live_wall_mode") || "sheet", // sheet | people | demo
     hsdDrafts: JSON.parse(localStorage.getItem("racm303_hs_disc_drafts_v1") || "{}"),
     hsdRevealedKeys: new Set(),
     myStudent: null,
@@ -8629,7 +8630,7 @@
     return qHead;
   }
 
-  function buildWideWorksheetTableDOM(qObj) {
+  function buildWideWorksheetTableDOM(qObj, forceInteractive) {
     const frag = document.createDocumentFragment();
     const ws = qObj.worksheet;
     if (!ws || ws.type !== "table") return frag;
@@ -8653,6 +8654,8 @@
     (ws.headers || []).forEach((thText) => hr.appendChild(make("th", thText)));
     thead.appendChild(hr);
 
+    const cellSyncCallbacks = [];
+
     const tbody = document.createElement("tbody");
     (ws.rows || []).forEach((r) => {
       const tr = document.createElement("tr");
@@ -8668,21 +8671,65 @@
           const maxWords = cell.maxWords || 45;
           const maxChars = cell.maxChars || 240;
           const isCompact = Boolean(cell.compact);
-          const minPx = isCompact ? 38 : 52;
+          const minPx = isCompact ? 40 : 52;
+          const maxPx = isCompact ? 92 : 170;
           const savedVal = enforceA4ConciseText(state.hsdDrafts[cell.inputId] || "", cell, false);
 
           const ta = document.createElement("textarea");
           ta.className = `hsd-input${isCompact ? " is-compact" : ""}`;
-          ta.id = `input_${cell.inputId}`;
+          ta.id = `${forceInteractive ? "demo_" : "input_"}${cell.inputId}`;
+          ta.dataset.inputId = cell.inputId;
           ta.maxLength = maxChars;
           ta.rows = isCompact ? 1 : 2;
           ta.placeholder = cell.placeholder || "พิมพ์คำตอบกระชับตรงประเด็น…";
           ta.value = savedVal;
 
           const foot = make("div", null, "hsd-cell-foot");
-          const footRule = make("span", cell.a4BoxLabel || `≤${maxWords} คำ`);
-          const footCount = make("span", "");
-          foot.append(footRule, footCount);
+          const footCount = make("span", "", "hsd-cell-counter");
+          foot.appendChild(footCount);
+
+          let cellSendBtn = null;
+          const syncCellSendBtnUI = () => {
+            if (!cellSendBtn || !LIVE) return;
+            const st =
+              typeof LIVE.getCellSubmissionState === "function"
+                ? LIVE.getCellSubmissionState(cell.inputId, ta.value)
+                : ta.value.trim()
+                ? "ready"
+                : "empty";
+            cellSendBtn.disabled = st === "empty";
+            cellSendBtn.classList.toggle("is-submitted", st === "submitted");
+            cellSendBtn.classList.toggle("is-dirty", st === "dirty");
+            ta.classList.toggle("is-cell-submitted", st === "submitted");
+            if (st === "submitted") {
+              cellSendBtn.textContent = "✓ ส่งแล้ว";
+              cellSendBtn.title = "ส่งคำตอบช่องนี้ขึ้นจออาจารย์เรียบร้อยแล้ว (พิมพ์แก้และกดอัปเดตได้ตลอด)";
+            } else if (st === "dirty") {
+              cellSendBtn.textContent = "อัปเดตช่องนี้ ↗";
+              cellSendBtn.title = "ส่งข้อความที่แก้ไขในช่องนี้ขึ้นจออาจารย์ (หรือกด Ctrl+Enter)";
+            } else if (st === "ready") {
+              cellSendBtn.textContent = "ส่งช่องนี้ ✓";
+              cellSendBtn.title = "ส่งเฉพาะช่องนี้ขึ้นจออาจารย์ทันที ไม่ต้องรอกรอกช่องอื่น (หรือกด Ctrl+Enter)";
+            } else {
+              cellSendBtn.textContent = "ส่งช่องนี้";
+              cellSendBtn.title = "พิมพ์คำตอบในช่องนี้แล้วกดส่งแยกเฉพาะช่องได้ทันที";
+            }
+          };
+
+          if (LIVE && ROLE === "student") {
+            cellSendBtn = make("button", "ส่งช่องนี้", "hsd-cell-send-btn hsd-no-print");
+            cellSendBtn.type = "button";
+            cellSendBtn.dataset.sendCellId = cell.inputId;
+            cellSendBtn.addEventListener("click", () => {
+              const map = collectQuestionCellsMap(qObj);
+              if (!String(ta.value || "").trim()) return;
+              map[cell.inputId] = ta.value;
+              LIVE.submitSingleCell(qObj.id, cell.inputId, map);
+              syncCellSendBtnUI();
+            });
+            foot.appendChild(cellSendBtn);
+            cellSyncCallbacks.push(syncCellSendBtnUI);
+          }
 
           const mirror = make(
             "div",
@@ -8700,11 +8747,27 @@
             ta.classList.toggle("is-at-limit", ratio >= 1);
             footCount.textContent =
               ratio >= 1
-                ? `${wCnt}/${maxWords} คำ · เต็มกรอบ A4`
-                : `${wCnt}/${maxWords} คำ · ${cCnt}/${maxChars}`;
+                ? `${wCnt}/${maxWords} คำ · เต็ม A4`
+                : isCompact
+                ? `${wCnt}/${maxWords} คำ (${cCnt}/${maxChars})`
+                : `${wCnt}/${maxWords} คำ · ${cCnt}/${maxChars} (กรอบ A4)`;
             ta.style.height = "auto";
-            ta.style.height = `${Math.min(isCompact ? 86 : 170, Math.max(minPx, ta.scrollHeight))}px`;
+            const sH = ta.scrollHeight;
+            ta.style.overflowY = sH > maxPx ? "auto" : "hidden";
+            ta.style.height = `${Math.min(maxPx, Math.max(minPx, sH))}px`;
+            syncCellSendBtnUI();
           };
+
+          ta.addEventListener("keydown", (ev) => {
+            if ((ev.ctrlKey || ev.metaKey) && ev.key === "Enter" && LIVE && ROLE === "student") {
+              ev.preventDefault();
+              if (!String(ta.value || "").trim()) return;
+              const map = collectQuestionCellsMap(qObj);
+              map[cell.inputId] = ta.value;
+              LIVE.submitSingleCell(qObj.id, cell.inputId, map);
+              syncCellSendBtnUI();
+            }
+          });
 
           ta.addEventListener("compositionstart", () => {
             composing = true;
@@ -8755,10 +8818,10 @@
       const rNum = LIVE.getRoomId();
       const hint = make(
         "span",
-        `● ซิงค์คำตอบสดเข้าห้องกลุ่มที่ ${rNum} อัตโนมัติขณะพิมพ์`,
+        `● กด “ส่งช่องนี้ ✓” ใต้แต่ละช่องได้ทันทีโดยไม่ต้องรอกรอกครบทุกช่อง (ซิงค์เข้าห้องกลุ่มที่ ${rNum})`,
         "hsd-live-sync-hint"
       );
-      const sendBtn = make("button", `ส่งคำตอบข้อนี้ขึ้นจอห้องกลุ่ม ${rNum} ✓`, "btn sm teal");
+      const sendBtn = make("button", `ส่งทุกช่องที่กรอกแล้วขึ้นจอ ✓`, "btn sm teal");
       sendBtn.type = "button";
       sendBtn.addEventListener("click", () => {
         const map = collectQuestionCellsMap(qObj);
@@ -8767,10 +8830,11 @@
           return;
         }
         LIVE.submitQuestionFinal(qObj.id, map);
-        sendBtn.textContent = "✓ ส่งขึ้นจออาจารย์แล้ว!";
-        hint.textContent = `ส่งคำตอบขึ้นจอห้องกลุ่มที่ ${LIVE.getRoomId()} เรียบร้อยแล้ว (แก้ไขเพิ่มเติมได้ตลอด)`;
+        cellSyncCallbacks.forEach((fn) => fn());
+        sendBtn.textContent = "✓ ส่งทุกช่องที่กรอกแล้ว!";
+        hint.textContent = `ส่งคำตอบทุกช่องที่กรอกขึ้นจอห้องกลุ่มที่ ${LIVE.getRoomId()} เรียบร้อยแล้ว`;
         setTimeout(() => {
-          sendBtn.textContent = `อัปเดตคำตอบขึ้นจอห้องกลุ่ม ${LIVE.getRoomId()} ✓`;
+          sendBtn.textContent = `ส่งทุกช่องที่กรอกแล้วขึ้นจอ ✓`;
         }, 2000);
       });
       subBar.append(hint, sendBtn);
@@ -8925,26 +8989,15 @@
       const rightPane = make("div", null, "hsd-slide-right");
       rightPane.appendChild(buildQuestionHeaderDOM(cur.qObj));
 
-      // On Faculty Portal: Show Live Student Response Wall right under Question Prompt!
-      if (ROLE === "faculty" && typeof renderFacultyLiveWallForQuestion === "function") {
+      // On Faculty Portal: Live Wall renders the exact Answer Sheet Table with per-cell live answers!
+      if (
+        ROLE === "faculty" &&
+        state.hsdFacultyMode !== "student" &&
+        typeof renderFacultyLiveWallForQuestion === "function"
+      ) {
         rightPane.appendChild(renderFacultyLiveWallForQuestion(cur.qObj, cur.caseObj));
-      }
-
-      if (ROLE === "faculty") {
-        const wsDetails = document.createElement("details");
-        wsDetails.open = true;
-        const sum = make(
-          "summary",
-          "ตารางใบงานฝั่งนักศึกษา (สำหรับสาธิตหน้าชั้น / ทดลองพิมพ์)",
-          "sidebar-label"
-        );
-        sum.style.cursor = "pointer";
-        sum.style.marginBottom = "4px";
-        wsDetails.appendChild(sum);
-        wsDetails.appendChild(buildWideWorksheetTableDOM(cur.qObj));
-        rightPane.appendChild(wsDetails);
       } else {
-        rightPane.appendChild(buildWideWorksheetTableDOM(cur.qObj));
+        rightPane.appendChild(buildWideWorksheetTableDOM(cur.qObj, ROLE === "faculty"));
       }
 
       stage.append(leftPane, rightPane);
@@ -9042,6 +9095,9 @@
           try {
             localStorage.setItem("racm303_hs_disc_drafts_v1", JSON.stringify(state.hsdDrafts));
           } catch (_) {}
+          if (LIVE && typeof LIVE.clearSubmittedCells === "function") {
+            LIVE.clearSubmittedCells(ids);
+          }
           renderHsDiscussionView();
         });
 
@@ -9065,11 +9121,15 @@
           qBlock.id = `hsd-qblock-${qObj.id}`;
           qBlock.appendChild(buildQuestionHeaderDOM(qObj));
 
-          if (ROLE === "faculty" && typeof renderFacultyLiveWallForQuestion === "function") {
+          if (
+            ROLE === "faculty" &&
+            state.hsdFacultyMode !== "student" &&
+            typeof renderFacultyLiveWallForQuestion === "function"
+          ) {
             qBlock.appendChild(renderFacultyLiveWallForQuestion(qObj, c));
+          } else {
+            qBlock.appendChild(buildWideWorksheetTableDOM(qObj, ROLE === "faculty"));
           }
-
-          qBlock.appendChild(buildWideWorksheetTableDOM(qObj));
 
           if (ROLE === "faculty" && state.hsdFacultyMode !== "student" && typeof appendFacultyTeacherKey === "function") {
             appendFacultyTeacherKey(qBlock, qObj, c, mod);
@@ -10872,7 +10932,8 @@
           </div>
           <div class="filter-field">
             <label for="slideUploaderInput">ชื่ออาจารย์ผู้อัปโหลด</label>
-            <input type="text" id="slideUploaderInput" placeholder="เช่น อ.นพ.ฉัตรชัย อิ่มอารมย์" value="${escapeHtml(defaultUploader)}">
+            <select id="slideUploaderInput"></select>
+            <input type="text" id="slideUploaderCustomInput" placeholder="ระบุชื่ออาจารย์ / วิทยากรผู้อัปโหลด…" style="margin-top:6px" hidden>
           </div>
           <div class="header-actions">
             <button type="button" class="btn primary" id="saveSessionSlideBtn">💾 บันทึก &amp; เปิดใช้งาน Slide ประจำคาบนี้</button>
@@ -10892,6 +10953,24 @@
     mount.replaceChildren(card);
     pendingSlideFileObj = null;
 
+    const allTeachers = getAllCourseTeachers();
+    const uploaderSel = $("slideUploaderInput");
+    const uploaderCustom = $("slideUploaderCustomInput");
+    if (uploaderSel) {
+      uploaderSel.add(new Option("— เลือกชื่ออาจารย์ผู้อัปโหลด —", ""));
+      allTeachers.forEach((t) => {
+        uploaderSel.add(new Option(t.label, t.label));
+      });
+      uploaderSel.add(new Option("ทีมผู้ประสานงานรายวิชา RACM 303", "ทีมผู้ประสานงานรายวิชา RACM 303"));
+      uploaderSel.add(new Option("อาจารย์ / วิทยากรท่านอื่น (ระบุชื่อเอง…)", "__CUSTOM__"));
+      uploaderSel.addEventListener("change", () => {
+        if (uploaderCustom) {
+          uploaderCustom.hidden = uploaderSel.value !== "__CUSTOM__";
+          if (!uploaderCustom.hidden) uploaderCustom.focus();
+        }
+      });
+    }
+
     const sel = $("slideTargetSessionSelect");
     sessions.forEach((s) => {
       const has = Boolean(getSessionSlideRecord(s.id));
@@ -10903,7 +10982,34 @@
     const syncSelectedSlideFields = () => {
       const rec = getSessionSlideRecord(sel.value);
       if ($("slideExternalUrlInput")) $("slideExternalUrlInput").value = (rec && rec.externalUrl) || "";
-      if ($("slideUploaderInput") && rec && rec.uploadedBy) $("slideUploaderInput").value = rec.uploadedBy;
+      if (uploaderSel) {
+        const hasOpt = (val) =>
+          Boolean(val) &&
+          val !== "__CUSTOM__" &&
+          Array.from(uploaderSel.options).some((o) => o.value === val);
+        if (rec && rec.uploadedBy) {
+          if (hasOpt(rec.uploadedBy)) {
+            uploaderSel.value = rec.uploadedBy;
+            if (uploaderCustom) uploaderCustom.value = "";
+          } else {
+            uploaderSel.value = "__CUSTOM__";
+            if (uploaderCustom) uploaderCustom.value = rec.uploadedBy;
+          }
+        } else if (defaultUploader && hasOpt(defaultUploader)) {
+          uploaderSel.value = defaultUploader;
+          if (uploaderCustom) uploaderCustom.value = "";
+        } else {
+          const sessObj = sessions.find((x) => x.id === sel.value);
+          const matchedTeacher = allTeachers.find(
+            (t) => sessObj && String(sessObj.lecturers || "").includes(t.key)
+          );
+          uploaderSel.value = matchedTeacher ? matchedTeacher.label : "";
+          if (uploaderCustom) uploaderCustom.value = "";
+        }
+        if (uploaderCustom) {
+          uploaderCustom.hidden = uploaderSel.value !== "__CUSTOM__";
+        }
+      }
       pendingSlideFileObj = null;
       const fBadge = $("slideSelectedFileBadge");
       if (fBadge) {
@@ -10954,7 +11060,11 @@
     $("saveSessionSlideBtn").addEventListener("click", async () => {
       const targetSid = sel.value;
       const extUrl = (($("slideExternalUrlInput") && $("slideExternalUrlInput").value) || "").trim();
-      const uploader = (($("slideUploaderInput") && $("slideUploaderInput").value) || "").trim() || "อาจารย์ผู้สอน";
+      const rawUploader =
+        uploaderSel && uploaderSel.value === "__CUSTOM__"
+          ? (uploaderCustom && uploaderCustom.value) || ""
+          : (uploaderSel && uploaderSel.value) || "";
+      const uploader = rawUploader.trim() || "อาจารย์ผู้สอน";
       const fb = $("slideStudioFeedback");
 
       if (!pendingSlideFileObj && !extUrl) {
