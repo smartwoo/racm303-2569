@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css?v=20261120m">
+  <link rel="stylesheet" href="assets/styles.css?v=20261120n">
 </head>
 <body>
   <header class="masthead">
@@ -20,18 +20,18 @@
           <p class="head-subtitle">พุธที่ 25 พฤศจิกายน – พุธที่ 30 ธันวาคม 2569 · สถาบันการแพทย์จักรีนฤบดินทร์ (CNMI) และโรงพยาบาลชุมชน 9 พื้นที่</p>
         </div>
         <div class="head-links">
-          <a class="ghost-link" id="studentManualQuickLink" href="คู่มือรายวิชา_RACM303_2569.md" download>ดาวน์โหลดคู่มือรายวิชา (.md)</a>
-          <a class="ghost-link" id="studentElearningLink" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">ห้องวิชา E-learning (id=398) ↗</a>
-          <a class="ghost-link" id="studentSurveyFormLink" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey</a>
-          <a class="ghost-link" id="studentAppsScriptTopLink" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec" target="_blank" rel="noopener">ตาราง &amp; รูปถ่าย (Apps Script)</a>
+          <button class="ghost-link" id="studentQuickLeaveTopBtn" type="button">📝 ยื่นใบลากิจ / ลาป่วย</button>
+          <a class="ghost-link" id="studentElearningLink" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">ห้องเรียน E-learning ↗</a>
+          <a class="ghost-link" id="studentSurveyFormLink" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey ↗</a>
         </div>
       </div>
 
-      <div class="personal-bar" aria-label="ตั้งค่าตารางเรียนและปฏิทินเฉพาะบุคคล">
-        <label for="personalStudentInput">ค้นหาตารางของฉัน:</label>
-        <div class="personal-input-wrap">
-          <input id="personalStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล เพื่อผูกห้องเรียนและดาวน์โหลดปฏิทินส่วนตัว…">
+      <div class="personal-bar universal-search-bar" aria-label="ค้นหาทุกอย่างในรายวิชาตามคำสำคัญ">
+        <label for="personalStudentInput">🔍 ค้นหาด่วน:</label>
+        <div class="personal-input-wrap omnibox-wrap" id="universalOmniboxWrap">
+          <input id="personalStudentInput" type="search" autocomplete="off" placeholder="ค้นหาได้ทุกอย่างตาม Keyword — รหัส/ชื่อ นศ., คาบเรียน, เอกสาร HS1–HS6, คำศัพท์, คู่มือ, รพช., ใบลา…">
           <datalist id="studentLookupList"></datalist>
+          <div class="omnibox-dropdown" id="universalOmniboxDropdown" hidden></div>
         </div>
         <div class="personal-summary" id="personalSummary"></div>
         <button class="personal-clear" id="clearPersonalBtn" type="button" hidden>ล้างค่าของฉัน</button>
@@ -43,8 +43,9 @@
         <button class="nav-tab" id="tabBtnDiscussion" role="tab" data-tab="discussion" aria-selected="false" type="button">รายชื่อกลุ่ม Discussion <span class="tab-count">6 กลุ่ม</span></button>
         <button class="nav-tab" id="tabBtnFieldwork" role="tab" data-tab="fieldwork" aria-selected="false" type="button">9 พื้นที่ภาคสนาม <span class="tab-count">9 พื้นที่</span></button>
         <button class="nav-tab" id="tabBtnSubmissions" role="tab" data-tab="submissions" aria-selected="false" type="button">การส่งงาน &amp; E-learning <span class="tab-count">4 งาน</span></button>
+        <button class="nav-tab" id="tabBtnLeave" role="tab" data-tab="leave" aria-selected="false" type="button">ใบลากิจ / ลาป่วย <span class="tab-count" id="leaveNavCountBadge">เซ็นออนไลน์</span></button>
         <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" aria-selected="false" type="button">คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
-        <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" aria-selected="false" type="button">บทเรียน HS1–HS6 &amp; ฉบับย่อ <span class="tab-count">14 เล่ม</span></button>
+        <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" aria-selected="false" type="button">เอกสารประกอบการสอบ Health Systems (HS1–HS6)</button>
         <button class="nav-tab" id="tabBtnPractice" role="tab" data-tab="practice" aria-selected="false" type="button">ทบทวนเร็ว · คำศัพท์ · โจทย์ <span class="tab-count">82 ข้อ</span></button>
       </nav>
     </div>
@@ -233,6 +234,7 @@
           <span class="cal-legend-item"><i class="cal-dot cat-SG"></i>กลุ่มย่อย &amp; ภาคสนาม</span>
           <span class="cal-legend-item"><i class="cal-dot cat-PANEL"></i>เสวนาเชิงระบบ</span>
           <span class="cal-legend-item"><i class="cal-dot cat-EXAM"></i>สอบ &amp; ส่งงาน</span>
+          <span class="cal-legend-item"><i class="cal-dot cat-HOLIDAY"></i>วันหยุดราชการ</span>
         </div>
         <button class="btn sm" id="resetSchedFiltersBtn" type="button">ล้างตัวกรอง</button>
       </div>
@@ -336,11 +338,10 @@
       <div class="section-header">
         <div>
           <h2>รายชื่อสมาชิกกลุ่มอภิปราย Discussion (HS1–HS6 · 6 กลุ่มย่อย)</h2>
-          <p>ซิงค์รูปถ่ายนักศึกษาครบ 169 คนจากระบบ Apps Script พร้อมป้ายสีย่อยแยกตามสังกัดโรงพยาบาลภาคสนามทั้ง 9 พื้นที่ และตารางหมุนเวียนอาจารย์ HS1–HS6</p>
+          <p>รูปถ่ายนักศึกษาครบ 169 คน พร้อมป้ายสีย่อยแยกตามสังกัดโรงพยาบาลภาคสนามทั้ง 9 พื้นที่ (วางเมาส์เหนือชื่อกลุ่มพื้นที่เพื่อดูรูปและชื่อเล่นเพื่อนในทีม) และตารางหมุนเวียนอาจารย์ HS1–HS6</p>
         </div>
         <div class="header-actions">
           <button class="btn" id="jumpToHsDiscCasesBtn" type="button">เปิดโจทย์ Discussion HS1–HS6 (10 กรณี) →</button>
-          <a class="btn teal" id="openAppsScriptDiscBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students&amp;type=discussion" target="_blank" rel="noopener">เปิดใน Apps Script ต้นฉบับ ↗</a>
           <button class="btn primary" id="discPrintTopBtn" type="button">พิมพ์ใบรายชื่อ Discussion 1 หน้า A4</button>
         </div>
       </div>
@@ -385,12 +386,11 @@
     <section class="tab-panel" id="panel-fieldwork" aria-labelledby="tabBtnFieldwork" hidden>
       <div class="section-header">
         <div>
-          <h2>ข้อมูลโรงพยาบาลชุมชนและรายชื่อสมาชิก 9 พื้นที่ภาคสนาม</h2>
-          <p>รายละเอียดโรงพยาบาลชุมชน อาจารย์ที่ปรึกษา ห้องประชุมกลุ่มย่อย กำหนดการเดินทางไป-กลับ และรายชื่อสมาชิกแยกตาม 9 พื้นที่ฝึกปฏิบัติงานภาคสนาม (169 คน)</p>
+          <h2>แผนที่โรงพยาบาลชุมชนและรายชื่อสมาชิก 9 พื้นที่ภาคสนาม</h2>
+          <p>สำรวจตำแหน่งโรงพยาบาลชุมชนทั่วประเทศบนแผนที่ประเทศไทย (Hover ดูข้อมูลและรูปเพื่อนในกลุ่มได้ทันที) พร้อมอาจารย์ที่ปรึกษา ห้องประชุมกลุ่มย่อย และวันเดินทางไป-กลับ</p>
         </div>
         <div class="header-actions">
-          <button class="btn" id="toggleSitesOverviewBtn" type="button">ซ่อนการ์ดข้อมูล 9 พื้นที่</button>
-          <a class="btn teal" id="openAppsScriptFieldBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students" target="_blank" rel="noopener">เปิดโหมดรูปถ่ายใน Apps Script ↗</a>
+          <button class="btn" id="toggleSitesOverviewBtn" type="button">ซ่อนแผนที่ 9 พื้นที่</button>
           <button class="btn primary" id="fieldPrintTopBtn" type="button">พิมพ์ใบรายชื่อพื้นที่ 1 หน้า A4</button>
         </div>
       </div>
@@ -422,87 +422,45 @@
       <div class="student-cards" id="fieldCardsContainer"></div>
     </section>
 
-    <!-- TAB 4: SEPARATED SUBMISSIONS HUB & RAMED E-LEARNING BACKEND INTEGRATION -->
+    <!-- TAB 4: SUBMISSIONS & E-LEARNING -->
     <section class="tab-panel" id="panel-submissions" aria-labelledby="tabBtnSubmissions" hidden>
       <div class="section-header">
         <div>
-          <h2>ศูนย์การส่งงานรายวิชา &amp; เชื่อมห้องเรียน 3/2569 RACM 303 Community Medicine I</h2>
-          <p>ตรวจไฟล์ PDF ตั้งชื่อไฟล์มาตรฐานอัตโนมัติ และเชื่อมตรงเข้าสู่ห้องรายวิชา <strong>Course ID: 398</strong> ในระบบ RAMA E-learning (หลักสูตรแพทยศาสตรบัณฑิต)</p>
+          <h2>ศูนย์การส่งงานรายวิชา &amp; ห้องเรียนออนไลน์ RACM 303</h2>
+          <p>เข้าใช้งานตามรหัสนักศึกษาของตนเอง (รหัสใคร รหัสมัน) พร้อมระบบตรวจไฟล์ PDF และตั้งชื่อไฟล์มาตรฐานอัตโนมัติ</p>
         </div>
         <div class="header-actions">
-          <a class="btn primary" id="subHeaderRamedLoginBtn" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">เข้าห้องวิชา RACM 303 (id=398) ↗</a>
-          <a class="btn teal" id="subHeaderGoogleFormBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">Google Form ส่งสไลด์ &amp; Health Survey ↗</a>
+          <a class="btn primary" id="subHeaderRamedLoginBtn" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">เข้าห้องเรียน E-learning ↗</a>
+          <a class="btn teal" id="subHeaderGoogleFormBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">แบบฟอร์มส่งสไลด์ &amp; Health Survey ↗</a>
         </div>
       </div>
 
-      <!-- RAMED E-learning Course 398 Connection Bridge -->
+      <!-- RAMED E-learning Connection Bridge (Clean UI Without Exposed Backend Paths) -->
       <div class="elearning-bridge-card" id="ramedBackendBridge">
         <div class="elearning-bridge-top">
           <div>
-            <h3 class="elearning-bridge-title">Course: 3/2569 RACM 303 Community Medicine I | หลักสูตรแพทยศาสตรบัณฑิต</h3>
-            <p class="elearning-bridge-url">ปลายทางห้องเรียนในระบบ: https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398</p>
+            <h3 class="elearning-bridge-title">ห้องเรียนออนไลน์ 3/2569 RACM 303 Community Medicine I (สำหรับนักศึกษา)</h3>
           </div>
-          <span class="elearning-status-pill is-checking" id="ramedBackendStatusBadge">● กำลังตรวจสอบการเชื่อมต่อห้องวิชา id=398…</span>
+          <span class="elearning-status-pill is-checking" id="ramedBackendStatusBadge">● กำลังตรวจสอบสถานะห้องเรียนออนไลน์…</span>
         </div>
 
-        <div class="elearning-role-grid" aria-label="การแสดงผลตามสิทธิ์รหัสผู้ใช้งาน">
+        <div class="elearning-role-grid" aria-label="การเข้าใช้งานตามรหัสนักศึกษาของตนเอง">
           <div class="elearning-role-box">
-            <strong>สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 (Student Login):</strong><br>
-            คลิกลิงก์ด้านล่างแล้วเข้าสู่ระบบด้วยบัญชีนักศึกษา (หรือกดปุ่ม <span class="ad-login-pill">LOGIN with AD</span> รหัส C-life) ระบบ Moodle จะพาเข้าห้อง <code>3/2569 RACM 303 (id=398)</code> เพื่ออัปโหลดงาน <strong>SRN 1 / SRN 2</strong> ทำแบบประเมินออนไลน์ และดูคะแนน/Feedback เฉพาะรายบุคคลทันที
+            <strong>1. ล็อกอินด้วยรหัสนักศึกษาของตนเอง (รหัสใคร รหัสมัน · 6702xxx):</strong><br>
+            กรอกรหัสนักศึกษา 7 หลักในแถบด้านบนแล้วกด <strong>ล็อกอินด้วยรหัสของฉัน</strong> (<span class="ad-login-pill">LOGIN with AD</span>) เพื่อส่งงาน <strong>SRN 1 / SRN 2</strong> และดูผลคะแนน/Feedback ส่วนตัวของคุณโดยไม่ปะปนกับคนอื่น
           </div>
           <div class="elearning-role-box">
-            <strong>สำหรับอาจารย์และบุคลากรคณะฯ (Faculty / Staff Login):</strong><br>
-            เมื่อใช้ลิงก์เดียวกันแล้วกดปุ่ม <span class="ad-login-pill">LOGIN with AD</span> (รหัส C-life หรือรหัสบุคลากรของคณะฯ) หรือ Username/Password ระบบจะปรับสิทธิ์เข้าโหมดอาจารย์ของห้อง <code>id=398</code> โดยอัตโนมัติ (ตรวจงาน ให้ Feedback และดูตารางคะแนนรวม)
+            <strong>2. กรณีใช้เครื่องส่วนกลาง หรือต้องการยื่นใบลากิจ / ลาป่วย:</strong><br>
+            หากเบราว์เซอร์ค้างบัญชีผู้อื่นอยู่ ให้กดปุ่ม <strong>🔄 สลับบัญชีผู้ใช้งาน</strong> ด้านบนก่อนล็อกอินใหม่ · สำหรับการขอลาเรียนหรือลาภาคสนาม สามารถกรอกและเซ็นลายเซ็นออนไลน์พร้อม Export PDF ได้ที่แท็บ <strong>ใบลากิจ / ลาป่วย</strong>
           </div>
         </div>
 
         <div class="elearning-cta-row">
-          <a class="btn primary" id="openRamedLoginPrimaryBtn" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">เข้าห้องวิชา 3/2569 RACM 303 (id=398) ↗</a>
-          <a class="btn teal" id="openRamedAssignIndexBtn" href="https://elearning.ra.mahidol.ac.th/ramed/mod/assign/index.php?id=398" target="_blank" rel="noopener">รวมกล่องส่งงาน SRN ในวิชา (assign?id=398) ↗</a>
-          <button class="btn" id="openRamedPopupWorkspaceBtn" type="button">เปิดหน้าต่างห้องวิชา id=398 คู่ขนาน (ลากไฟล์วางส่งงาน)</button>
-          <a class="btn" id="openPinnedRamedCourseBtn" href="#" target="_blank" rel="noopener" hidden>เปิดกล่องส่งงานย่อยที่ปักหมุดไว้ ↗</a>
-          <a class="btn" id="openGoogleFormBridgeBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ 29–30 ธ.ค. &amp; Health Survey (Google Form) ↗</a>
+          <a class="btn primary" id="openRamedLoginPrimaryBtn" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">เข้าห้องเรียน RACM 303 ↗</a>
+          <a class="btn teal" id="openRamedAssignIndexBtn" href="https://elearning.ra.mahidol.ac.th/ramed/mod/assign/index.php?id=398" target="_blank" rel="noopener">ส่งงาน SRN 1 &amp; SRN 2 ↗</a>
+          <button class="btn" id="openRamedPopupWorkspaceBtn" type="button">เปิดหน้าต่างคู่ขนานเพื่อลากไฟล์วางส่งงาน</button>
+          <a class="btn" id="openGoogleFormBridgeBtn" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ 29–30 ธ.ค. &amp; Health Survey ↗</a>
         </div>
-
-        <div class="elearning-deep-links" aria-label="ทางลัดเข้าสู่โมดูลย่อยของวิชา 3/2569 RACM 303 (id=398)">
-          <a class="elearning-endpoint-link" id="ramedLinkCourseHome" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">
-            <strong>1. หน้าหลักรายวิชา RACM 303</strong>
-            <small>/ramed/course/view.php?id=398 · เนื้อหาและประกาศทั้งหมด</small>
-          </a>
-          <a class="elearning-endpoint-link" id="ramedLinkAssignments" href="https://elearning.ra.mahidol.ac.th/ramed/mod/assign/index.php?id=398" target="_blank" rel="noopener">
-            <strong>2. กล่องส่งงานทั้งหมด (Assignments)</strong>
-            <small>/ramed/mod/assign/index.php?id=398 · ส่งไฟล์ SRN 1 &amp; SRN 2</small>
-          </a>
-          <a class="elearning-endpoint-link" id="ramedLinkGrades" href="https://elearning.ra.mahidol.ac.th/ramed/grade/report/user/index.php?id=398" target="_blank" rel="noopener">
-            <strong>3. คะแนนและ Feedback ของฉัน</strong>
-            <small>/ramed/grade/report/user/index.php?id=398 · ผลประเมินรายบุคคล</small>
-          </a>
-          <a class="elearning-endpoint-link" id="ramedLinkResources" href="https://elearning.ra.mahidol.ac.th/ramed/course/resources.php?id=398" target="_blank" rel="noopener">
-            <strong>4. คลังเอกสารในระบบ E-learning</strong>
-            <small>/ramed/course/resources.php?id=398 · สไลด์และเอกสารประจำวิชา</small>
-          </a>
-          <a class="elearning-endpoint-link" id="ramedLinkUpcoming" href="https://elearning.ra.mahidol.ac.th/ramed/calendar/view.php?view=upcoming&amp;course=398" target="_blank" rel="noopener">
-            <strong>5. ปฏิทินกำหนดส่งงานของวิชา 398</strong>
-            <small>/ramed/calendar/view.php?course=398 · เช็กงานค้างส่งเฉพาะวิชานี้</small>
-          </a>
-          <a class="elearning-endpoint-link" id="ramedLinkLogin" href="https://elearning.ra.mahidol.ac.th/ramed/login/index.php" target="_blank" rel="noopener">
-            <strong>6. หน้าเข้าสู่ระบบหลัก (LOGIN with AD)</strong>
-            <small>/ramed/login/index.php · เปลี่ยนบัญชีผู้ใช้ / รหัส C-life</small>
-          </a>
-        </div>
-
-        <details class="elearning-pin-details" id="ramedPinDetails">
-          <summary>ปักหมุดลิงก์ตรงระดับกล่องส่งงานย่อย (เช่น mod/assign/view.php?id=... ของ SRN 1 หรือ SRN 2)</summary>
-          <div class="elearning-pin-body">
-            <p style="margin:0;font-size:13px;color:var(--muted)">ค่าเริ่มต้นเชื่อมตรงกับห้องวิชา <code>course/view.php?id=398</code> อยู่แล้ว หากต้องการปักหมุดเข้ากล่องส่งงานย่อยโดยตรง สามารถวางลิงก์ <code>https://elearning.ra.mahidol.ac.th/ramed/mod/assign/view.php?id=...</code> เพื่อใช้เป็นปลายทางหลักแทนได้</p>
-            <div class="elearning-pin-row">
-              <input id="ramedCustomCourseUrlInput" type="url" placeholder="วางลิงก์ย่อย เช่น https://elearning.ra.mahidol.ac.th/ramed/mod/assign/view.php?id=...">
-              <button class="btn sm teal" id="saveRamedCustomUrlBtn" type="button">ปักหมุดกล่องส่งงานย่อย</button>
-              <button class="btn sm" id="clearRamedCustomUrlBtn" type="button" hidden>กลับไปใช้หน้าห้องวิชา id=398</button>
-            </div>
-            <div id="ramedPinFeedback" style="font-size:12.6px;color:var(--teal-deep)"></div>
-          </div>
-        </details>
       </div>
 
       <!-- Smart SRN 1 & SRN 2 Filename Builder + Local PDF Validator & Auto-Renamer -->
@@ -568,7 +526,7 @@
       <div class="section-header" style="margin-top:6px;margin-bottom:12px">
         <div>
           <h3 style="margin:0;font-family:var(--font-display);font-size:19px;color:var(--brand-deep)">รายการส่งงานทั้งหมดของรายวิชา RACM 303 (ครบ 4 ชิ้นงาน) &amp; เช็กลิสต์ของฉัน</h3>
-          <p style="margin:3px 0 0;font-size:13.8px;color:var(--muted)">ทำเครื่องหมายติดตามสถานะการส่งงานของตนเอง พร้อมลิงก์ตรงสู่ระบบหลังบ้านของแต่ละชิ้นงานและเกณฑ์การประเมินในคู่มือ</p>
+          <p style="margin:3px 0 0;font-size:13.8px;color:var(--muted)">ทำเครื่องหมายติดตามสถานะการส่งงานของตนเอง พร้อมทางลัดส่งงานแต่ละชิ้นและเกณฑ์การประเมินในคู่มือ</p>
         </div>
       </div>
       <div class="deliverables-grid" id="deliverablesCardsGrid"></div>
@@ -611,12 +569,12 @@
       </div>
     </section>
 
-    <!-- TAB 4: HS1-HS6 TEXTBOOKS, CONCISE SUMMARIES & WORKBOOKS -->
+    <!-- TAB: HEALTH SYSTEMS EXAM STUDY MATERIALS (HS1-HS6) -->
     <section class="tab-panel" id="panel-textbooks" aria-labelledby="tabBtnTextbooks" hidden>
       <div class="section-header">
         <div>
-          <h2>เอกสารคำสอน HS1–HS6 · ฉบับเต็ม · ฉบับย่อ (Abridged version) &amp; Worksheet</h2>
-          <p>รวมบทเรียนฉบับเต็ม ฉบับย่อ (Abridged version) และใบงานกรณีศึกษา (Worksheet) พร้อมแนวคำตอบแบบเปิด–ซ่อนได้</p>
+          <h2>เอกสารประกอบการสอบ Health Systems (HS1–HS6) · ฉบับเต็ม · ฉบับย่อ (Abridged version) &amp; Worksheet</h2>
+          <p>รวมเอกสารคำสอนระบบสุขภาพครบทั้ง 6 หมวด (HS1–HS6) ทั้งฉบับเต็ม ฉบับย่อ (Abridged version) พร้อมแผนภาพ และ Worksheet พร้อมแนวคำตอบ</p>
         </div>
         <div class="header-actions">
           <a class="btn teal" id="activeTextbookMdBtn" href="#" download hidden>ดาวน์โหลดไฟล์ .md บทนี้</a>
@@ -627,7 +585,7 @@
 
       <div class="reader-shell">
         <aside class="reader-sidebar" aria-label="เลือกเอกสารคำสอนและหัวข้อ">
-          <p class="sidebar-label">เลือกเอกสาร (14 ฉบับ)</p>
+          <p class="sidebar-label">เลือกหมวดเอกสาร (HS1–HS6)</p>
           <ul class="doc-picker-list" id="textbookDocList"></ul>
           <hr style="border:0;border-top:1px solid var(--line-soft);margin:14px 0">
           <p class="sidebar-label">หัวข้อย่อยในบทนี้</p>
@@ -693,6 +651,11 @@
       </div>
       <div id="practiceQaWrap" hidden></div>
     </section>
+
+    <!-- TAB: DIGITAL LEAVE FORM & SIGNATURE STUDIO (ฟอร์มใบลากิจ-ลาป่วย นศพ. ปีการศึกษา 2569) -->
+    <section class="tab-panel" id="panel-leave" aria-labelledby="tabBtnLeave" hidden>
+      <div id="leavePortalMount"></div>
+    </section>
   </main>
 
   <!-- Calendar Event Detail Popover Modal (Google Calendar / Apple iCal Style) -->
@@ -715,9 +678,9 @@
   <script src="assets/data_schedule.js?v=20261120e"></script>
   <script src="assets/data_roster.js?v=20261120e"></script>
   <script src="assets/data_manual.js?v=20261120e"></script>
-  <script src="assets/data_hs_docs.js?v=20261120m"></script>
+  <script src="assets/data_hs_docs.js?v=20261120n"></script>
   <script src="assets/data_hs_discussion.js?v=20261120k"></script>
   <script src="assets/interactive_qa.js?v=20261120m"></script>
-  <script src="assets/portal.js?v=20261120m"></script>
+  <script src="assets/portal.js?v=20261120n"></script>
 </body>
 </html>
