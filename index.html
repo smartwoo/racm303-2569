@@ -66,65 +66,74 @@
         </div>
       </div>
 
-      <!-- Calendar Personalize, Download & Subscribe Studio -->
-      <div class="cal-studio-card" id="calendarDownloadStudio">
-        <div class="cal-studio-grid">
-          <div>
-            <h3 class="cal-studio-step-title"><span class="cal-step-badge">1</span>เลือกตารางของตัวเอง หรือ เฉพาะกลุ่มภาคสนาม (ผูกวัน-เวลาลงภาคสนามอัตโนมัติ)</h3>
-            <div class="cal-scope-tabs" role="tablist" aria-label="เลือกรูปแบบตารางปฏิทิน">
-              <button class="cal-scope-tab" id="calScopeStudentBtn" data-cal-scope="student" role="tab" aria-selected="true" type="button">เฉพาะตัวนักศึกษาเอง</button>
-              <button class="cal-scope-tab" id="calScopeGroupBtn" data-cal-scope="group" role="tab" aria-selected="false" type="button">เฉพาะกลุ่มภาคสนาม (9 กลุ่ม)</button>
-              <button class="cal-scope-tab" id="calScopeAllBtn" data-cal-scope="all" role="tab" aria-selected="false" type="button">ตารางรวมทั้งชั้นปี (169 คน)</button>
-            </div>
-
-            <div id="calScopeStudentPane">
-              <div class="cal-studio-input-row">
-                <input id="studioStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล (เช่น 6702006)…" aria-label="ค้นหารหัสนักศึกษาหรือชื่อเพื่อสร้างปฏิทินส่วนตัว">
-                <button class="btn sm" id="studioClearSelectionBtn" type="button" hidden>ล้างค่าที่เลือก</button>
+      <!-- Collapsible macOS-Style Calendar Personalize & Subscribe Studio -->
+      <details class="macos-studio-disclosure" id="calStudioDisclosure">
+        <summary class="macos-studio-summary">
+          <span class="studio-sum-left">
+            <span class="macos-icon-badge">📅</span>
+            <span><strong>ซิงค์ปฏิทินส่วนตัวเข้า Apple Calendar (iCal) &amp; Google Calendar</strong> — เลือกเฉพาะตัวนักศึกษาหรือเฉพาะกลุ่มภาคสนาม พร้อมลิงก์ Subscribe อัปเดตอัตโนมัติ</span>
+          </span>
+          <span class="studio-sum-pill">ตั้งค่า &amp; ดาวน์โหลด ▾</span>
+        </summary>
+        <div class="cal-studio-card" id="calendarDownloadStudio">
+          <div class="cal-studio-grid">
+            <div>
+              <h3 class="cal-studio-step-title"><span class="cal-step-badge">1</span>เลือกตารางของตัวเอง หรือ เฉพาะกลุ่มภาคสนาม (ผูกวัน-เวลาลงภาคสนามอัตโนมัติ)</h3>
+              <div class="cal-scope-tabs" role="tablist" aria-label="เลือกรูปแบบตารางปฏิทิน">
+                <button class="cal-scope-tab" id="calScopeStudentBtn" data-cal-scope="student" role="tab" aria-selected="true" type="button">เฉพาะตัวนักศึกษาเอง</button>
+                <button class="cal-scope-tab" id="calScopeGroupBtn" data-cal-scope="group" role="tab" aria-selected="false" type="button">เฉพาะกลุ่มภาคสนาม (9 กลุ่ม)</button>
+                <button class="cal-scope-tab" id="calScopeAllBtn" data-cal-scope="all" role="tab" aria-selected="false" type="button">ตารางรวมทั้งชั้นปี (169 คน)</button>
               </div>
-              <p style="margin:6px 0 0;font-size:12.6px;color:var(--muted)">ผูกครบทั้ง <strong>ห้อง Discussion 1–6</strong> + <strong>กลุ่มภาคสนาม 1–9</strong> (เวลาออกเดินทาง คาบศุกร์ 11 ธ.ค. เฉพาะกลุ่มที่ยังไม่เดินทาง และวันเดินทางกลับ)</p>
-            </div>
 
-            <div id="calScopeGroupPane" hidden>
-              <div class="cal-group-pills-grid" id="studioGroupPillsGrid"></div>
-            </div>
-
-            <div id="calScopeAllPane" hidden>
-              <p style="margin:4px 0 0;font-size:13.4px;color:var(--muted)">ส่งออกตารางเรียนรวมทั้งชั้นปี 169 คนครบทุกคาบ (หากต้องการให้ตัดคาบวันศุกร์ที่ 11 ธ.ค. และปรับวันไป-กลับภาคสนามตามกลุ่มตัวเอง แนะนำเลือกโหมด <strong>เฉพาะตัวนักศึกษาเอง</strong> หรือ <strong>เฉพาะกลุ่มภาคสนาม</strong>)</p>
-            </div>
-
-            <div class="cal-target-summary" id="calTargetSummaryBox">กำลังโหลดข้อมูลตารางเรียน…</div>
-          </div>
-
-          <div class="cal-export-actions-stack">
-            <h3 class="cal-studio-step-title"><span class="cal-step-badge">2</span>นำเข้า Google Calendar / Apple Calendar (iCal) พร้อมฝังลิงก์ Zoom</h3>
-
-            <div class="cal-dl-btn-row">
-              <button class="btn cal-ics-btn" id="studioDownloadIcsBtn" type="button">ดาวน์โหลดไฟล์ .ics (Google / Apple iCal)</button>
-              <button class="btn cal-gcal-btn" id="studioDownloadCsvBtn" type="button">ดาวน์โหลดไฟล์ .csv (Google Calendar)</button>
-            </div>
-
-            <div class="cal-sub-box">
-              <div class="cal-sub-label">สมัครรับผ่านลิงก์ .ics (Subscribe URL — อัปเดตข้อมูลอัตโนมัติเมื่อตารางมีการแก้ไข)</div>
-              <div class="cal-sub-url-row">
-                <input class="cal-sub-url-input" id="studioSubscribeUrlInput" type="text" readonly aria-label="ลิงก์สมัครรับปฏิทิน .ics">
-                <button class="btn sm teal" id="studioCopySubUrlBtn" type="button">คัดลอกลิงก์ .ics</button>
-                <a class="btn sm" id="studioWebcalLink" href="webcal://smartwoo.github.io/racm303-2569/calendars/all.ics">สมัครรับใน Apple iCal ↗</a>
+              <div id="calScopeStudentPane">
+                <div class="cal-studio-input-row">
+                  <input id="studioStudentInput" list="studentLookupList" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก หรือชื่อ-นามสกุล (เช่น 6702006)…" aria-label="ค้นหารหัสนักศึกษาหรือชื่อเพื่อสร้างปฏิทินส่วนตัว">
+                  <button class="btn sm" id="studioClearSelectionBtn" type="button" hidden>ล้างค่าที่เลือก</button>
+                </div>
+                <p style="margin:6px 0 0;font-size:12.6px;color:var(--muted)">ผูกครบทั้ง <strong>ห้อง Discussion 1–6</strong> + <strong>กลุ่มภาคสนาม 1–9</strong> (เวลาออกเดินทาง คาบศุกร์ 11 ธ.ค. เฉพาะกลุ่มที่ยังไม่เดินทาง และวันเดินทางกลับ)</p>
               </div>
+
+              <div id="calScopeGroupPane" hidden>
+                <div class="cal-group-pills-grid" id="studioGroupPillsGrid"></div>
+              </div>
+
+              <div id="calScopeAllPane" hidden>
+                <p style="margin:4px 0 0;font-size:13.4px;color:var(--muted)">ส่งออกตารางเรียนรวมทั้งชั้นปี 169 คนครบทุกคาบ (หากต้องการให้ตัดคาบวันศุกร์ที่ 11 ธ.ค. และปรับวันไป-กลับภาคสนามตามกลุ่มตัวเอง แนะนำเลือกโหมด <strong>เฉพาะตัวนักศึกษาเอง</strong> หรือ <strong>เฉพาะกลุ่มภาคสนาม</strong>)</p>
+              </div>
+
+              <div class="cal-target-summary" id="calTargetSummaryBox">กำลังโหลดข้อมูลตารางเรียน…</div>
             </div>
 
-            <details class="cal-howto-details">
-              <summary>วิธีนำเข้า Google Calendar ทั้ง 2 รูปแบบ (นำเข้าไฟล์ .ics/.csv ครั้งเดียว vs เพิ่มผ่านลิงก์ URL)</summary>
-              <div class="cal-howto-body">
-                <ol>
-                  <li><strong>เพิ่มผ่านลิงก์ (Subscribe / จาก URL) เพื่อให้อัปเดตอัตโนมัติ:</strong> กด <em>คัดลอกลิงก์ .ics</em> ด้านบน → เปิด Google Calendar บนคอมพิวเตอร์ → คลิกไอคอนเฟือง <strong>การตั้งค่า &gt; เพิ่มปฏิทิน &gt; จาก URL</strong> → วางลิงก์ `.ics` แล้วคลิก <strong>เพิ่มปฏิทิน</strong> (สำหรับ iPhone / iPad / Mac กดปุ่ม <em>สมัครรับใน Apple iCal</em> ได้ทันที)</li>
-                  <li><strong>นำเข้าไฟล์ .ics หรือ .csv ครั้งเดียว:</strong> กดดาวน์โหลดไฟล์ `.ics` (หรือ `.csv`) → เปิด Google Calendar บนคอมพิวเตอร์ → ไอคอนเฟือง <strong>การตั้งค่า &gt; ตั้งค่า &gt; นำเข้าและส่งออก</strong> → เลือกไฟล์จากคอมพิวเตอร์ เลือกปฏิทินปลายทาง แล้วคลิก <strong>นำเข้า</strong> <em>(ข้อควรทราบ: การนำเข้าแบบไฟล์จะเป็นข้อมูล ณ เวลาที่นำเข้า ไม่อัปเดตอัตโนมัติหากมีการแก้ไขภายหลัง)</em></li>
-                </ol>
+            <div class="cal-export-actions-stack">
+              <h3 class="cal-studio-step-title"><span class="cal-step-badge">2</span>นำเข้า Google Calendar / Apple Calendar (iCal) พร้อมฝังลิงก์ Zoom</h3>
+
+              <div class="cal-dl-btn-row">
+                <button class="btn cal-ics-btn" id="studioDownloadIcsBtn" type="button">ดาวน์โหลดไฟล์ .ics (Google / Apple iCal)</button>
+                <button class="btn cal-gcal-btn" id="studioDownloadCsvBtn" type="button">ดาวน์โหลดไฟล์ .csv (Google Calendar)</button>
               </div>
-            </details>
+
+              <div class="cal-sub-box">
+                <div class="cal-sub-label">สมัครรับผ่านลิงก์ .ics (Subscribe URL — อัปเดตข้อมูลอัตโนมัติเมื่อตารางมีการแก้ไข)</div>
+                <div class="cal-sub-url-row">
+                  <input class="cal-sub-url-input" id="studioSubscribeUrlInput" type="text" readonly aria-label="ลิงก์สมัครรับปฏิทิน .ics">
+                  <button class="btn sm teal" id="studioCopySubUrlBtn" type="button">คัดลอกลิงก์ .ics</button>
+                  <a class="btn sm" id="studioWebcalLink" href="webcal://smartwoo.github.io/racm303-2569/calendars/all.ics">สมัครรับใน Apple iCal ↗</a>
+                </div>
+              </div>
+
+              <details class="cal-howto-details">
+                <summary>วิธีนำเข้า Google Calendar ทั้ง 2 รูปแบบ (นำเข้าไฟล์ .ics/.csv ครั้งเดียว vs เพิ่มผ่านลิงก์ URL)</summary>
+                <div class="cal-howto-body">
+                  <ol>
+                    <li><strong>เพิ่มผ่านลิงก์ (Subscribe / จาก URL) เพื่อให้อัปเดตอัตโนมัติ:</strong> กด <em>คัดลอกลิงก์ .ics</em> ด้านบน → เปิด Google Calendar บนคอมพิวเตอร์ → คลิกไอคอนเฟือง <strong>การตั้งค่า &gt; เพิ่มปฏิทิน &gt; จาก URL</strong> → วางลิงก์ `.ics` แล้วคลิก <strong>เพิ่มปฏิทิน</strong> (สำหรับ iPhone / iPad / Mac กดปุ่ม <em>สมัครรับใน Apple iCal</em> ได้ทันที)</li>
+                    <li><strong>นำเข้าไฟล์ .ics หรือ .csv ครั้งเดียว:</strong> กดดาวน์โหลดไฟล์ `.ics` (หรือ `.csv`) → เปิด Google Calendar บนคอมพิวเตอร์ → ไอคอนเฟือง <strong>การตั้งค่า &gt; ตั้งค่า &gt; นำเข้าและส่งออก</strong> → เลือกไฟล์จากคอมพิวเตอร์ เลือกปฏิทินปลายทาง แล้วคลิก <strong>นำเข้า</strong> <em>(ข้อควรทราบ: การนำเข้าแบบไฟล์จะเป็นข้อมูล ณ เวลาที่นำเข้า ไม่อัปเดตอัตโนมัติหากมีการแก้ไขภายหลัง)</em></li>
+                  </ol>
+                </div>
+              </details>
+            </div>
           </div>
         </div>
-      </div>
+      </details>
 
       <!-- Collapsible Zoom Classroom Hub & Dual-Format Import Guide -->
       <div class="zoom-sync-drawer" id="zoomSyncDrawer" hidden>
@@ -138,15 +147,13 @@
             <ol>
               <li><strong>แนะนำก่อนดาวน์โหลด:</strong> พิมพ์รหัสนักศึกษา 7 หลักในแถบด้านบนก่อน เพื่อให้ระบบผูกห้อง Discussion 1–6 ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของคุณเข้าในปฏิทินอัตโนมัติ</li>
               <li><strong>Apple Calendar / iCal (iPhone, iPad, Mac) &amp; Outlook:</strong> กดปุ่ม <strong>ดาวน์โหลด iCal / Apple (.ics)</strong> แล้วเปิดไฟล์ ระบบจะเพิ่มทุกคาบพร้อมแจ้งเตือนล่วงหน้า 15 นาทีและลิงก์กดเข้า Zoom ทันที</li>
-              <li><strong>Google Calendar (ผ่านไฟล์ .csv หรือ .ics):</strong> เปิด Google Calendar บนคอมพิวเตอร์ → ฟันเฟือง <em>Settings</em> → <em>Import &amp; export</em> → เลือกไฟล์ <strong>.csv</strong> หรือ <strong>.ics</strong> ที่ดาวน์โหลดแล้วกด <em>Import</em> (หรือคลิกที่แต่ละคาบเพื่อกด <em>+ เพิ่มใน Google Calendar</em> รายคาบ)</li>
+              <li><strong>Google Calendar (ผ่านไฟล์ .csv หรือ .ics):</strong> เปิด Google Calendar บนคอมพิวเตอร์ → ฟันเฟือง <em>Settings</em> → <em>Import &amp; export</em> → เลือกไฟล์ <strong>.csv</strong> หรือ <strong>.ics</strong> ที่ดาวน์โหลดแล้วกด <em>Import</em></li>
             </ol>
           </div>
         </div>
       </div>
 
-      <div class="milestone-strip" id="milestoneStrip"></div>
-
-      <!-- Shared Filter Bar (Applies across Month, Week & Agenda + Personalizes Calendar Downloads) -->
+      <!-- Shared Filter Bar -->
       <div class="filter-panel">
         <div class="filter-field">
           <label for="schedWeekFilter">สัปดาห์การเรียน</label>
@@ -195,22 +202,25 @@
         </div>
       </div>
 
-      <!-- Google Calendar & Apple iCal Navigation Bar -->
+      <!-- macOS / iPadOS Calendar Top Navigation Bar -->
       <div class="cal-topbar">
         <div class="cal-nav-left">
           <div class="cal-stepper" id="calWeekStepper" aria-label="เลื่อนสัปดาห์">
-            <button type="button" id="calPrevBtn" title="สัปดาห์ก่อนหน้า">◀</button>
+            <button type="button" id="calPrevBtn" title="สัปดาห์ก่อนหน้า">‹</button>
             <button type="button" id="calStartWeekBtn">สัปดาห์เปิดวิชา</button>
-            <button type="button" id="calNextBtn" title="สัปดาห์ถัดไป">▶</button>
+            <button type="button" id="calNextBtn" title="สัปดาห์ถัดไป">›</button>
           </div>
           <h3 class="cal-period-title" id="calPeriodTitle">พฤศจิกายน – ธันวาคม 2569 (ครบ 6 สัปดาห์)</h3>
         </div>
 
-        <div class="cal-segmented" role="group" aria-label="มุมมองปฏิทิน">
-          <button class="cal-seg-btn" id="schedSubMonthBtn" data-sched-sub="month" aria-pressed="true" type="button">ปฏิทินรายเดือน</button>
-          <button class="cal-seg-btn" id="schedSubWeekBtn" data-sched-sub="week" aria-pressed="false" type="button">ตารางรายสัปดาห์</button>
-          <button class="cal-seg-btn" id="schedSubDailyBtn" data-sched-sub="daily" aria-pressed="false" type="button">กำหนดการรายคาบ</button>
-          <button class="cal-seg-btn" id="schedSubSpecBtn" data-sched-sub="spec" aria-pressed="false" type="button">หมุนเวียน HS &amp; ข้อสอบ</button>
+        <div class="cal-topbar-right">
+          <div class="cal-segmented" role="group" aria-label="มุมมองปฏิทิน">
+            <button class="cal-seg-btn" id="schedSubMonthBtn" data-sched-sub="month" aria-pressed="true" type="button">เดือน</button>
+            <button class="cal-seg-btn" id="schedSubWeekBtn" data-sched-sub="week" aria-pressed="false" type="button">สัปดาห์</button>
+            <button class="cal-seg-btn" id="schedSubDailyBtn" data-sched-sub="daily" aria-pressed="false" type="button">รายคาบ</button>
+            <button class="cal-seg-btn" id="schedSubSpecBtn" data-sched-sub="spec" aria-pressed="false" type="button">หมุนเวียน HS</button>
+          </div>
+          <button class="cal-sidebar-toggle-btn" id="toggleCalSidebarBtn" type="button" aria-expanded="true" title="แสดงหรือซ่อนแถบกำหนดการสำคัญด้านข้าง">◫ กำหนดการสำคัญ</button>
         </div>
       </div>
 
@@ -226,20 +236,56 @@
         <button class="btn sm" id="resetSchedFiltersBtn" type="button">ล้างตัวกรอง</button>
       </div>
 
-      <div id="schedMonthWrap">
-        <div id="schedMonthContent"></div>
-      </div>
+      <!-- macOS / iPadOS Split-View: Calendar Main Canvas + Side-Tab Inspector -->
+      <div class="cal-workspace-split" id="calWorkspaceSplit">
+        <div class="cal-workspace-main">
+          <div id="schedMonthWrap">
+            <div id="schedMonthContent"></div>
+          </div>
 
-      <div id="schedWeekWrap" hidden>
-        <div id="schedWeekContent"></div>
-      </div>
+          <div id="schedWeekWrap" hidden>
+            <div id="schedWeekContent"></div>
+          </div>
 
-      <div id="schedDailyWrap" hidden>
-        <div id="scheduleSessionsContainer"></div>
-      </div>
+          <div id="schedDailyWrap" hidden>
+            <div id="scheduleSessionsContainer"></div>
+          </div>
 
-      <div id="schedSpecWrap" hidden>
-        <div id="schedSpecContent"></div>
+          <div id="schedSpecWrap" hidden>
+            <div id="schedSpecContent"></div>
+          </div>
+        </div>
+
+        <!-- Side-Tab Inspector Right Beside Calendar -->
+        <aside class="cal-side-inspector" id="calSideInspector" aria-label="แถบด้านข้างกำหนดการสำคัญและทางลัดปฏิทิน">
+          <div class="cal-side-head">
+            <div class="cal-side-tabs" role="tablist" aria-label="แท็บข้อมูลข้างปฏิทิน">
+              <button class="cal-side-tab" id="calSideTabMilestones" data-side-tab="milestones" role="tab" aria-selected="true" type="button">วันสำคัญ (7)</button>
+              <button class="cal-side-tab" id="calSideTabZoom" data-side-tab="zoom" role="tab" aria-selected="false" type="button">Zoom (3)</button>
+              <button class="cal-side-tab" id="calSideTabSync" data-side-tab="sync" role="tab" aria-selected="false" type="button">ซิงค์ iCal</button>
+            </div>
+          </div>
+
+          <div class="cal-side-pane" id="calSideMilestonesPane" role="tabpanel">
+            <p class="cal-side-caption">คลิกที่การ์ดเพื่อเปิดสัปดาห์นั้นในปฏิทิน หรือไปที่หน้าส่งงาน/ภาคสนามทันที</p>
+            <div class="milestone-strip" id="milestoneStrip"></div>
+          </div>
+
+          <div class="cal-side-pane" id="calSideZoomPane" role="tabpanel" hidden>
+            <p class="cal-side-caption">ห้องเรียนออนไลน์ระบาดวิทยา (ฝังอยู่ในไฟล์ .ics และ .csv ทุกคาบแล้ว)</p>
+            <div class="side-zoom-list" id="calSideZoomList"></div>
+          </div>
+
+          <div class="cal-side-pane" id="calSideSyncPane" role="tabpanel" hidden>
+            <p class="cal-side-caption" id="calSideSyncTargetLabel">ซิงค์ตารางปัจจุบันเข้าแอปปฏิทินบน iPhone / iPad / Mac หรือ Google Calendar</p>
+            <div class="side-sync-stack">
+              <a class="btn primary" id="sideWebcalQuickLink" href="webcal://smartwoo.github.io/racm303-2569/calendars/all.ics">สมัครรับใน Apple Calendar (iCal) ↗</a>
+              <button class="btn" id="sideDlIcsQuickBtn" type="button">ดาวน์โหลดไฟล์ .ics ลงเครื่อง</button>
+              <button class="btn" id="sideDlCsvQuickBtn" type="button">ดาวน์โหลดไฟล์ Google Calendar (.csv)</button>
+              <button class="btn sm teal" id="sideOpenFullStudioBtn" type="button">เปิดแผงตั้งค่ารายบุคคล / รายกลุ่มแบบละเอียด ↗</button>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -248,10 +294,10 @@
       <div class="section-header">
         <div>
           <h2>รายชื่อสมาชิกกลุ่มอภิปราย Discussion (HS1–HS6 · 6 กลุ่มย่อย)</h2>
-          <p>แยกเฉพาะสมาชิกกลุ่มอภิปรายระบบสุขภาพ 6 กลุ่มย่อย (กลุ่มละ 28–29 คน · รวม 169 คน) พร้อมห้องเรียนประจำกลุ่มและตารางหมุนเวียนอาจารย์ครบทั้ง HS1–HS6</p>
+          <p>ซิงค์รูปถ่ายนักศึกษาครบ 169 คนจากระบบ Apps Script พร้อมป้ายสีย่อยแยกตามสังกัดโรงพยาบาลภาคสนามทั้ง 9 พื้นที่ และตารางหมุนเวียนอาจารย์ HS1–HS6</p>
         </div>
         <div class="header-actions">
-          <a class="btn teal" id="openAppsScriptDiscBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students&amp;type=discussion" target="_blank" rel="noopener">เปิดโหมดรูปถ่ายใน Apps Script ↗</a>
+          <a class="btn teal" id="openAppsScriptDiscBtn" href="https://script.google.com/macros/s/AKfycbzaDuMJDfeCxDxSbxSP7wt7qO-hh073x6UtLuv7sZCLTpCieQmHlLnv4V7n6RC4EFgOpA/exec?page=students&amp;type=discussion" target="_blank" rel="noopener">เปิดใน Apps Script ต้นฉบับ ↗</a>
           <button class="btn primary" id="discPrintTopBtn" type="button">พิมพ์ใบรายชื่อ Discussion 1 หน้า A4</button>
         </div>
       </div>
@@ -268,14 +314,22 @@
           </select>
         </div>
         <div class="filter-field">
+          <label for="discAreaSubFilter">กรองตามป้ายสีกลุ่มพื้นที่ภาคสนาม (9 แห่ง)</label>
+          <select id="discAreaSubFilter">
+            <option value="">ทุกกลุ่มพื้นที่ภาคสนาม (แสดงครบทั้ง 9 สี)</option>
+          </select>
+        </div>
+        <div class="filter-field">
           <label for="discSearchInput">ค้นหาสมาชิกในกลุ่ม Discussion</label>
           <input id="discSearchInput" type="search" placeholder="พิมพ์รหัสนักศึกษา 7 หลัก ชื่อ-นามสกุล หรือชื่อเล่น…">
         </div>
       </div>
 
+      <div class="disc-area-legend-bar" id="discAreaLegendBar" aria-label="คลิกป้ายสีเพื่อกรองสมาชิกตามกลุ่มพื้นที่ภาคสนาม"></div>
+
       <div class="toolbar-row">
         <span class="status-text" id="discStatusText" role="status">กำลังโหลดรายชื่อสมาชิกกลุ่ม Discussion…</span>
-        <button class="btn sm" id="discTogglePhotosBtn" type="button">แสดงรูปถ่ายนักศึกษา</button>
+        <button class="btn sm" id="discTogglePhotosBtn" type="button">ซ่อนรูปถ่าย (โหมดกะทัดรัด)</button>
         <button class="btn sm" id="discClearFiltersBtn" type="button">ล้างตัวกรอง</button>
         <button class="btn sm primary" id="discPrintBtn" type="button">พิมพ์ใบรายชื่อ 1 หน้า A4</button>
       </div>
@@ -316,7 +370,7 @@
 
       <div class="toolbar-row">
         <span class="status-text" id="fieldStatusText" role="status">กำลังโหลดรายชื่อกลุ่มพื้นที่ภาคสนาม…</span>
-        <button class="btn sm" id="fieldTogglePhotosBtn" type="button">แสดงรูปถ่ายนักศึกษา</button>
+        <button class="btn sm" id="fieldTogglePhotosBtn" type="button">ซ่อนรูปถ่าย (โหมดกะทัดรัด)</button>
         <button class="btn sm" id="fieldClearFiltersBtn" type="button">ล้างตัวกรอง</button>
         <button class="btn sm primary" id="fieldPrintBtn" type="button">พิมพ์ใบรายชื่อ 1 หน้า A4</button>
       </div>
