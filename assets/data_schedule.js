@@ -936,7 +936,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "ผศ. นพ.วิชช์ เกษมทรัพย์",
       "format": "Onsite · ห้องใหญ่ 169 คน",
       "room": "2C2-03 ชั้น 2 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS4-CONCISE"
     },
     {
       "id": "w2-d2-hs4-disc",
@@ -955,7 +956,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "คณาจารย์ประจำกลุ่มอภิปราย HS ทั้ง 6 กลุ่มย่อย",
       "format": "Onsite · แยก 6 กลุ่มย่อย",
       "room": "กลุ่ม 1–5: ห้อง 1C1-02 ถึง 1C1-06 | กลุ่มที่ 6 (ผศ.วิชช์): ใช้ห้อง 2C2-03",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS4-CONCISE"
     },
     {
       "id": "w2-d2-hs5-lec",
@@ -973,7 +975,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "อ. นพ.ฉัตรชัย อิ่มอารมย์",
       "format": "Onsite · ห้องใหญ่ 169 คน",
       "room": "2C2-03 ชั้น 2 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS5-CONCISE"
     },
     {
       "id": "w2-d2-hs5-disc",
@@ -992,7 +995,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "คณาจารย์ประจำกลุ่มอภิปราย HS ทั้ง 6 กลุ่มย่อย",
       "format": "Onsite · แยก 6 กลุ่มย่อย",
       "room": "กลุ่ม 1–6: ห้อง 1C1-02 ถึง 1C1-07 ชั้น 1 อาคารพรีคลินิก (ช่วงบ่ายได้ห้อง 1C1-07 ตามปกติ)",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS5-CONCISE"
     },
     {
       "id": "w2-d3-ep45",
@@ -1098,7 +1102,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "ผศ. นพ.สัมฤทธิ์ ศรีธำรงสวัสดิ์ / นพ.พีรสิชฌ์ สิทธิรัตน์",
       "format": "Onsite · ห้องใหญ่ 169 คน",
       "room": "2C2-03 ชั้น 2 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS6-CONCISE"
     },
     {
       "id": "w2-d5-hs6-disc",
@@ -1117,7 +1122,8 @@ window.RACM_SCHEDULE_DATA = {
       "lecturers": "คณาจารย์ประจำกลุ่มอภิปราย HS ทั้ง 6 กลุ่มย่อย",
       "format": "Onsite · แยก 6 กลุ่มย่อย",
       "room": "กลุ่ม 1–6: ห้อง 1C1-02 ถึง 1C1-07 ชั้น 1 อาคารพรีคลินิก",
-      "checkIn": "เช็คชื่อ"
+      "checkIn": "เช็คชื่อ",
+      "conciseLink": "HS6-CONCISE"
     },
     {
       "id": "w2-d5-sg2",

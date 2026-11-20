@@ -23,6 +23,9 @@
 - **HS1 (ฉบับสรุปกระชับ + 7 แผนภาพ):** [lessons/HS1_health_determinants_concise_summary.md](lessons/HS1_health_determinants_concise_summary.md) — สุขภาพ ปัจจัยกำหนดสุขภาพ และการป้องกันโรค 4 ระดับ
 - **HS2 (ฉบับสรุปกระชับ + 15 อินโฟกราฟิก):** [lessons/HS2_structure_and_functions_concise_summary.md](lessons/HS2_structure_and_functions_concise_summary.md) — หน้าที่และโครงสร้างของระบบสุขภาพและระบบบริการสุขภาพ & กรอบความต่อเนื่องของการดูแล `6W`
 - **HS3 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS3_desirable_characteristics_concise_summary.md](lessons/HS3_desirable_characteristics_concise_summary.md) — คุณลักษณะของระบบบริการสุขภาพที่พึงประสงค์ (`EQESaRR`) และธรรมนูญสุขภาพไทย
+- **HS4 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS4_health_behaviour_concise_summary.md](lessons/HS4_health_behaviour_concise_summary.md) — พฤติกรรมสุขภาพ การปรับเปลี่ยนพฤติกรรม (`COM-B / BCW / Nudge`) และความรอบรู้ด้านสุขภาพ
+- **HS5 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS5_primary_health_care_concise_summary.md](lessons/HS5_primary_health_care_concise_summary.md) — ระบบบริการสุขภาพปฐมภูมิและบริการปฐมภูมิ (`Alma-Ata / WHR 2008 / Astana / Starfield 4Cs`)
+- **HS6 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS6_health_insurance_concise_summary.md](lessons/HS6_health_insurance_concise_summary.md) — การประกันสุขภาพ การซื้อบริการเชิงกลยุทธ์ และกลไกการจ่ายเงินแก่ผู้ให้บริการ
 - *(สำหรับเอกสารคำสอนฉบับเต็มครบทั้ง `HS1–HS6`, สมุดแบบฝึกหัด `Workbook`, บัตรคำศัพท์ `111 คำ` และโจทย์ฝึกคิด `82 ข้อ` สามารถเปิดอ่านและฝึกทำแบบโต้ตอบได้บนเว็บพอร์ทัลในแท็บ **บทเรียน HS1–HS6 & ฉบับย่อ** และ **ทบทวนเร็ว · คำศัพท์ · โจทย์**)*
 
 ### 3. ห้องเรียนออนไลน์ Zoom ประจำรายวิชา
