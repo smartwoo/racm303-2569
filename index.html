@@ -8,7 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/styles.css?v=20261120v">
+  <script>(function(){try{var t=localStorage.getItem("racm303_theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");var l=localStorage.getItem("racm303_lang");if(l==="en"){document.documentElement.lang="en";document.documentElement.setAttribute("data-lang","en");}}catch(_){}})();</script>
+  <link rel="stylesheet" href="assets/styles.css?v=20261120w">
 </head>
 <body>
   <header class="masthead">
@@ -20,6 +21,10 @@
           <p class="head-subtitle">พุธที่ 25 พฤศจิกายน – พุธที่ 30 ธันวาคม 2569 · สถาบันการแพทย์จักรีนฤบดินทร์ (CNMI) และโรงพยาบาลชุมชน 9 พื้นที่</p>
         </div>
         <div class="head-links">
+          <div class="top-pref-controls" role="group" aria-label="สลับภาษาและโหมดสีหน้าจอ">
+            <button class="pref-pill-btn" id="langToggleBtn" type="button" title="สลับภาษา TH / EN"><span class="pref-lang-opt is-active">TH</span><span class="pref-sep">/</span><span class="pref-lang-opt">EN</span></button>
+            <button class="pref-pill-btn" id="themeToggleBtn" type="button" aria-pressed="false" title="สลับโหมดสว่าง / โหมดมืด"><span>☀️</span><span>โหมดสว่าง</span></button>
+          </div>
           <button class="ghost-link" id="studentQuickLeaveTopBtn" type="button">📝 ยื่นใบลากิจ / ลาป่วย</button>
           <a class="ghost-link" id="studentElearningLink" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">ห้องเรียน E-learning ↗</a>
           <a class="ghost-link" id="studentSurveyFormLink" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener">ส่งสไลด์ &amp; Health Survey ↗</a>
@@ -39,9 +44,9 @@
 
       <nav class="nav-tabs" role="tablist" aria-label="หมวดเนื้อหาหลัก">
         <button class="nav-tab" id="tabBtnSchedule" role="tab" data-tab="schedule" aria-selected="true" type="button">ปฏิทิน &amp; ตารางสอน</button>
-        <button class="nav-tab" id="tabBtnHsDiscussion" role="tab" data-tab="hs-discussion" aria-selected="false" type="button">Discussion ระบบสุขภาพ <span class="tab-count">HS1–HS6 · 10 กรณี</span></button>
-        <button class="nav-tab" id="tabBtnDiscussion" role="tab" data-tab="discussion" aria-selected="false" type="button">รายชื่อกลุ่ม Discussion <span class="tab-count">6 กลุ่ม</span></button>
-        <button class="nav-tab" id="tabBtnFieldwork" role="tab" data-tab="fieldwork" aria-selected="false" type="button">9 พื้นที่ภาคสนาม <span class="tab-count">9 พื้นที่</span></button>
+        <button class="nav-tab" id="tabBtnFieldwork" role="tab" data-tab="fieldwork" aria-selected="false" type="button">กลุ่มตามพื้นที่ภาคสนาม <span class="tab-count">9 แห่ง</span></button>
+        <button class="nav-tab" id="tabBtnDiscussion" role="tab" data-tab="discussion" aria-selected="false" type="button">กลุ่ม Discussion <span class="tab-count">6 กลุ่ม</span></button>
+        <button class="nav-tab" id="tabBtnHsDiscussion" role="tab" data-tab="hs-discussion" aria-selected="false" type="button">Discussion ระบบสุขภาพ <span class="tab-count">HS1–HS6</span></button>
         <button class="nav-tab" id="tabBtnSubmissions" role="tab" data-tab="submissions" aria-selected="false" type="button">การส่งงาน &amp; E-learning <span class="tab-count">4 งาน</span></button>
         <button class="nav-tab" id="tabBtnLeave" role="tab" data-tab="leave" aria-selected="false" type="button">ใบลากิจ / ลาป่วย <span class="tab-count" id="leaveNavCountBadge">เซ็นออนไลน์</span></button>
         <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" aria-selected="false" type="button">คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
@@ -341,15 +346,16 @@
       <div id="hsdCasesContainer"></div>
     </section>
 
-    <!-- TAB 2: SEPARATED DISCUSSION GROUP ROSTER (HS1–HS6 · 6 GROUPS) -->
+    <!-- TAB 3: SEPARATED DISCUSSION GROUP ROSTER (HS1–HS6 · 6 GROUPS) -->
     <section class="tab-panel" id="panel-discussion" aria-labelledby="tabBtnDiscussion" hidden>
       <div class="section-header">
         <div>
-          <h2>รายชื่อสมาชิกกลุ่มอภิปราย Discussion (HS1–HS6 · 6 กลุ่มย่อย)</h2>
-          <p>รูปถ่ายนักศึกษาครบ 169 คน พร้อมป้ายสีย่อยแยกตามสังกัดโรงพยาบาลภาคสนามทั้ง 9 พื้นที่ (วางเมาส์เหนือชื่อกลุ่มพื้นที่เพื่อดูรูปและชื่อเล่นเพื่อนในทีม) และตารางหมุนเวียนอาจารย์ HS1–HS6</p>
+          <h2>กลุ่มอภิปราย Discussion (HS1–HS6 · 6 กลุ่มย่อย · จัดกลุ่มตามพื้นที่ภาคสนาม)</h2>
+          <p>สำรวจผังห้องเรียน 1C1-02 ถึง 1C1-07 ชั้น 1 อาคารพรีคลินิก รูปถ่ายนักศึกษาครบ 169 คนพร้อมป้ายสีแยกตามแหล่งฝึกภาคสนามทั้ง 9 แห่ง และตารางหมุนเวียนอาจารย์ HS1–HS6</p>
         </div>
         <div class="header-actions">
-          <button class="btn" id="jumpToHsDiscCasesBtn" type="button">เปิดโจทย์ Discussion HS1–HS6 (10 กรณี) →</button>
+          <button class="btn" id="toggleDiscOverviewBtn" type="button">ซ่อนผัง 6 กลุ่ม</button>
+          <button class="btn" id="jumpToHsDiscCasesBtn" type="button">เปิดโจทย์ Discussion HS1–HS6 →</button>
           <a class="btn pdf-red" id="exportDiscPdfBtn" href="exports/pdf/RACM303_2569_Discussion_All.pdf" download="ใบรายชื่อ_Discussion_ครบ6กลุ่ม_RACM303_2569.pdf" title="ส่งออกใบรูปถ่ายสมาชิกกลุ่ม Discussion เป็นไฟล์ PDF"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9.5 15.5 2.5 2.5 2.5-2.5"/></svg>Export as PDF</a>
           <a class="btn docx-blue" id="exportDiscDocxBtn" href="exports/docx/RACM303_2569_Discussion_Roster.docx" download="รายชื่อสมาชิก_Discussion_RACM303_2569.docx" title="ส่งออกรายชื่อสมาชิกกลุ่ม Discussion เป็นไฟล์ Word (.docx)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13.5" y2="17"/></svg>Export as .docx</a>
           <button class="btn print-ink" id="discPrintTopBtn" type="button" title="พิมพ์ใบรายชื่อและรูปถ่ายลงกระดาษ A4 หน้าเดียว"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print (1 หน้า A4)</button>
@@ -392,12 +398,12 @@
       <div class="student-cards" id="discCardsContainer"></div>
     </section>
 
-    <!-- TAB 3: SEPARATED 9 FIELDWORK SITES & COMMUNITY HOSPITAL ROSTER -->
+    <!-- TAB 2: SEPARATED 9 FIELDWORK SITES & COMMUNITY HOSPITAL ROSTER -->
     <section class="tab-panel" id="panel-fieldwork" aria-labelledby="tabBtnFieldwork" hidden>
       <div class="section-header">
         <div>
-          <h2>แผนที่โรงพยาบาลชุมชนและรายชื่อสมาชิก 9 พื้นที่ภาคสนาม</h2>
-          <p>สำรวจตำแหน่งโรงพยาบาลชุมชนทั่วประเทศบนแผนที่ประเทศไทย (Hover ดูข้อมูลและรูปเพื่อนในกลุ่มได้ทันที) พร้อมอาจารย์ที่ปรึกษา ห้องประชุมกลุ่มย่อย และวันเดินทางไป-กลับ</p>
+          <h2>กลุ่มแบ่งตามพื้นที่ฝึกภาคสนามและแผนที่โรงพยาบาลชุมชน (9 แห่ง)</h2>
+          <p>สำรวจเส้นทางและตำแหน่งโรงพยาบาลชุมชนทั่วประเทศบนแผนที่ 3 มิติ (Hover ดูข้อมูลและรูปเพื่อนในกลุ่มได้ทันที) พร้อมอาจารย์ที่ปรึกษา ห้องประชุมกลุ่มย่อย และวันเดินทางไป-กลับ</p>
         </div>
         <div class="header-actions">
           <button class="btn" id="toggleSitesOverviewBtn" type="button">ซ่อนแผนที่ 9 พื้นที่</button>
@@ -698,15 +704,15 @@
   </div>
 
   <script>window.PORTAL_ROLE = "student";</script>
-  <script src="assets/vendor/mqtt.min.js?v=20261120s"></script>
-  <script src="assets/vendor/peerjs.min.js?v=20261120s"></script>
-  <script src="assets/live_classroom.js?v=20261120v"></script>
-  <script src="assets/data_schedule.js?v=20261120e"></script>
-  <script src="assets/data_roster.js?v=20261120u"></script>
-  <script src="assets/data_manual.js?v=20261120s"></script>
-  <script src="assets/data_hs_docs.js?v=20261120p"></script>
-  <script src="assets/data_hs_discussion.js?v=20261120v"></script>
-  <script src="assets/interactive_qa.js?v=20261120m"></script>
-  <script src="assets/portal.js?v=20261120v"></script>
+  <script src="assets/vendor/mqtt.min.js?v=20261120w"></script>
+  <script src="assets/vendor/peerjs.min.js?v=20261120w"></script>
+  <script src="assets/live_classroom.js?v=20261120w"></script>
+  <script src="assets/data_schedule.js?v=20261120w"></script>
+  <script src="assets/data_roster.js?v=20261120w"></script>
+  <script src="assets/data_manual.js?v=20261120w"></script>
+  <script src="assets/data_hs_docs.js?v=20261120w"></script>
+  <script src="assets/data_hs_discussion.js?v=20261120w"></script>
+  <script src="assets/interactive_qa.js?v=20261120w"></script>
+  <script src="assets/portal.js?v=20261120w"></script>
 </body>
 </html>
