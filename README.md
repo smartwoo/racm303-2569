@@ -1,14 +1,14 @@
-# RACM 303 (ปีการศึกษา 2569) — พอร์ทัลการเรียนรู้สำหรับนักศึกษาแพทย์ชั้นปีที่ 3
+# 🔵 [STUDENT] RACM 303 (ปีการศึกษา 2569) — Student Portal สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 (โทนสีน้ำเงิน)
 
 พอร์ทัลปฏิทินการเรียนการสอน รายชื่อกลุ่มภาคสนาม **คู่มือรายวิชาฉบับสมบูรณ์** และคลังเอกสารคำสอนแบบชี้นำ (`HS1–HS6` ฉบับเต็ม · ฉบับสรุปกระชับพร้อมอินโฟกราฟิก · สมุดแบบฝึกหัด) สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 (จำนวน 169 คน) ภาควิชาเวชศาสตร์ชุมชน คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี มหาวิทยาลัยมหิดล (วันพุธที่ 25 พฤศจิกายน – วันพุธที่ 30 ธันวาคม 2569)
 
 ## เข้าใช้งานเว็บพอร์ทัลสำหรับนักศึกษา
 
-- **เว็บไซต์พอร์ทัลนักศึกษา (GitHub Pages):** https://smartwoo.github.io/racm303-2569/
-  - **Discussion ระบบสุขภาพ (`HS1–HS6` · 10 กรณีศึกษาและตารางใบงาน):** https://smartwoo.github.io/racm303-2569/#hs-discussion
-  - **รายชื่อสมาชิกกลุ่ม Discussion (`HS1–HS6` · 6 กลุ่มย่อย แยกอิสระ):** https://smartwoo.github.io/racm303-2569/#discussion
-  - **ข้อมูลโรงพยาบาลชุมชน & รายชื่อ 9 พื้นที่ภาคสนาม:** https://smartwoo.github.io/racm303-2569/#fieldwork
-  - **ศูนย์การส่งงาน (`SRN 1` · `SRN 2` · สไลด์ · Health Survey) & เชื่อมห้องวิชา RACM 303 (`id=398`):** https://smartwoo.github.io/racm303-2569/#submissions
+- **เว็บไซต์พอร์ทัลนักศึกษา (GitHub Pages):** https://smartwoo.github.io/racm303-2569-student/
+  - **Discussion ระบบสุขภาพ (`HS1–HS6` · 10 กรณีศึกษาและตารางใบงาน):** https://smartwoo.github.io/racm303-2569-student/#hs-discussion
+  - **รายชื่อสมาชิกกลุ่ม Discussion (`HS1–HS6` · 6 กลุ่มย่อย แยกอิสระ):** https://smartwoo.github.io/racm303-2569-student/#discussion
+  - **ข้อมูลโรงพยาบาลชุมชน & รายชื่อ 9 พื้นที่ภาคสนาม:** https://smartwoo.github.io/racm303-2569-student/#fieldwork
+  - **ศูนย์การส่งงาน (`SRN 1` · `SRN 2` · สไลด์ · Health Survey) & เชื่อมห้องวิชา RACM 303 (`id=398`):** https://smartwoo.github.io/racm303-2569-student/#submissions
 - **ห้องรายวิชาใน RAMA E-learning (`3/2569 RACM 303 Community Medicine I` · `id=398`):** https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398
 
 ## เอกสารหลักในคลัง GitHub สำหรับนักศึกษา
@@ -19,7 +19,7 @@
 - **ไฟล์ปฏิทินมาตรฐาน Apple Calendar / iCal / Outlook (`.ics` พร้อมลิงก์ Zoom & แจ้งเตือนล่วงหน้า 15 นาที):** [downloads/RACM303_2569_Calendar.ics](downloads/RACM303_2569_Calendar.ics)
 - **ไฟล์ปฏิทินสำหรับนำเข้า Google Calendar (`.csv` พร้อมลิงก์ Zoom):** [downloads/RACM303_2569_GoogleCalendar.csv](downloads/RACM303_2569_GoogleCalendar.csv)
 - **ตารางสอนฉบับสมบูรณ์ (Excel `.xlsx` / Markdown `.md`):** [downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx](downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx) · [downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.md](downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.md)
-  - *คำแนะนำ:* หากเปิดผ่านเว็บพอร์ทัล https://smartwoo.github.io/racm303-2569/ และกรอกรหัสนักศึกษา 7 หลักก่อนกดดาวน์โหลด `.ics` หรือ `.csv` ระบบจะผูกห้อง `Discussion 1–6` ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของนักศึกษาเข้าในปฏิทินส่วนตัวให้อัตโนมัติ
+  - *คำแนะนำ:* หากเปิดผ่านเว็บพอร์ทัล https://smartwoo.github.io/racm303-2569-student/ และกรอกรหัสนักศึกษา 7 หลักก่อนกดดาวน์โหลด `.ics` หรือ `.csv` ระบบจะผูกห้อง `Discussion 1–6` ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของนักศึกษาเข้าในปฏิทินส่วนตัวให้อัตโนมัติ
 
 ### 2. บทเรียนวิทยาศาสตร์ระบบสุขภาพฉบับสรุปกระชับ (Concise Summary `.md` + อินโฟกราฟิก)
 - **HS1 (ฉบับสรุปกระชับ + 7 แผนภาพ):** [lessons/HS1_health_determinants_concise_summary.md](lessons/HS1_health_determinants_concise_summary.md) — สุขภาพ ปัจจัยกำหนดสุขภาพ และการป้องกันโรค 4 ระดับ
@@ -43,12 +43,12 @@
 
 | กลุ่มพื้นที่ภาคสนาม | ช่วงวันลงภาคสนาม | ลิงก์ Subscribe `.ics` (อัปเดตอัตโนมัติ) |
 |---|---|---|
-| **1. รพร.กุฉินารายณ์** จ.กาฬสินธุ์ | พฤ. 10 เย็น (รถไฟ) – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_1_kuchinarai.ics` |
-| **2. รพร.ด่านซ้าย** จ.เลย | ส. 12 – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_2_dansai.ics` |
-| **3. รพ.ตะกั่วป่า** จ.พังงา | พฤ. 10 เย็น (รถไฟ) – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_3_takuapa.ics` |
-| **4. รพ.ท่าวังผา** จ.น่าน | ส. 12 – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_4_thawangpha.ics` |
-| **5. รพ.เพชรบูรณ์ (กลุ่ม 1)** | พฤ. 10 – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_5_phetchabun1.ics` |
-| **6. รพ.เพชรบูรณ์ (กลุ่ม 2)** | พฤ. 10 – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_6_phetchabun2.ics` |
-| **7. รพ.อุบลรัตน์** จ.ขอนแก่น | ส. 12 เย็น (รถไฟ) – อา. 20 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_7_ubonrat.ics` |
-| **8. รพ.ท่าสองยาง** จ.ตาก | ศ. 11 เย็น – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569/calendars/group_8_thasongyang.ics` |
-| **9. รพ.อุ้มผาง** จ.ตาก | คืน พ. 9 (23:00 น.) – ศ. 18 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569/calendars/group_9_umphang.ics` |
+| **1. รพร.กุฉินารายณ์** จ.กาฬสินธุ์ | พฤ. 10 เย็น (รถไฟ) – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569-student/calendars/group_1_kuchinarai.ics` |
+| **2. รพร.ด่านซ้าย** จ.เลย | ส. 12 – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569-student/calendars/group_2_dansai.ics` |
+| **3. รพ.ตะกั่วป่า** จ.พังงา | พฤ. 10 เย็น (รถไฟ) – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569-student/calendars/group_3_takuapa.ics` |
+| **4. รพ.ท่าวังผา** จ.น่าน | ส. 12 – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569-student/calendars/group_4_thawangpha.ics` |
+| **5. รพ.เพชรบูรณ์ (กลุ่ม 1)** | พฤ. 10 – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569-student/calendars/group_5_phetchabun1.ics` |
+| **6. รพ.เพชรบูรณ์ (กลุ่ม 2)** | พฤ. 10 – ส. 19 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569-student/calendars/group_6_phetchabun2.ics` |
+| **7. รพ.อุบลรัตน์** จ.ขอนแก่น | ส. 12 เย็น (รถไฟ) – อา. 20 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569-student/calendars/group_7_ubonrat.ics` |
+| **8. รพ.ท่าสองยาง** จ.ตาก | ศ. 11 เย็น – ส. 19 ธ.ค. 69 *(มีเรียน 11 ธ.ค.)* | `https://smartwoo.github.io/racm303-2569-student/calendars/group_8_thasongyang.ics` |
+| **9. รพ.อุ้มผาง** จ.ตาก | คืน พ. 9 (23:00 น.) – ศ. 18 ธ.ค. 69 | `https://smartwoo.github.io/racm303-2569-student/calendars/group_9_umphang.ics` |
