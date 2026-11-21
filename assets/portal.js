@@ -13223,6 +13223,10 @@
             stageEl.style.setProperty("--hsd-left-pct", `${clamped}%`);
           }
           if (ratioPill) ratioPill.textContent = `${clamped}:${100 - clamped}`;
+          const parentSheet = stageEl.closest(".ppt-slide-sheet");
+          if (parentSheet && typeof parentSheet._redrawConceptLines === "function") {
+            parentSheet._redrawConceptLines();
+          }
         };
 
         const onUp = () => {
@@ -14099,7 +14103,7 @@
     return row;
   }
 
-  function autoFitSingleSheetBoxes(sheetEl) {
+  function autoFitSingleSheetBoxes(sheetEl, forceBoxRefit) {
     if (!sheetEl || !sheetEl.isConnected) return;
     const fitZ = Number(sheetEl.dataset.pptFitZoom) || 0.84;
     sheetEl.querySelectorAll(".hsd-box-zoom-body").forEach((boxEl) => {
@@ -14110,6 +14114,11 @@
       const paneEl = boxEl.closest(".hsd-slide-left, .hsd-slide-right, .hsd-key-slide-stage");
 
       if (!isAuto) {
+        boxEl._lastFitSig = "";
+        if (paneEl) {
+          paneEl.style.overflowY = "auto";
+          paneEl.style.overflowX = "auto";
+        }
         boxEl.style.zoom = ((manualPct / 100) * fitZ).toFixed(4);
         boxEl.dataset.effectivePct = String(manualPct);
         sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
@@ -14119,6 +14128,7 @@
       }
 
       if (!paneEl || paneEl.hidden) {
+        boxEl._lastFitSig = "";
         boxEl.style.zoom = fitZ.toFixed(4);
         boxEl.dataset.effectivePct = "100";
         sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
@@ -14127,23 +14137,32 @@
         return;
       }
 
-      if (paneEl.clientHeight < 36 || paneEl.clientWidth < 50) {
+      const pOffW = paneEl.offsetWidth;
+      const pOffH = paneEl.offsetHeight;
+      if (pOffH < 36 || pOffW < 50) {
         boxEl.style.zoom = fitZ.toFixed(4);
         if (!sheetEl._deferredFitQueued) {
           sheetEl._deferredFitQueued = true;
           requestAnimationFrame(() => {
             sheetEl._deferredFitQueued = false;
-            autoFitSingleSheetBoxes(sheetEl);
+            autoFitSingleSheetBoxes(sheetEl, true);
           });
         }
         return;
       }
 
+      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}`;
+      if (!forceBoxRefit && boxEl._lastFitSig === fitSig) {
+        return;
+      }
+
+      // Lock overflow hidden during & after Auto-Fit so OS scrollbars never toggle clientWidth/clientHeight!
+      paneEl.style.overflowY = "hidden";
+      paneEl.style.overflowX = "hidden";
       paneEl.scrollTop = 0;
       paneEl.scrollLeft = 0;
       boxEl.style.zoom = fitZ.toFixed(4);
 
-      // Measure strictly in paneEl's un-zoomed (zoom=1) container space (note: scrollHeight is always >= clientHeight)
       const fitsCleanly = () =>
         paneEl.scrollHeight <= paneEl.clientHeight && paneEl.scrollWidth <= paneEl.clientWidth + 2;
 
@@ -14189,6 +14208,11 @@
         boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
       }
 
+      if (!fitsCleanly()) {
+        paneEl.style.overflowY = "auto";
+      }
+
+      boxEl._lastFitSig = fitSig;
       boxEl.dataset.effectivePct = String(chosenPct);
       paneEl.scrollTop = 0;
       paneEl.scrollLeft = 0;
@@ -14205,23 +14229,17 @@
   function applySlideBoxesZoom(rootEl) {
     const scope = rootEl || document;
     scope.querySelectorAll(".ppt-slide-sheet").forEach((sheetEl) => {
-      autoFitSingleSheetBoxes(sheetEl);
+      autoFitSingleSheetBoxes(sheetEl, true);
     });
   }
 
   function scheduleStabilizedSlideFit(stageEl, sheetEl, useZoomState) {
-    fitSlideSheetToStage(stageEl, sheetEl, useZoomState);
+    fitSlideSheetToStage(stageEl, sheetEl, useZoomState, true);
     requestAnimationFrame(() => {
-      fitSlideSheetToStage(stageEl, sheetEl, useZoomState);
-      requestAnimationFrame(() => {
-        fitSlideSheetToStage(stageEl, sheetEl, useZoomState);
-      });
-    });
-    setTimeout(() => {
       if (sheetEl && sheetEl.isConnected) {
-        fitSlideSheetToStage(stageEl, sheetEl, useZoomState);
+        fitSlideSheetToStage(stageEl, sheetEl, useZoomState, false);
       }
-    }, 140);
+    });
   }
 
   function buildBoxFontSizeCtrlDOM(side) {
@@ -14743,8 +14761,8 @@
     // Re-optimize automatically if any embedded figure/image finishes decoding after initial frame
     sheet.querySelectorAll("img").forEach((imgEl) => {
       if (!imgEl.complete) {
-        imgEl.addEventListener("load", () => autoFitSingleSheetBoxes(sheet), { once: true });
-        imgEl.addEventListener("error", () => autoFitSingleSheetBoxes(sheet), { once: true });
+        imgEl.addEventListener("load", () => autoFitSingleSheetBoxes(sheet, true), { once: true });
+        imgEl.addEventListener("error", () => autoFitSingleSheetBoxes(sheet, true), { once: true });
       }
     });
 
@@ -14768,26 +14786,70 @@
     return sheet;
   }
 
-  function fitSlideSheetToStage(stageEl, sheetEl, useZoomState) {
-    if (!stageEl || !sheetEl) return;
+  function fitSlideSheetToStage(stageEl, sheetEl, useZoomState, forceRefit) {
+    if (!stageEl || !sheetEl || sheetEl._fittingNow) return;
     const isProjected = sheetEl.classList.contains("is-projected");
-    const padX = isProjected ? 0 : window.innerWidth <= 960 ? 8 : 16;
-    const padY = isProjected ? 0 : window.innerWidth <= 960 ? 8 : 12;
-    const availW = Math.max(280, stageEl.clientWidth - padX);
-    const availH = Math.max(200, stageEl.clientHeight - padY);
-    const fitW = Math.min(availW, availH * (16 / 9));
-    const scaleFactor =
-      useZoomState && state.hsdPptZoomMode === "manual" ? (state.hsdPptZoomPct || 100) / 100 : 1;
-    const finalW = Math.round(fitW * scaleFactor);
-    const finalH = Math.round(finalW * (9 / 16));
-    sheetEl.style.width = `${finalW}px`;
-    sheetEl.style.height = `${finalH}px`;
-    sheetEl.style.maxWidth = "none";
-    const fontScale = Math.max(0.68, Math.min(1.42, finalW / 1220));
-    sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
-    const fitZoom = Math.max(0.24, Math.min(1.26, finalW / 1690));
-    sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
-    autoFitSingleSheetBoxes(sheetEl);
+    const isManualZoom = Boolean(useZoomState && state.hsdPptZoomMode === "manual");
+    const scaleFactor = isManualZoom ? (state.hsdPptZoomPct || 100) / 100 : 1;
+    if (!isProjected) {
+      stageEl.classList.toggle("is-manual-zoom", isManualZoom && scaleFactor > 1);
+    }
+
+    // Use offsetWidth/offsetHeight (border-box, 100% immune to scrollbar presence!)
+    const stageW = stageEl.offsetWidth;
+    const stageH = stageEl.offsetHeight;
+    if (stageW < 80 || stageH < 60) return;
+
+    if (
+      !forceRefit &&
+      sheetEl._lastStageW !== undefined &&
+      Math.abs(stageW - sheetEl._lastStageW) <= 1 &&
+      Math.abs(stageH - sheetEl._lastStageH) <= 1 &&
+      sheetEl._lastScaleFactor === scaleFactor
+    ) {
+      return;
+    }
+
+    sheetEl._fittingNow = true;
+    try {
+      sheetEl._lastStageW = stageW;
+      sheetEl._lastStageH = stageH;
+      sheetEl._lastScaleFactor = scaleFactor;
+
+      let padX = 0;
+      let padY = 0;
+      if (!isProjected) {
+        const cs = window.getComputedStyle(stageEl);
+        padX =
+          (parseFloat(cs.paddingLeft) || 0) +
+          (parseFloat(cs.paddingRight) || 0) +
+          (parseFloat(cs.borderLeftWidth) || 0) +
+          (parseFloat(cs.borderRightWidth) || 0) +
+          6;
+        padY =
+          (parseFloat(cs.paddingTop) || 0) +
+          (parseFloat(cs.paddingBottom) || 0) +
+          (parseFloat(cs.borderTopWidth) || 0) +
+          (parseFloat(cs.borderBottomWidth) || 0) +
+          6;
+      }
+
+      const availW = Math.max(260, stageW - padX);
+      const availH = Math.max(180, stageH - padY);
+      const fitW = Math.min(availW, availH * (16 / 9));
+      const finalW = Math.floor(fitW * scaleFactor);
+      const finalH = Math.floor(finalW * (9 / 16));
+      sheetEl.style.width = `${finalW}px`;
+      sheetEl.style.height = `${finalH}px`;
+      sheetEl.style.maxWidth = "none";
+      const fontScale = Math.max(0.68, Math.min(1.42, finalW / 1220));
+      sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
+      const fitZoom = Math.max(0.24, Math.min(1.26, finalW / 1690));
+      sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
+      autoFitSingleSheetBoxes(sheetEl, Boolean(forceRefit));
+    } finally {
+      sheetEl._fittingNow = false;
+    }
   }
 
   function buildPptSlideSorterGridDOM(slides, onPickSlide) {
@@ -15178,7 +15240,8 @@
     });
 
     const centerCol = make("div", null, "ppt-center-col");
-    const canvasStage = make("div", null, "ppt-canvas-stage");
+    const canvasStage = make("div", null, `ppt-canvas-stage${isSorter ? " is-sorter-stage" : ""}`);
+    let mountedSheet = null;
 
     if (isSorter) {
       canvasStage.appendChild(
@@ -15196,12 +15259,8 @@
         pptCanvasResizeObserver = null;
       }
     } else {
-      const sheet = buildPptSlideSheetDOM(cur, slides, false);
-      canvasStage.appendChild(sheet);
-      if (pptCanvasResizeObserver) pptCanvasResizeObserver.disconnect();
-      pptCanvasResizeObserver = new ResizeObserver(() => fitSlideSheetToStage(canvasStage, sheet, true));
-      pptCanvasResizeObserver.observe(canvasStage);
-      scheduleStabilizedSlideFit(canvasStage, sheet, true);
+      mountedSheet = buildPptSlideSheetDOM(cur, slides, false);
+      canvasStage.appendChild(mountedSheet);
     }
     centerCol.appendChild(canvasStage);
 
@@ -15329,7 +15388,7 @@
       zPctBtn.textContent = `${state.hsdPptZoomPct}% ↺`;
       zPctBtn.setAttribute("aria-pressed", "false");
       const sheetEl = canvasStage.querySelector(".ppt-slide-sheet");
-      if (sheetEl) fitSlideSheetToStage(canvasStage, sheetEl, true);
+      if (sheetEl) fitSlideSheetToStage(canvasStage, sheetEl, true, true);
     });
 
     const zPlus = make("button", "+", "ppt-status-btn");
@@ -15373,6 +15432,15 @@
     shell.appendChild(statusBar);
 
     container.appendChild(shell);
+
+    if (mountedSheet) {
+      scheduleStabilizedSlideFit(canvasStage, mountedSheet, true);
+      if (pptCanvasResizeObserver) pptCanvasResizeObserver.disconnect();
+      pptCanvasResizeObserver = new ResizeObserver(() => {
+        fitSlideSheetToStage(canvasStage, mountedSheet, true, false);
+      });
+      pptCanvasResizeObserver.observe(canvasStage);
+    }
   }
 
   function renderHsScrollMode(container, matchedCases) {
