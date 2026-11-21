@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){try{var t=localStorage.getItem("racm303_theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");var l=localStorage.getItem("racm303_lang");if(l==="en"){document.documentElement.lang="en";document.documentElement.setAttribute("data-lang","en");}}catch(_){}})();</script>
-  <link rel="stylesheet" href="assets/styles.css?v=20261121c">
+  <link rel="stylesheet" href="assets/styles.css?v=20261121d">
 </head>
 <body>
   <header class="masthead">
@@ -357,11 +357,12 @@
       <div class="hsd-view-toolbar hsd-no-print">
         <div class="hsd-view-left">
           <div class="hsd-mode-segmented" role="group" aria-label="รูปแบบการแสดงผลโจทย์และช่องตอบ">
-            <button class="hsd-mode-btn" id="hsdViewSlideBtn" data-hsd-vmode="slide" aria-pressed="true" type="button">▣ สไลด์รายข้อ (Slide Each Case)</button>
+            <button class="hsd-mode-btn" id="hsdViewSlideBtn" data-hsd-vmode="slide" aria-pressed="true" type="button">▣ มุมมองสไลด์ PPT 16:9</button>
             <button class="hsd-mode-btn" id="hsdViewScrollBtn" data-hsd-vmode="scroll" aria-pressed="false" type="button">☰ เลื่อนอ่านยาว (Full Scroll)</button>
           </div>
+          <button class="btn sm ppt-launch-fs-btn" id="hsdToggleTheaterBtn" type="button" title="ฉายสไลด์ 16:9 เต็มหน้าจอเหมือนกด F5 ใน Microsoft PowerPoint (กด Esc เพื่อออก)">▶ ฉาย Full Screen 16:9</button>
+          <button class="btn sm ppt-launch-win-btn" id="hsdPopoutShareBtn" type="button" title="เปิดหน้าต่าง Presentation View 16:9 แยกเป็นอีกหน้าต่างสำหรับแชร์จอหรือขึ้นโปรเจกเตอร์">🪟 แยกหน้าต่าง Slide Share</button>
           <button class="btn sm" id="hsdToggleScenPaneBtn" type="button" title="ซ่อนหรือแสดงกรอบเนื้อหาสถานการณ์ด้านซ้ายเพื่อขยายช่องกรอกคำตอบให้เต็มจอ">◫ ขยายช่องกรอกเต็มความกว้าง</button>
-          <button class="btn sm" id="hsdToggleTheaterBtn" type="button" title="ขยายโหมดสไลด์เต็มหน้าจอ (กด Esc เพื่อออก)">⛶ เต็มจอ</button>
         </div>
         <div class="hsd-view-right">
           <select id="hsdModuleSelect" aria-label="เลือกคาบอภิปรายระบบสุขภาพ" style="padding:5px 9px;font-size:12.8px;border-radius:7px;border:1px solid var(--line)">
@@ -744,7 +745,7 @@
   <script src="assets/data_manual.js?v=20261120w"></script>
   <script src="assets/data_hs_docs.js?v=20261120w"></script>
   <script src="assets/data_hs_discussion.js?v=20261120w"></script>
-  <script src="assets/interactive_qa.js?v=20261121c"></script>
-  <script src="assets/portal.js?v=20261121c"></script>
+  <script src="assets/interactive_qa.js?v=20261121d"></script>
+  <script src="assets/portal.js?v=20261121d"></script>
 </body>
 </html>
