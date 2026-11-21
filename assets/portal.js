@@ -65,6 +65,8 @@
     hsdSheetStageTab: "blank", // blank | live
     hsdFocusedConceptStep: 0,
     hsdShowConceptLines: true,
+    hsdScrollLinkedQByCase: {},
+    hsdScrollCollapseLiveByQ: {},
     hsdLastSplitLayout: "split-sheet",
     hsdSplitOrient: localStorage.getItem("racm303_hsd_split_orient") === "horizontal" ? "horizontal" : "vertical",
     hsdSplitPct: Math.min(78, Math.max(22, Number(localStorage.getItem("racm303_hsd_split_pct")) || 46)),
@@ -16905,6 +16907,13 @@
         });
 
         split.append(scenSticky, qCol);
+        if (
+          ROLE === "faculty" &&
+          state.hsdFacultyMode !== "student" &&
+          typeof attachFacultyScrollCaseConceptEngine === "function"
+        ) {
+          attachFacultyScrollCaseConceptEngine(card, split, scenSticky, qCol, c, mod, hRight);
+        }
         body.appendChild(split);
         card.appendChild(body);
         modSec.appendChild(card);
@@ -16917,6 +16926,10 @@
   function renderHsDiscussionView() {
     const container = $("hsdCasesContainer");
     if (!container) return;
+
+    if (typeof cleanupFacultyScrollConceptListeners === "function") {
+      cleanupFacultyScrollConceptListeners();
+    }
 
     if (LIVE) {
       LIVE.startEngine();
@@ -16966,6 +16979,9 @@
     if (!matchedCases.length) {
       if (panelEl) panelEl.classList.remove("is-ppt-slide-mode");
       container.appendChild(make("div", "ไม่พบกรณีศึกษาที่ตรงกับตัวกรองหรือคำค้นหา", "empty-state"));
+      if (ROLE === "faculty" && typeof syncFacultyScrollGlobalLinkBar === "function") {
+        syncFacultyScrollGlobalLinkBar(matchedCases);
+      }
       syncLiveBarQuestionPickerDOM(matchedCases);
       renderPptPresentationOverlay();
       return;
@@ -16975,6 +16991,9 @@
       renderHsSlideDeckMode(container, matchedCases);
     } else {
       renderHsScrollMode(container, matchedCases);
+    }
+    if (ROLE === "faculty" && typeof syncFacultyScrollGlobalLinkBar === "function") {
+      syncFacultyScrollGlobalLinkBar(matchedCases);
     }
     syncLiveBarQuestionPickerDOM(matchedCases);
     renderPptPresentationOverlay();
