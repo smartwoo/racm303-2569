@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>RACM 303 (ปีการศึกษา 2569) · พอร์ทัลนักศึกษาแพทย์ชั้นปีที่ 3 — ปฏิทินเรียน Discussion ระบบสุขภาพ (HS1–HS6) และเอกสารคำสอน</title>
-  <meta name="description" content="พอร์ทัลการเรียนรู้รายวิชา RACM 303 เวชศาสตร์ชุมชนและวิทยาศาสตร์ระบบสุขภาพ ปีการศึกษา 2569 สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี พร้อมปฏิทิน iCal (.ics) และ Google Calendar (.csv) กรณีศึกษา Discussion ระบบสุขภาพ HS1–HS6 (10 กรณีศึกษา) คู่มือรายวิชา และเอกสารคำสอนฉบับเต็มและฉบับย่อ">
+  <meta name="description" content="พอร์ทัลการเรียนรู้รายวิชา RACM 303 เวชศาสตร์ชุมชนและวิทยาศาสตร์ระบบสุขภาพ ปีการศึกษา 2569 สำหรับนักศึกษาแพทย์ชั้นปีที่ 3 คณะแพทยศาสตร์โรงพยาบาลรามาธิบดี พร้อมปฏิทิน .ics (Google Calendar / Apple iCal) และตารางเรียน Excel (.xlsx) กรณีศึกษา Discussion ระบบสุขภาพ HS1–HS6 (10 กรณีศึกษา) คู่มือรายวิชา และเอกสารคำสอนฉบับเต็มและฉบับย่อ">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -94,13 +94,12 @@
       <div class="section-header">
         <div>
           <h2>ปฏิทินและตารางกิจกรรมการเรียนการสอน ปีการศึกษา 2569</h2>
-          <p>ลงชื่อเข้าเรียนได้ 15 นาทีก่อนเวลาเรียน และเริ่มนับว่าสายเมื่อเกิน 15 นาทีหลังเวลาเริ่มคาบ · ดาวน์โหลดลงเครื่องได้ทั้ง <strong>Apple iCal (.ics)</strong> และ <strong>Google Calendar (.csv)</strong> พร้อมฝังลิงก์ Zoom ในตัว</p>
+          <p>ลงชื่อเข้าเรียนได้ 15 นาทีก่อนเวลาเรียน และเริ่มนับว่าสายเมื่อเกิน 15 นาทีหลังเวลาเริ่มคาบ · ส่งออกเป็นไฟล์ปฏิทิน <strong>.ics (Google Calendar / Apple iCal / Outlook)</strong> หรือตาราง <strong>Excel (.xlsx)</strong> พร้อมฝังลิงก์ Zoom ในตัว</p>
         </div>
         <div class="cal-export-group">
-          <button class="btn cal-ics-btn" id="exportIcsBtn" type="button" title="มาตรฐาน iCalendar สำหรับ Apple Calendar (iPhone/iPad/Mac), Outlook และ Google Calendar"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-btn-label>Export iCal (.ics)</span></button>
-          <button class="btn cal-gcal-btn" id="exportGcalCsvBtn" type="button" title="ไฟล์ CSV มาตรฐานสำหรับนำเข้า Google Calendar พร้อมฝังลิงก์ Zoom"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg><span data-btn-label>Google (.csv)</span></button>
           <button class="btn zoom-pill-btn" id="toggleZoomDrawerBtn" type="button" aria-expanded="false">รวมลิงก์ห้องเรียน Zoom (3 ห้อง)</button>
-          <a class="btn xlsx-green" id="dlScheduleExcelBtn" href="downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx" download title="ส่งออกตารางเรียนเป็นไฟล์ Excel (.xlsx)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg>Export .xlsx</a>
+          <button class="btn cal-ics-btn" id="exportIcsBtn" type="button" title="ส่งออกไฟล์ปฏิทินมาตรฐาน .ics ใช้ได้ทั้ง Google Calendar, Apple Calendar (iCal) และ Outlook พร้อมฝังลิงก์ Zoom"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-btn-label>Export as .ics</span></button>
+          <a class="btn xlsx-green" id="dlScheduleExcelBtn" href="downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx" download="ตารางเรียน_RACM303_2569.xlsx" title="ส่งออกตารางเรียนเป็นไฟล์ Microsoft Excel (.xlsx)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg><span data-btn-label>Export as .xlsx</span></a>
           <a class="btn pdf-red" id="exportSchedulePdfBtn" href="exports/pdf/RACM303_2569_Schedule.pdf" download="ตารางเรียน_RACM303_2569.pdf" title="ส่งออกตารางเรียนเป็นไฟล์ PDF"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9.5 15.5 2.5 2.5 2.5-2.5"/></svg>Export as PDF</a>
           <a class="btn docx-blue" id="exportScheduleDocxBtn" href="exports/docx/RACM303_2569_Schedule.docx" download="ตารางเรียน_RACM303_2569.docx" title="ส่งออกตารางเรียนเป็นไฟล์ Microsoft Word (.docx)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13.5" y2="17"/></svg>Export as .docx</a>
           <button class="btn print-ink" id="printScheduleBtn" type="button" title="สั่งพิมพ์ตารางเรียน (Print)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print</button>
@@ -112,7 +111,7 @@
         <summary class="macos-studio-summary">
           <span class="studio-sum-left">
             <span class="macos-icon-badge">📅</span>
-            <span><strong>ซิงค์ปฏิทินส่วนตัวเข้า Apple Calendar (iCal) &amp; Google Calendar</strong> — เลือกเฉพาะตัวนักศึกษาหรือเฉพาะกลุ่มภาคสนาม พร้อมลิงก์ Subscribe อัปเดตอัตโนมัติ</span>
+            <span><strong>ซิงค์ปฏิทินส่วนตัวเข้า Google Calendar / Apple Calendar (.ics) &amp; ส่งออกตาราง (.xlsx)</strong> — เลือกเฉพาะตัวนักศึกษาหรือเฉพาะกลุ่มภาคสนาม พร้อมลิงก์ Subscribe อัปเดตอัตโนมัติ</span>
           </span>
           <span class="studio-sum-pill">ตั้งค่า &amp; ดาวน์โหลด ▾</span>
         </summary>
@@ -146,11 +145,11 @@
             </div>
 
             <div class="cal-export-actions-stack">
-              <h3 class="cal-studio-step-title"><span class="cal-step-badge">2</span>นำเข้า Google Calendar / Apple Calendar (iCal) พร้อมฝังลิงก์ Zoom</h3>
+              <h3 class="cal-studio-step-title"><span class="cal-step-badge">2</span>ส่งออกปฏิทิน .ics (Google Calendar / Apple iCal) หรือตาราง Excel (.xlsx)</h3>
 
               <div class="cal-dl-btn-row">
-                <button class="btn cal-ics-btn" id="studioDownloadIcsBtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-btn-label>Export .ics (Google / Apple iCal)</span></button>
-                <button class="btn cal-gcal-btn" id="studioDownloadCsvBtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg><span data-btn-label>Export .csv (Google Calendar)</span></button>
+                <button class="btn cal-ics-btn" id="studioDownloadIcsBtn" type="button" title="ไฟล์ปฏิทินมาตรฐาน .ics ใช้ได้ทั้ง Google Calendar, Apple Calendar (iCal) และ Outlook"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-btn-label>Export as .ics</span></button>
+                <button class="btn xlsx-green" id="studioDownloadXlsxBtn" type="button" title="ส่งออกตารางเรียนที่เลือกเป็นไฟล์ Microsoft Excel (.xlsx)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg><span data-btn-label>Export as .xlsx</span></button>
               </div>
 
               <div class="cal-sub-box">
@@ -163,11 +162,11 @@
               </div>
 
               <details class="cal-howto-details">
-                <summary>วิธีนำเข้า Google Calendar ทั้ง 2 รูปแบบ (นำเข้าไฟล์ .ics/.csv ครั้งเดียว vs เพิ่มผ่านลิงก์ URL)</summary>
+                <summary>วิธีนำเข้าไฟล์ .ics เดียวทั้ง Google Calendar &amp; Apple iCal (รวมถึงลิงก์อัปเดตอัตโนมัติ)</summary>
                 <div class="cal-howto-body">
                   <ol>
                     <li><strong>เพิ่มผ่านลิงก์ (Subscribe / จาก URL) เพื่อให้อัปเดตอัตโนมัติ:</strong> กด <em>คัดลอกลิงก์ .ics</em> ด้านบน → เปิด Google Calendar บนคอมพิวเตอร์ → คลิกไอคอนเฟือง <strong>การตั้งค่า &gt; เพิ่มปฏิทิน &gt; จาก URL</strong> → วางลิงก์ `.ics` แล้วคลิก <strong>เพิ่มปฏิทิน</strong> (สำหรับ iPhone / iPad / Mac กดปุ่ม <em>สมัครรับใน Apple iCal</em> ได้ทันที)</li>
-                    <li><strong>นำเข้าไฟล์ .ics หรือ .csv ครั้งเดียว:</strong> กดดาวน์โหลดไฟล์ `.ics` (หรือ `.csv`) → เปิด Google Calendar บนคอมพิวเตอร์ → ไอคอนเฟือง <strong>การตั้งค่า &gt; ตั้งค่า &gt; นำเข้าและส่งออก</strong> → เลือกไฟล์จากคอมพิวเตอร์ เลือกปฏิทินปลายทาง แล้วคลิก <strong>นำเข้า</strong> <em>(ข้อควรทราบ: การนำเข้าแบบไฟล์จะเป็นข้อมูล ณ เวลาที่นำเข้า ไม่อัปเดตอัตโนมัติหากมีการแก้ไขภายหลัง)</em></li>
+                    <li><strong>นำเข้าไฟล์ .ics ครั้งเดียว (ใช้ได้ทั้ง Google Calendar, Apple iCal และ Outlook):</strong> กดปุ่ม <strong>Export as .ics</strong> → บน Apple Calendar / Outlook กดเปิดไฟล์ได้ทันที · บน Google Calendar ไปที่ไอคอนเฟือง <strong>การตั้งค่า &gt; นำเข้าและส่งออก (Import &amp; export)</strong> → เลือกไฟล์ `.ics` และปฏิทินปลายทางแล้วคลิก <strong>นำเข้า</strong></li>
                   </ol>
                 </div>
               </details>
@@ -176,19 +175,19 @@
         </div>
       </details>
 
-      <!-- Collapsible Zoom Classroom Hub & Dual-Format Import Guide -->
+      <!-- Collapsible Zoom Classroom Hub & Unified Import Guide -->
       <div class="zoom-sync-drawer" id="zoomSyncDrawer" hidden>
         <div class="zoom-sync-grid">
           <div>
-            <h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:16.5px;color:var(--brand-deep)">รวมลิงก์ห้องเรียนออนไลน์ Zoom ประจำรายวิชา (ฝังอยู่ในไฟล์ปฏิทินทั้ง .ics และ .csv แล้ว)</h3>
+            <h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:16.5px;color:var(--brand-deep)">รวมลิงก์ห้องเรียนออนไลน์ Zoom ประจำรายวิชา (ฝังอยู่ในไฟล์ปฏิทิน .ics และตาราง .xlsx แล้ว)</h3>
             <div class="zoom-rooms-list" id="zoomRoomsHubList"></div>
           </div>
           <div class="sync-guide-box">
-            <h4>วิธีนำเข้าปฏิทินลงเครื่องส่วนตัว (Personal Calendar Sync)</h4>
+            <h4>วิธีนำเข้าปฏิทินลงเครื่องส่วนตัว (Personal Calendar &amp; Excel Export)</h4>
             <ol>
               <li><strong>แนะนำก่อนดาวน์โหลด:</strong> พิมพ์รหัสนักศึกษา 7 หลักในแถบด้านบนก่อน เพื่อให้ระบบผูกห้อง Discussion 1–6 ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของคุณเข้าในปฏิทินอัตโนมัติ</li>
-              <li><strong>Apple Calendar / iCal (iPhone, iPad, Mac) &amp; Outlook:</strong> กดปุ่ม <strong>ดาวน์โหลด iCal / Apple (.ics)</strong> แล้วเปิดไฟล์ ระบบจะเพิ่มทุกคาบพร้อมแจ้งเตือนล่วงหน้า 15 นาทีและลิงก์กดเข้า Zoom ทันที</li>
-              <li><strong>Google Calendar (ผ่านไฟล์ .csv หรือ .ics):</strong> เปิด Google Calendar บนคอมพิวเตอร์ → ฟันเฟือง <em>Settings</em> → <em>Import &amp; export</em> → เลือกไฟล์ <strong>.csv</strong> หรือ <strong>.ics</strong> ที่ดาวน์โหลดแล้วกด <em>Import</em></li>
+              <li><strong>Google Calendar / Apple Calendar (iCal) / Outlook (.ics):</strong> กดปุ่ม <strong>Export as .ics</strong> ปุ่มเดียวใช้ได้ทุกแอปปฏิทิน (iPhone/iPad/Mac/Outlook กดเปิดไฟล์ได้ทันที · Google Calendar ไปที่ <em>Settings → Import &amp; export</em> แล้วเลือกไฟล์ <strong>.ics</strong>)</li>
+              <li><strong>Microsoft Excel / Google Sheets (.xlsx):</strong> กดปุ่ม <strong>Export as .xlsx</strong> เพื่อดาวน์โหลดไฟล์ตารางเรียนพร้อมห้องเรียน ผู้สอน และลิงก์ Zoom</li>
             </ol>
           </div>
         </div>
@@ -304,7 +303,7 @@
             <div class="cal-side-tabs" role="tablist" aria-label="แท็บข้อมูลข้างปฏิทิน">
               <button class="cal-side-tab" id="calSideTabMilestones" data-side-tab="milestones" role="tab" aria-selected="true" type="button">วันสำคัญ (7)</button>
               <button class="cal-side-tab" id="calSideTabZoom" data-side-tab="zoom" role="tab" aria-selected="false" type="button">Zoom (3)</button>
-              <button class="cal-side-tab" id="calSideTabSync" data-side-tab="sync" role="tab" aria-selected="false" type="button">ซิงค์ iCal</button>
+              <button class="cal-side-tab" id="calSideTabSync" data-side-tab="sync" role="tab" aria-selected="false" type="button">ซิงค์ .ics</button>
             </div>
           </div>
 
@@ -314,16 +313,16 @@
           </div>
 
           <div class="cal-side-pane" id="calSideZoomPane" role="tabpanel" hidden>
-            <p class="cal-side-caption">ห้องเรียนออนไลน์ระบาดวิทยา (ฝังอยู่ในไฟล์ .ics และ .csv ทุกคาบแล้ว)</p>
+            <p class="cal-side-caption">ห้องเรียนออนไลน์ระบาดวิทยา (ฝังอยู่ในไฟล์ .ics และ .xlsx ทุกคาบแล้ว)</p>
             <div class="side-zoom-list" id="calSideZoomList"></div>
           </div>
 
           <div class="cal-side-pane" id="calSideSyncPane" role="tabpanel" hidden>
-            <p class="cal-side-caption" id="calSideSyncTargetLabel">ซิงค์ตารางปัจจุบันเข้าแอปปฏิทินบน iPhone / iPad / Mac หรือ Google Calendar</p>
+            <p class="cal-side-caption" id="calSideSyncTargetLabel">ซิงค์ตารางปัจจุบันเข้า Google Calendar / Apple Calendar (.ics) หรือส่งออก Excel (.xlsx)</p>
             <div class="side-sync-stack">
               <a class="btn primary" id="sideWebcalQuickLink" href="webcal://smartwoo.github.io/racm303-2569/calendars/all.ics">สมัครรับใน Apple Calendar (iCal) ↗</a>
-              <button class="btn" id="sideDlIcsQuickBtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-btn-label>Export .ics ลงเครื่อง</span></button>
-              <button class="btn" id="sideDlCsvQuickBtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg><span data-btn-label>Export .csv (Google Calendar)</span></button>
+              <button class="btn cal-ics-btn" id="sideDlIcsQuickBtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span data-btn-label>Export as .ics</span></button>
+              <button class="btn xlsx-green" id="sideDlXlsxQuickBtn" type="button"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/></svg><span data-btn-label>Export as .xlsx</span></button>
               <button class="btn sm teal" id="sideOpenFullStudioBtn" type="button">เปิดแผงตั้งค่ารายบุคคล / รายกลุ่มแบบละเอียด ↗</button>
             </div>
           </div>
@@ -746,6 +745,6 @@
   <script src="assets/data_hs_docs.js?v=20261120w"></script>
   <script src="assets/data_hs_discussion.js?v=20261120w"></script>
   <script src="assets/interactive_qa.js?v=20261121d"></script>
-  <script src="assets/portal.js?v=20261121d"></script>
+  <script src="assets/portal.js?v=20261121e"></script>
 </body>
 </html>
