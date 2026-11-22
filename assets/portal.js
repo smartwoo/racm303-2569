@@ -85,8 +85,8 @@
     hsdRevealedKeys: new Set(),
     hsdPptSubView: "normal", // normal | sorter
     hsdPptActiveRibbonTab: "home", // file | home | ref | slideshow | view
-    hsdPptRibbonCollapsed: false,
-    hsdPptShowThumbs: localStorage.getItem("racm303_hsd_ppt_thumbs") !== "0",
+    hsdPptRibbonCollapsed: true,
+    hsdPptShowThumbs: localStorage.getItem("racm303_hsd_ppt_thumbs") === "1",
     hsdPptShowNotes: localStorage.getItem("racm303_hsd_ppt_notes") === "1",
     hsdPptZoomMode: "fit", // fit | manual
     hsdPptZoomPct: 100,
@@ -116,7 +116,7 @@
     fieldContext: null,
     showPhotos: true,
     calSideTab: "milestones",
-    showCalSidebar: true,
+    showCalSidebar: false,
     showSitesOverview: true,
     showZoomDrawer: false,
     visibleDiscStudents: [],
@@ -142,7 +142,7 @@
     adminSortAsc: true,
     myTeacherKey: localStorage.getItem("racm303_my_teacher") || "",
     conciergeDateISO: "",
-    conciergeOpen: localStorage.getItem("racm303_concierge_tab_open") !== "0",
+    conciergeOpen: false,
     conciergeTab: "today",
     conciergeTeacherAllDays: false,
     lastCatSubTab: {
@@ -898,6 +898,7 @@
       );
       if (clearBtn) clearBtn.hidden = true;
       if (typeof renderRoleConcierge === "function") renderRoleConcierge();
+      window.dispatchEvent(new CustomEvent("racm:profilechange"));
       return;
     }
     const s = state.myStudent;
@@ -929,11 +930,12 @@
     );
     if (clearBtn) clearBtn.hidden = false;
     if (typeof renderRoleConcierge === "function") renderRoleConcierge();
+    window.dispatchEvent(new CustomEvent("racm:profilechange"));
   }
 
   /* ---------- Primary Tab Routing ---------- */
   function normalizeTabId(rawTab) {
-    if (!rawTab) return "schedule";
+    if (!rawTab || rawTab === "home" || rawTab === "launcher") return "home";
     if (rawTab === "students") return "fieldwork";
     if (rawTab === "srn" || rawTab === "elearning") return "submissions";
     if (rawTab === "discussion-hs" || rawTab === "hs-cases") return "hs-discussion";
@@ -971,14 +973,14 @@
 
   window.addEventListener("hashchange", () => {
     const rawHash = (window.location.hash || "").replace(/^#/, "");
-    if (!rawHash) return;
     const nextTab = normalizeTabId(rawHash);
     if (nextTab !== state.activeTab || /^hs-discussion/i.test(rawHash)) {
-      switchTab(rawHash, false);
+      switchTab(rawHash || "home", false);
     }
   });
 
   const TAB_TO_NAV_CATEGORY = {
+    home: "home",
     schedule: "schedule-classroom",
     discussion: "schedule-classroom",
     "hs-discussion": "knowledge",
@@ -1046,7 +1048,7 @@
   function syncNavHierarchyUI(tabId) {
     const activeCat = TAB_TO_NAV_CATEGORY[tabId] || "schedule-classroom";
     if (!state.lastCatSubTab) state.lastCatSubTab = {};
-    state.lastCatSubTab[activeCat] = tabId;
+    if (activeCat !== "home") state.lastCatSubTab[activeCat] = tabId;
 
     document.querySelectorAll(".nav-group-btn").forEach((gBtn) => {
       const isCat = gBtn.dataset.navCat === activeCat;
@@ -1064,7 +1066,7 @@
     document.querySelectorAll(".nav-tab").forEach((btn) => {
       const active = btn.dataset.tab === tabId;
       const inCat = (btn.dataset.navCat || TAB_TO_NAV_CATEGORY[btn.dataset.tab]) === activeCat;
-      const showBtn = activeCat !== "fieldwork" && inCat;
+      const showBtn = activeCat !== "fieldwork" && activeCat !== "home" && inCat;
       btn.hidden = !showBtn;
       if (showBtn) visibleSubCount += 1;
       btn.setAttribute("aria-selected", active ? "true" : "false");
@@ -1101,11 +1103,12 @@
   function switchTab(tabId, pushHash = true) {
     tabId = normalizeTabId(tabId);
     const validTabs = ROLE === "faculty"
-      ? ["schedule", "discussion", "hs-discussion", "fieldwork", "submissions", "leave", "audit", "faculty-docs", "manual", "textbooks", "practice"]
-      : ["schedule", "discussion", "hs-discussion", "fieldwork", "submissions", "leave", "manual", "textbooks", "practice"];
-    if (!validTabs.includes(tabId)) tabId = "schedule";
+      ? ["home", "schedule", "discussion", "hs-discussion", "fieldwork", "submissions", "leave", "audit", "faculty-docs", "manual", "textbooks", "practice"]
+      : ["home", "schedule", "discussion", "hs-discussion", "fieldwork", "submissions", "leave", "manual", "textbooks", "practice"];
+    if (!validTabs.includes(tabId)) tabId = "home";
 
     state.activeTab = tabId;
+    document.body.dataset.activeTab = tabId;
     syncNavHierarchyUI(tabId);
     document.querySelectorAll(".tab-panel").forEach((panel) => {
       panel.hidden = panel.id !== `panel-${tabId}`;
@@ -1121,8 +1124,12 @@
     document.body.classList.remove("print-single-hsd-case");
 
     if (pushHash) {
-      const suffix = tabId === "hs-discussion" && state.hsdModule !== "ALL" ? `-${state.hsdModule}` : "";
-      history.replaceState(null, "", `#${tabId}${suffix}`);
+      if (tabId === "home") {
+        history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+      } else {
+        const suffix = tabId === "hs-discussion" && state.hsdModule !== "ALL" ? `-${state.hsdModule}` : "";
+        history.replaceState(null, "", `#${tabId}${suffix}`);
+      }
     }
 
     if (tabId === "schedule") {
@@ -1148,6 +1155,7 @@
     if (tabId === "practice") renderPracticeCurrent();
     if (ROLE === "faculty" && tabId === "audit" && typeof renderAuditView === "function") renderAuditView();
     if (ROLE === "faculty" && tabId === "faculty-docs" && typeof renderFacultyDocsView === "function") renderFacultyDocsView();
+    window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId, role: ROLE } }));
   }
 
   /* ---------- Per-Session Group Assignments & Fieldwork Personalization ---------- */
@@ -21956,8 +21964,52 @@
     }
 
     const hash = (window.location.hash || "").replace(/^#/, "");
-    switchTab(hash || "schedule", false);
+    switchTab(hash || "home", false);
   }
+
+  window.RACM_PORTAL_API = {
+    role: ROLE,
+    getState: () => state,
+    switchTab,
+    openHsDiscussion,
+    openTextbookDoc: (docId) => {
+      if (docId) state.activeDocId = docId;
+      switchTab("textbooks");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    openPractice: (mod, sub) => {
+      if (sub) {
+        state.practiceSub = sub;
+        document.querySelectorAll("[data-practice-sub]").forEach((b) =>
+          b.setAttribute("aria-pressed", b.dataset.practiceSub === sub ? "true" : "false")
+        );
+      }
+      if ($("practiceModuleFilter") && mod !== undefined) {
+        $("practiceModuleFilter").value = mod || "";
+      }
+      switchTab("practice");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    openFieldworkSite: (shortName) => {
+      setSyncedFieldworkArea(shortName || "");
+      switchTab("fieldwork");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    openDiscussionGroup: (groupId) => {
+      setSyncedDiscussionGroup(groupId ? String(groupId) : "");
+      switchTab("discussion");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    },
+    applyMyStudent,
+    selectFieldworkGroupOnly,
+    selectActiveTeacher,
+    clearAllPersonalization,
+    openGlobalSpotlight,
+    downloadScheduleIcs,
+    openEventModal,
+    getActivePersonalContext,
+    resolveEffectiveSessionDetails
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
