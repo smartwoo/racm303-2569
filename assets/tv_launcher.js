@@ -188,7 +188,8 @@
         </button>
         ${
           ROLE === "faculty"
-            ? `<button type="button" class="tv-menu-item" id="tvMenuUploadSlideBtn"><span>อัปโหลด Slide ประกอบการสอน</span><span>→</span></button>`
+            ? `<button type="button" class="tv-menu-item" id="tvMenuPrintoutHubBtn"><span>🖨️ เอกสารสำหรับอาจารย์ (Print-out PDF)</span><span>→</span></button>
+               <button type="button" class="tv-menu-item" id="tvMenuUploadSlideBtn"><span>อัปโหลด Slide ประกอบการสอน</span><span>→</span></button>`
             : `<a class="tv-menu-item" href="https://forms.gle/1Gsg2SmSfuuEwmcE9" target="_blank" rel="noopener"><span>ส่งสไลด์ &amp; Health Survey</span><span>↗</span></a>`
         }
         <a class="tv-menu-item" href="https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398" target="_blank" rel="noopener">
@@ -286,6 +287,18 @@
       fab.innerHTML = `${ICONS.upload} <span>Upload Slide / GitHub</span>`;
       fab.addEventListener("click", () => openGlobalUploadModal("w1-d1-st"));
       document.body.appendChild(fab);
+    }
+
+    const prHubBtn = $("tvMenuPrintoutHubBtn");
+    if (prHubBtn) {
+      prHubBtn.addEventListener("click", () => {
+        morePop.hidden = true;
+        moreBtn.setAttribute("aria-expanded", "false");
+        hideCourseDriveBrowser();
+        const api = getApi();
+        if (api && api.openFacultyPrintoutHub) api.openFacultyPrintoutHub();
+        else navigateTvTab("manual");
+      });
     }
 
     const upSlideBtn = $("tvMenuUploadSlideBtn");
@@ -778,7 +791,7 @@
           <div class="tv-shelf-head">
             <div>
               <h2 class="tv-shelf-title">${esc(t("🧭 เวทีคิดเชิงระบบ & เสวนา (6 คาบสำคัญนอกกรอบสอบ HS1–HS6)", "🧭 Systems Thinking & Panels (6 Key Sessions Beyond HS1–HS6)"))}</h2>
-              <span class="tv-shelf-sub">${esc(t("ไม่ได้ออกข้อสอบทฤษฎี แต่มีการสอนสด (18.5 ชม.) และเป็นหัวใจของภาคสนาม ฟอร์ม 3A และ SRN 1–2", "Not on the written exam, yet essential onsite sessions (18.5 hrs) powering Fieldwork, Form 3A & SRN 1–2"))}</span>
+              <span class="tv-shelf-sub">${esc(t("ไม่ได้ออกข้อสอบทฤษฎี แต่มีการสอนสด (17.5 ชม.) และเป็นหัวใจของภาคสนาม ฟอร์ม 3A และ SRN 1–2", "Not on the written exam, yet essential onsite sessions (17.5 hrs) powering Fieldwork, Form 3A & SRN 1–2"))}</span>
             </div>
             <div class="tv-shelf-controls">
               <button type="button" class="tv-pill-action-btn" id="tvOpenAllSystemsForumBtn">${esc(t("ดูครบ 6 คาบ →", "View All 6 →"))}</button>
@@ -793,7 +806,7 @@
               <button type="button" class="tv-episode-card ${esc(s.tone)}" id="tvSfCard-${esc(s.id)}" data-sf-id="${esc(s.id)}" data-ep-num="0${s.order}" data-tv-focus data-tv-row="3">
                 <span class="tv-ep-top">
                   <span class="tv-ep-code">${esc(s.code)}</span>
-                  <span class="tv-ep-weight">${esc(s.kind === "systems" ? "Systems Thinking" : "Panel / Policy")}</span>
+                  <span class="tv-ep-weight">${esc(s.kind === "systems" ? "Systems Thinking" : "Panel / Workshop")}</span>
                 </span>
                 <span class="tv-ep-bottom">
                   <span class="tv-ep-title">${esc(s.title)}</span>
@@ -826,6 +839,9 @@
                 const cleanStaff = String(s.staffRef || "")
                   .replace(/\s*\[[^\]]*\]/g, "")
                   .trim();
+                const staffThumbHtml = s.staffHasLocalPhoto
+                  ? `<img src="assets/photos/staff_${s.id}.jpg" alt="" loading="lazy" style="width:28px;height:36px;object-fit:cover;border-radius:6px;border:1.5px solid rgba(255,255,255,0.85);box-shadow:0 2px 6px rgba(15,23,42,0.18);flex-shrink:0">`
+                  : `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:36px;border-radius:6px;background:rgba(15,23,42,0.12);font-size:11px;font-weight:800;flex-shrink:0">${esc(s.staffInitials || "จนท")}</span>`;
                 return `
               <button type="button" class="tv-site-card" id="tvSiteCard-${s.id}" data-site-short="${esc(s.shortName)}" data-tv-focus data-tv-row="4">
                 <span class="tv-site-top">
@@ -839,7 +855,7 @@
                 <span class="tv-site-mentor">
                   <strong>${esc(t("อ.ประจำกลุ่ม:", "Advisor:"))}</strong> ${esc(s.advisors || "-")}${
                   cleanStaff
-                    ? `<br><strong>${esc(t("ผู้ประสานงาน:", "Coordinator:"))}</strong> ${esc(cleanStaff)}`
+                    ? `<span style="display:flex;align-items:center;gap:8px;margin-top:6px">${staffThumbHtml}<span><strong>${esc(t("ผู้ประสานงาน:", "Coordinator:"))}</strong> ${esc(cleanStaff)}</span></span>`
                     : ""
                 }
                 </span>
@@ -863,15 +879,29 @@
               <span class="tv-quick-meta">ID: 910 2256 1292 · Pass: 346256 · หลัง 11.00 SDL ใน E-learning</span>
             </a>
             <a class="tv-quick-card" href="https://zoom.us/j/94317626613?pwd=0M6tElkd5gdbRjjdMQ1wYUmThR7Bla.1" target="_blank" rel="noopener" data-tv-focus data-tv-row="5">
-              <span class="tv-quick-tag">ZOOM · พ. 2 ธ.ค. 69</span>
+              <span class="tv-quick-tag">ZOOM · พ. 2 ธ.ค. 69 (09.00–16.30 น.)</span>
               <span class="tv-quick-title">EP4 – EP5 &amp; Exercise 3–4</span>
               <span class="tv-quick-meta">ID: 943 1762 6613 · Pass: 547989</span>
             </a>
             <a class="tv-quick-card" href="https://zoom.us/j/92940953542?pwd=95C9xFpBvOFg8gtuaXkDBkc4ivtFGU.1" target="_blank" rel="noopener" data-tv-focus data-tv-row="5">
-              <span class="tv-quick-tag">ZOOM · พฤ. 3 ธ.ค. 69</span>
+              <span class="tv-quick-tag">ZOOM · พฤ. 3 ธ.ค. 69 (09.00–16.30 น.)</span>
               <span class="tv-quick-title">EP6 – EP9 &amp; Exercise 5–6</span>
               <span class="tv-quick-meta">ID: 929 4095 3542 · Pass: 165796</span>
             </a>
+            <a class="tv-quick-card" href="https://zoom.us/j/95270544175?pwd=B7iFJGrjOcvFM4uzwtBfgic83Hse2q.1" target="_blank" rel="noopener" data-tv-focus data-tv-row="5">
+              <span class="tv-quick-tag">ZOOM · อ. 8 ธ.ค. 69 (13.30–14.30 น.)</span>
+              <span class="tv-quick-title">โปรแกรมวิเคราะห์ข้อมูล SPSS</span>
+              <span class="tv-quick-meta">ID: 952 7054 4175 · Pass: 756928 · Hybrid 2C2-03</span>
+            </a>
+            ${
+              ROLE === "faculty"
+                ? `<button type="button" class="tv-quick-card" id="tvQuickPrintBinderCardBtn" data-tv-focus data-tv-row="5">
+                     <span class="tv-quick-tag">🖨️ PRINT-OUT PDF · ครบ 6 หมวด</span>
+                     <span class="tv-quick-title">${esc(t("เอกสารสำหรับอาจารย์ & แฟ้ม 9 พื้นที่", "Faculty Print-out PDFs & 9 Binders"))}</span>
+                     <span class="tv-quick-meta">${esc(t("ใบรูปถ่าย (มีเบอร์โทร) · ฟอร์ม 1A (GRS) · 2A · 3A · 4A", "Photo rosters + Forms 1A, 2A, 3A, 4A"))}</span>
+                   </button>`
+                : ""
+            }
             <button type="button" class="tv-quick-card" id="tvQuickLeaveCardBtn" data-tv-focus data-tv-row="5">
               <span class="tv-quick-tag">${ROLE === "faculty" ? "ธุรการรายวิชา" : "ใบลาออนไลน์"}</span>
               <span class="tv-quick-title">${esc(ROLE === "faculty" ? t("ดูคำขอใบลานักศึกษา", "Student Leave Inbox") : t("ยื่นใบลากิจ / ลาป่วย", "Submit Leave Request"))}</span>
@@ -973,6 +1003,15 @@
         if (api && api.openFieldworkSite) api.openFieldworkSite(card.dataset.siteShort);
       });
     });
+
+    const printBinderCard = $("tvQuickPrintBinderCardBtn");
+    if (printBinderCard) {
+      printBinderCard.addEventListener("click", () => {
+        lastHomeTileFocusSelector = "#tvQuickPrintBinderCardBtn";
+        if (api && api.openFacultyPrintoutHub) api.openFacultyPrintoutHub();
+        else navigateTvTab("manual");
+      });
+    }
 
     const leaveCard = $("tvQuickLeaveCardBtn");
     if (leaveCard) {
@@ -2287,11 +2326,11 @@
           {
             id: "systems-forum",
             code: "07_เวทีคิดเชิงระบบและเสวนา",
-            title: "Beyond HS1–HS6: Systems Thinking, CLD Workshop, Panel Discussions & Policy Exercise",
+            title: "Beyond HS1–HS6: Systems Thinking, Learning How to Learn & Expert Panels",
             examWeight: "",
             customPill: "6 คาบสำคัญ",
-            customTags: ["🧠 Systems Thinking (2)", "🎙️ Panel & Policy (4)", "📋 ฟอร์ม 3A · SRN"],
-            meta: "สัปดาห์ที่ 1, 3, 5 · 18.5 ชม. (นอกกรอบสอบ HS1–HS6 · เช็คชื่อ Onsite)",
+            customTags: ["🧠 Systems & Workshop (3)", "🎙️ Expert Panels (3)", "📋 ฟอร์ม 3A · SRN"],
+            meta: "สัปดาห์ที่ 1, 3, 5 · 17.5 ชม. (นอกกรอบสอบ HS1–HS6 · เช็คชื่อ Onsite)",
             files: ((api && api.getSystemsForumSessions ? api.getSystemsForumSessions() : []) || []).map((s) => ({
               id: `sf:${s.id}`,
               folderPath: ["health-systems", "systems-forum"],
@@ -2499,6 +2538,22 @@
           },
           ...(ROLE === "faculty"
             ? [
+                {
+                  id: "man:fac-print-master",
+                  folderPath: ["manuals"],
+                  name: "01_เอกสารสำหรับอาจารย์_RACM303_2569_Print-out_(ครบ_6_หมวด_&_9_แฟ้มพื้นที่).pdf",
+                  title: "เอกสารสำหรับอาจารย์ — รายวิชา RACM 303 ปีการศึกษา 2569 (Print-out PDF · ครบ 6 หมวด & 9 แฟ้ม อ.ที่ปรึกษา)",
+                  sub: "1. รูป นศพ. 9 พื้นที่ · 2. รูป Discussion 6 กลุ่ม · 3. ฟอร์ม 1A (GRS) · 4. ฟอร์ม 2A · 5. ฟอร์ม 3A · 6. ฟอร์ม 4A",
+                  meta: "24 หน้า / 58 หน้า · A4",
+                  badge: "🖨️ เปิดชุด Print-out",
+                  icoCls: "is-faculty",
+                  icoTxt: "🖨️",
+                  pdfHref: "exports/pdf/RACM303_2569_Faculty_Documents_Master.pdf",
+                  onOpen: openFileAction(() => {
+                    if (api && api.openFacultyPrintoutHub) api.openFacultyPrintoutHub();
+                    else navigateTvTab("manual");
+                  })
+                },
                 {
                   id: "man:faculty",
                   folderPath: ["manuals"],
