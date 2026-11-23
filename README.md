@@ -22,12 +22,12 @@
   - *คำแนะนำ:* หากเปิดผ่านเว็บพอร์ทัล https://smartwoo.github.io/racm303-2569-student/ และกรอกรหัสนักศึกษา 7 หลักก่อนกดดาวน์โหลด `.ics` หรือ `.csv` ระบบจะผูกห้อง `Discussion 1–6` ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของนักศึกษาเข้าในปฏิทินส่วนตัวให้อัตโนมัติ
 
 ### 2. บทเรียนวิทยาศาสตร์ระบบสุขภาพฉบับสรุปกระชับ (Concise Summary `.md` + อินโฟกราฟิก)
-- **HS1 (ฉบับสรุปกระชับ + 7 แผนภาพ):** [lessons/HS1_health_determinants_concise_summary.md](lessons/HS1_health_determinants_concise_summary.md) — สุขภาพ ปัจจัยกำหนดสุขภาพ และการป้องกันโรค 4 ระดับ
-- **HS2 (ฉบับสรุปกระชับ + 15 อินโฟกราฟิก):** [lessons/HS2_structure_and_functions_concise_summary.md](lessons/HS2_structure_and_functions_concise_summary.md) — หน้าที่และโครงสร้างของระบบสุขภาพและระบบบริการสุขภาพ & กรอบความต่อเนื่องของการดูแล `6W`
-- **HS3 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS3_desirable_characteristics_concise_summary.md](lessons/HS3_desirable_characteristics_concise_summary.md) — คุณลักษณะของระบบบริการสุขภาพที่พึงประสงค์ (`EQESaRR`) และธรรมนูญสุขภาพไทย
-- **HS4 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS4_health_behaviour_concise_summary.md](lessons/HS4_health_behaviour_concise_summary.md) — พฤติกรรมสุขภาพ การปรับเปลี่ยนพฤติกรรม (`COM-B / BCW / Nudge`) และความรอบรู้ด้านสุขภาพ
-- **HS5 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS5_primary_health_care_concise_summary.md](lessons/HS5_primary_health_care_concise_summary.md) — ระบบบริการสุขภาพปฐมภูมิและบริการปฐมภูมิ (`Alma-Ata / WHR 2008 / Astana / Starfield 4Cs`)
-- **HS6 (ฉบับสรุปกระชับ + 5 อินโฟกราฟิก):** [lessons/HS6_health_insurance_concise_summary.md](lessons/HS6_health_insurance_concise_summary.md) — ประกันสุขภาพ องค์ประกอบ ประเภทระบบประกันสุขภาพไทย รูปแบบการจ่ายค่าบริการ และการควบคุมค่าใช้จ่าย
+- **HS1 (ฉบับสรุปกระชับ + 7 แผนภาพ):** [lessons/HS1_health_determinants_concise_summary.md](lessons/HS1_health_determinants_concise_summary.md) — สุขภาพ (Health) ปัจจัยกำหนดสุขภาพ (Determinants of Health) และระดับการป้องกันโรค (Level of Disease Prevention)
+- **HS2 (ฉบับสรุปกระชับ + 15 อินโฟกราฟิก):** [lessons/HS2_structure_and_functions_concise_summary.md](lessons/HS2_structure_and_functions_concise_summary.md) — หน้าที่และโครงสร้างของระบบสุขภาพ (Structure and Functions of Health Systems) และรูปแบบการดูแล (Models of Care)
+- **HS3 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS3_desirable_characteristics_concise_summary.md](lessons/HS3_desirable_characteristics_concise_summary.md) — คุณลักษณะของระบบบริการสุขภาพที่พึงประสงค์ (Desirable Characteristics of Health Services Systems)
+- **HS4 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS4_health_behaviour_concise_summary.md](lessons/HS4_health_behaviour_concise_summary.md) — พฤติกรรมสุขภาพ (Health Behavior) การปรับเปลี่ยนพฤติกรรม (Behavior Change) และการสร้างเสริมสุขภาพ (Health Promotion)
+- **HS5 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS5_primary_health_care_concise_summary.md](lessons/HS5_primary_health_care_concise_summary.md) — ระบบบริการสุขภาพปฐมภูมิ (Primary Health Care) และบริการปฐมภูมิ (Primary Care)
+- **HS6 (ฉบับสรุปกระชับ + 5 อินโฟกราฟิก):** [lessons/HS6_health_insurance_concise_summary.md](lessons/HS6_health_insurance_concise_summary.md) — การประกันสุขภาพ (Health Insurance) หลักประกันสุขภาพถ้วนหน้า (Universal Health Coverage) และกลไกการจ่ายเงินแก่ผู้ให้บริการ (Provider Payment Methods)
 - *(สำหรับเอกสารคำสอนฉบับเต็มครบทั้ง `HS1–HS6`, สมุดแบบฝึกหัด `Workbook`, บัตรคำศัพท์ `111 คำ` และโจทย์ฝึกคิด `60 ข้อ` สามารถเปิดอ่านและฝึกทำแบบโต้ตอบได้บนเว็บพอร์ทัลในแท็บ **บทเรียน HS1–HS6 & ฉบับย่อ** และ **ทบทวนเร็ว · คำศัพท์ · โจทย์**)*
 
 ### 3. ห้องเรียนออนไลน์ Zoom ประจำรายวิชา
