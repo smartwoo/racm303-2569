@@ -18,7 +18,8 @@ window.RACM_SCHEDULE_DATA = {
         "url": "https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1",
         "id": "910 2256 1292",
         "pass": "346256",
-        "label": "ระบาดวิทยา วันศุกร์ที่ 27 พ.ย. 2569 (09.00–16.30 น.) · EP1–EP3 & Exercise 1–2"
+        "label": "ระบาดวิทยา วันศุกร์ที่ 27 พ.ย. 2569 (08.30–11.00 น.) · EP1–EP3 (หลัง 11.00 น. ทำ Exercise SDL ใน E-learning)",
+        "timeLabel": "08.30 – 11.00 น."
       },
       {
         "url": "https://zoom.us/j/94317626613?pwd=0M6tElkd5gdbRjjdMQ1wYUmThR7Bla.1",
@@ -469,7 +470,7 @@ window.RACM_SCHEDULE_DATA = {
       "tue": "—",
       "wed": "25 พ.ย. · เช้า: Orientation & Systems Thinking (อ.ณัฐวุฒิ) | บ่าย: Global/Planetary Health & HPSR (นพ.ทักษพล, นพ.วิรุฬ)",
       "thu": "26 พ.ย. · เช้า: HS1 สุขภาพ (Health) ปัจจัยกำหนดสุขภาพ (Determinants of Health) และระดับการป้องกันโรค (Level of Disease Prevention) (อ.วริษา + 6 กลุ่ม) | บ่าย: กลุ่มย่อย ครั้งที่ 1 (9 กลุ่ม)",
-      "fri": "27 พ.ย. · เช้า: EP1–EP3 + Ex 1–2 (อ.จักรกฤษณ์, Auditorium) | บ่าย: Exercise Day 1 (Online)",
+      "fri": "27 พ.ย. · 08.30–11.00: EP1–EP3 (อ.จักรกฤษณ์, Auditorium/Hybrid) | หลัง 11.00: Exercise 1–2 & Day 1 (SDL ใน E-learning)",
       "wknd": "28–29 พ.ย. · วันหยุดสุดสัปดาห์"
     },
     {
@@ -779,9 +780,9 @@ window.RACM_SCHEDULE_DATA = {
       "week": 1,
       "dateISO": "2026-11-27",
       "dateTH": "วันศุกร์ที่ 27 พฤศจิกายน 2569",
-      "startTime": "09:00",
+      "startTime": "08:30",
       "endTime": "11:00",
-      "timeLabel": "09.00 – 11.00 น.",
+      "timeLabel": "08.30 – 11.00 น.",
       "category": "EP",
       "code": "EP1–EP3",
       "title": "EP1: Introduction to Epidemiology · EP2: Diagnostic Test · EP3: Errors in Epidemiology",
@@ -805,40 +806,34 @@ window.RACM_SCHEDULE_DATA = {
       "endTime": "12:00",
       "timeLabel": "11.00 – 12.00 น.",
       "category": "EP",
-      "code": "EX1–EX2",
-      "title": "EXERCISE 1: Diagnostic Test & Errors in Epidemiology · EXERCISE 2: Errors in Epidemiology (Case Appraisal)",
-      "objectives": "ฝึกคำนวณและแปลผลค่าสถิติการตรวจวินิจฉัยโรค และวิเคราะห์อคติ/ตัวกวนในงานวิจัยทางการแพทย์",
-      "lecturers": "อ. นพ.จักรกฤษณ์ เอื้อสุนทรวัฒนา",
-      "format": "Online",
-      "room": "Online (Zoom)",
-      "checkIn": "ต่อเนื่อง",
-      "zoom": {
-        "url": "https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1",
-        "id": "910 2256 1292",
-        "pass": "346256"
-      }
+      "code": "EX1–EX2 (SDL)",
+      "title": "EXERCISE 1: Diagnostic Test & Errors in Epidemiology · EXERCISE 2: Errors in Epidemiology (Case Appraisal) — SDL ใน E-learning",
+      "objectives": "ฝึกคำนวณและแปลผลค่าสถิติการตรวจวินิจฉัยโรค และวิเคราะห์อคติ/ตัวกวนในงานวิจัยทางการแพทย์ด้วยตนเองผ่านระบบ E-learning",
+      "lecturers": "นักศึกษาทำแบบฝึกหัดด้วยตนเอง (SDL)",
+      "format": "Self-Directed Learning (SDL) · E-learning",
+      "room": "ระบบ E-learning รามาธิบดี (ศึกษาด้วยตนเอง)",
+      "checkIn": "ไม่เช็คชื่อ",
+      "actionUrl": "https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398",
+      "actionLabel": "ทำแบบฝึกหัดใน E-learning ↗"
     },
     {
       "id": "w1-d3-exday1",
       "week": 1,
       "dateISO": "2026-11-27",
       "dateTH": "วันศุกร์ที่ 27 พฤศจิกายน 2569",
-      "startTime": "13:00",
+      "startTime": "13:30",
       "endTime": "16:30",
-      "timeLabel": "13.00 – 16.30 น.",
+      "timeLabel": "13.30 – 16.30 น.",
       "category": "EP",
       "code": "EX-SDL",
-      "title": "Exercise Day 1 (ทำแบบฝึกหัดต่อเนื่องด้วยตนเอง)",
-      "objectives": "ทบทวนและทำโจทย์แบบฝึกหัด EP1–EP3 ด้วยตนเอง เพื่อเตรียมประเด็นซักถามในช่วง Q&A วันพุธที่ 2 ธ.ค. 2569",
-      "lecturers": "นักศึกษาทำแบบฝึกหัดด้วยตนเอง",
-      "format": "Online / SDL",
-      "room": "Online",
+      "title": "Exercise Day 1 (ทำแบบฝึกหัดต่อเนื่องด้วยตนเองในระบบ E-learning)",
+      "objectives": "ทบทวนและทำโจทย์แบบฝึกหัด EP1–EP3 ด้วยตนเองในระบบ E-learning เพื่อเตรียมประเด็นซักถามในช่วง Q&A วันพุธที่ 2 ธ.ค. 2569",
+      "lecturers": "นักศึกษาทำแบบฝึกหัดด้วยตนเอง (SDL)",
+      "format": "Self-Directed Learning (SDL) · E-learning",
+      "room": "ระบบ E-learning รามาธิบดี (ศึกษาด้วยตนเอง)",
       "checkIn": "ไม่เช็คชื่อ",
-      "zoom": {
-        "url": "https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1",
-        "id": "910 2256 1292",
-        "pass": "346256"
-      }
+      "actionUrl": "https://elearning.ra.mahidol.ac.th/ramed/course/view.php?id=398",
+      "actionLabel": "ทำแบบฝึกหัดใน E-learning ↗"
     },
     {
       "id": "w2-d1-hs2-lec",
