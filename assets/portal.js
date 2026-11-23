@@ -9746,6 +9746,19 @@
   }
 
   function renderManualReader() {
+    const manualBannerWrap = $("manualUnifiedBannerWrap");
+    if (manualBannerWrap) {
+      manualBannerWrap.replaceChildren(
+        buildUnifiedHsModuleBanner(state.activeHsModule || "HS1", "manual", {
+          showModuleBar: true,
+          onSelectModule: (m) => {
+            state.activeHsModule = m || "HS1";
+            renderManualReader();
+          }
+        })
+      );
+    }
+
     const picker = $("manualChapterList");
     const prose = $("manualProseContainer");
     if (!picker || !prose) return;
@@ -9854,7 +9867,7 @@
       `hsd-module-banner is-unified-hs-banner hsd-no-print${options.compact ? " is-compact-slide-banner" : ""}`
     );
 
-    if (options.showModuleBar) {
+    if (options.showModuleBar !== false) {
       const strip = make("div", null, "hs-unified-mod-strip");
       strip.setAttribute("role", "group");
       strip.setAttribute("aria-label", "เลือกบทเรียน HS1–HS6");
@@ -9879,6 +9892,8 @@
           state.activeHsModule = m.id;
           if (typeof options.onSelectModule === "function") {
             options.onSelectModule(m.id);
+          } else {
+            openHsDiscussion(m.id);
           }
         });
         strip.appendChild(pBtn);
@@ -9982,6 +9997,27 @@
         state.activeHsModule = mod.code;
         if ($("practiceModuleFilter")) $("practiceModuleFilter").value = mod.code;
         switchTab("practice");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      })
+    );
+
+    if (ROLE === "faculty") {
+      tabsRow.appendChild(
+        makeTabBtn(`คู่มือผู้สอน (${mod.code})`, "faculty-docs", true, () => {
+          state.activeHsModule = mod.code;
+          if (typeof openFacultyGuideForHsModule === "function") {
+            openFacultyGuideForHsModule(mod.code);
+          } else {
+            switchTab("faculty-docs");
+          }
+        })
+      );
+    }
+
+    tabsRow.appendChild(
+      makeTabBtn("คู่มือรายวิชา", "manual", true, () => {
+        state.activeHsModule = mod.code;
+        switchTab("manual");
         window.scrollTo({ top: 0, behavior: "smooth" });
       })
     );
@@ -17073,6 +17109,26 @@
   }
 
   function renderHsGoogleDriveFolderMode(container) {
+    const activeDriveMod =
+      state.activeHsModule && /^HS[1-6]$/i.test(state.activeHsModule)
+        ? state.activeHsModule.toUpperCase()
+        : state.hsdSlideDeckMod && /^HS[1-6]$/i.test(state.hsdSlideDeckMod)
+        ? state.hsdSlideDeckMod.toUpperCase()
+        : "HS1";
+    container.appendChild(
+      buildUnifiedHsModuleBanner(activeDriveMod, "discussion", {
+        showModuleBar: true,
+        onSelectModule: (m) => {
+          const clean = m && /^HS[1-6]$/i.test(m) ? m.toUpperCase() : "HS1";
+          state.activeHsModule = clean;
+          state.hsdSlideDeckMod = clean;
+          try {
+            localStorage.setItem("racm303_hsd_deck_mod", clean);
+          } catch (_) {}
+          renderHsDiscussionView();
+        }
+      })
+    );
     container.appendChild(buildGoogleDriveExplorerDOM({ isModal: false }));
   }
 
@@ -18772,7 +18828,19 @@
     activeModules.forEach((mod) => {
       const modSec = make("section", null, "hsd-module-section");
       modSec.id = `hsd-sec-${mod.id}`;
-      modSec.appendChild(buildUnifiedHsModuleBanner(mod.id, "discussion"));
+      modSec.appendChild(
+        buildUnifiedHsModuleBanner(mod.id, "discussion", {
+          showModuleBar: true,
+          allowAllModules: true,
+          isAllActive: false,
+          onSelectModule: (m) => {
+            state.hsdModule = m || "ALL";
+            if (m) state.activeHsModule = m;
+            if ($("hsdModuleSelect")) $("hsdModuleSelect").value = state.hsdModule;
+            renderHsDiscussionView();
+          }
+        })
+      );
 
       if (ROLE === "faculty" && state.hsdFacultyMode === "teacher" && typeof appendFacultyFacilitationPlan === "function") {
         appendFacultyFacilitationPlan(modSec, mod.id);
@@ -18967,6 +19035,19 @@
       if (panelEl) {
         panelEl.classList.remove("is-ppt-slide-mode", "is-drive-folder-mode");
       }
+      container.appendChild(
+        buildUnifiedHsModuleBanner(state.activeHsModule || "HS1", "discussion", {
+          showModuleBar: true,
+          allowAllModules: true,
+          isAllActive: state.hsdModule === "ALL",
+          onSelectModule: (m) => {
+            state.hsdModule = m || "ALL";
+            if (m) state.activeHsModule = m;
+            if ($("hsdModuleSelect")) $("hsdModuleSelect").value = state.hsdModule;
+            renderHsDiscussionView();
+          }
+        })
+      );
       container.appendChild(make("div", "ไม่พบกรณีศึกษาที่ตรงกับตัวกรองหรือคำค้นหา", "empty-state"));
       if (ROLE === "faculty" && typeof syncFacultyScrollGlobalLinkBar === "function") {
         syncFacultyScrollGlobalLinkBar(matchedCases);
