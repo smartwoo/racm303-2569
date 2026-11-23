@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){try{var t=localStorage.getItem("racm303_theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");var l=localStorage.getItem("racm303_lang");if(l==="en"){document.documentElement.lang="en";document.documentElement.setAttribute("data-lang","en");}}catch(_){}})();</script>
-  <link rel="stylesheet" href="assets/styles.css?v=20261123kt1">
+  <link rel="stylesheet" href="assets/styles.css?v=20261123flow2">
   <link rel="stylesheet" href="assets/tv_ui.css?v=20261123nav1">
 </head>
 <body class="role-student">
@@ -635,11 +635,11 @@
       <div id="textbookReaderWrap">
         <div class="section-header">
           <div>
-            <h2>เอกสารคำสอนระบบสุขภาพ (HS1–HS6) · ฉบับย่อ (Abridged) · ฉบับเต็ม &amp; Worksheet</h2>
-            <p>รวมเอกสารคำสอนระบบสุขภาพครบทั้ง 6 หมวด (HS1–HS6) ทั้งฉบับย่อ (Abridged version) พร้อมแผนภาพ ฉบับเต็ม และ Worksheet พร้อมแนวคำตอบ</p>
+            <h2>เส้นทางการเรียนรู้ระบบสุขภาพ 4 ขั้นตอน (HS1–HS6) · Full · Abridged · Self-Quiz · Case Discussion</h2>
+            <p>เอกสารคำสอนครบทั้ง 6 บทเรียน (HS1–HS6) เรียงลำดับการเรียนรู้จาก ① ฉบับเต็ม (Full) → ② ฉบับย่อ (Abridged) → ③ Self-Quiz → ④ Case Discussion in Class</p>
           </div>
           <div class="header-actions">
-            <button class="btn primary" id="jumpTextbookToHsDiscBtn" type="button">💬 โจทย์อภิปราย HS1 →</button>
+            <button class="btn primary" id="jumpTextbookToHsDiscBtn" type="button">④ Case Discussion HS1 →</button>
             <button class="btn" id="toggleAllAnswersBtn" type="button">เปิดแนวคำตอบทั้งหมด</button>
             <a class="btn pdf-red" id="exportTextbookPdfBtn" href="exports/pdf/HS1.pdf" download="RACM303_HS1.pdf" title="ส่งออกบทเรียนนี้เป็นไฟล์ PDF"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9.5 15.5 2.5 2.5 2.5-2.5"/></svg>Export as PDF</a>
             <a class="btn docx-blue" id="exportTextbookDocxBtn" href="exports/docx/HS1.docx" download="RACM303_HS1.docx" title="ส่งออกบทเรียนนี้เป็นไฟล์ Microsoft Word (.docx)"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13.5" y2="17"/></svg>Export as .docx</a>
@@ -649,7 +649,7 @@
 
         <div class="reader-shell">
           <aside class="reader-sidebar" aria-label="เลือกเอกสารคำสอนและหัวข้อ">
-            <p class="sidebar-label" id="textbookSidebarPickerLabel">ไฟล์ในโฟลเดอร์บทเรียนนี้</p>
+            <p class="sidebar-label" id="textbookSidebarPickerLabel">เส้นทางการเรียนรู้ 4 ขั้น</p>
             <ul class="doc-picker-list" id="textbookDocList"></ul>
             <hr style="border:0;border-top:1px solid var(--line-soft);margin:14px 0">
             <p class="sidebar-label">หัวข้อย่อยในบทนี้</p>
@@ -672,14 +672,15 @@
       </div>
     </section>
 
-    <!-- TAB 5: PRACTICE, FLASHCARDS & SELF-CHECK Q&A -->
+    <!-- TAB 5: STEP 03 SELF-QUIZ, FLASHCARDS & RAPID REVIEW -->
     <section class="tab-panel" id="panel-practice" aria-labelledby="tabBtnPractice" hidden>
       <div id="practiceUnifiedBannerWrap" class="hsd-no-print"></div>
+      <div id="practiceFlowContextBar" class="hsd-no-print"></div>
 
       <div class="section-header">
         <div>
-          <h2>คลังทบทวนเร็ว · บัตรคำศัพท์ 2 ภาษา &amp; โจทย์ฝึกดึงความรู้ (Active Recall)</h2>
-          <p>ใช้เตรียมความพร้อมก่อนอภิปรายกลุ่มย่อย และใช้คัดเลือกประเด็นสำคัญลงกระดาษ A4 เขียนลายมือ 1 แผ่นสำหรับการสอบ Open Note</p>
+          <h2>STEP 03 · Self-Quiz (แบบทดสอบประเมินตนเอง 60 ข้อ) · บัตรคำศัพท์ 111 คำ &amp; Rapid Review</h2>
+          <p>เช็กความเข้าใจจากเอกสารคำสอนขั้นที่ 1–2 ด้วยการดึงความรู้ (Active Recall) พร้อม AI Mentor ก่อนเข้าห้อง Case Discussion in Class</p>
         </div>
         <div class="header-actions">
           <a class="btn pdf-red" id="exportPracticePdfBtn" href="exports/pdf/RACM303_2569_Practice_Review.pdf" download="คลังทบทวนเร็ว_คำศัพท์_โจทย์_RACM303_2569.pdf" title="ส่งออกคลังทบทวนเร็ว คำศัพท์ และโจทย์เป็นไฟล์ PDF"><svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="m9.5 15.5 2.5 2.5 2.5-2.5"/></svg>Export as PDF</a>
@@ -689,9 +690,9 @@
       </div>
 
       <div class="subnav" role="group" aria-label="เครื่องมือทบทวนความรู้">
-        <button class="subnav-btn" id="pracSubRapidBtn" data-practice-sub="rapid" aria-pressed="true" type="button">ตารางทบทวนเร็ว (Rapid Review)</button>
-        <button class="subnav-btn" id="pracSubFcBtn" data-practice-sub="flashcards" aria-pressed="false" type="button">บัตรคำศัพท์สำคัญ (111 คำ)</button>
-        <button class="subnav-btn" id="pracSubQaBtn" data-practice-sub="qa" aria-pressed="false" type="button">โจทย์ตรวจสอบความเข้าใจ (60 ข้อ)</button>
+        <button class="subnav-btn" id="pracSubQaBtn" data-practice-sub="qa" aria-pressed="true" type="button">🧠 แบบทดสอบ Self-Quiz (60 ข้อ)</button>
+        <button class="subnav-btn" id="pracSubFcBtn" data-practice-sub="flashcards" aria-pressed="false" type="button">🗂 บัตรคำศัพท์สำคัญ (111 คำ)</button>
+        <button class="subnav-btn" id="pracSubRapidBtn" data-practice-sub="rapid" aria-pressed="false" type="button">📋 ตารางทบทวนเร็ว (Rapid Review)</button>
       </div>
 
       <div class="filter-panel">
@@ -718,11 +719,11 @@
         <button class="btn sm" id="shuffleFlashcardsBtn" type="button" hidden>สุ่มลำดับบัตรคำศัพท์</button>
       </div>
 
-      <div id="practiceRapidWrap"></div>
+      <div id="practiceQaWrap"></div>
       <div id="practiceFlashcardsWrap" hidden>
         <div class="flashcard-grid" id="flashcardsGrid"></div>
       </div>
-      <div id="practiceQaWrap" hidden></div>
+      <div id="practiceRapidWrap" hidden></div>
     </section>
 
     <!-- TAB: DIGITAL LEAVE FORM & SIGNATURE STUDIO (ฟอร์มใบลากิจ-ลาป่วย นศพ. ปีการศึกษา 2569) -->
@@ -777,7 +778,7 @@
   <script src="assets/data_hs_discussion.js?v=20261123kt1"></script>
   <script src="assets/interactive_qa.js?v=20261123ai1"></script>
   <script src="assets/pptx_exporter.js?v=20261123kt1"></script>
-  <script src="assets/portal.js?v=20261123nav1"></script>
-  <script src="assets/tv_launcher.js?v=20261123nav1"></script>
+  <script src="assets/portal.js?v=20261123flow2"></script>
+  <script src="assets/tv_launcher.js?v=20261123flow2"></script>
 </body>
 </html>
