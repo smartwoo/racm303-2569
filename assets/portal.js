@@ -84,6 +84,7 @@
     hsdFacultyMode: "teacher", // teacher | projector | student
     hsdLiveWallMode: localStorage.getItem("racm303_hsd_live_wall_mode") || "sheet", // sheet | people | demo
     hsdDrafts: JSON.parse(localStorage.getItem("racm303_hs_disc_drafts_v1") || "{}"),
+    hsdSubmittedQuestions: JSON.parse(localStorage.getItem("racm303_hs_disc_submitted_q_v1") || "{}"),
     hsdRevealedKeys: new Set(),
     hsdDriveFolderOpen: false,
     hsdDriveViewLayout: localStorage.getItem("racm303_hsd_drive_layout") === "list" ? "list" : "grid",
@@ -15839,9 +15840,20 @@
     if (ROLE !== "faculty" || !LIVE || typeof LIVE.broadcastTeacherQuestionPointer !== "function") return;
     const { cur } = getActiveSlideDeckContext();
     if (!cur || !cur.qObj || !cur.mod || !cur.caseObj) return;
+    let slideKind = cur.kind || "question";
+    if (slideKind === "concept-summary") {
+      if (forceSync && typeof LIVE.setConceptSummaryUnlocked === "function") {
+        LIVE.setConceptSummaryUnlocked(cur.qObj.id, true);
+      }
+      const isReleased = Boolean(
+        typeof LIVE.isConceptSummaryUnlocked === "function" &&
+          LIVE.isConceptSummaryUnlocked(cur.qObj.id)
+      );
+      slideKind = isReleased ? "concept-summary" : "question";
+    }
     LIVE.broadcastTeacherQuestionPointer(cur.mod.id, cur.caseObj.id, cur.qObj.id, {
       splitOrient: state.hsdSplitOrient,
-      slideKind: cur.kind || "question",
+      slideKind,
       forceSync: Boolean(forceSync)
     });
   }
@@ -16360,6 +16372,28 @@
         }
         jumpStudentToTeacherQuestion(ptr);
       });
+      LIVE.on("concept_unlock", (ev) => {
+        preserveSlideIdentityAfterDeckUpdate(state.hsdCurrentSlideRef);
+        if (ROLE === "student" && ev && ev.questionId && ev.questionId !== "*" && !ev.isRetained) {
+          const qObj = findHsQuestionById(ev.questionId);
+          if (qObj && qObj.conceptSummarySlide) {
+            const shortNum = getShortQuestionNumLabel(qObj, 0);
+            if (ev.unlocked) {
+              showStudentSlideSyncToast(
+                `อาจารย์เปิดปล่อย Key Takeaway ข้อ ${shortNum} แล้ว — กดดูได้ที่ปุ่ม Key Takeaway`
+              );
+            } else if (!isHsQuestionSubmittedByStudent(qObj)) {
+              showStudentSlideSyncToast(
+                `อาจารย์ปิดการแสดง Key Takeaway ข้อ ${shortNum} ชั่วคราว`
+              );
+            }
+          }
+        }
+        if (state.activeTab === "hs-discussion" || state.isPptSlideSharePopup) {
+          renderHsDiscussionView();
+          broadcastPptPresentationState();
+        }
+      });
     }
   }
 
@@ -16368,6 +16402,173 @@
     return qObj.worksheet.rows.some((r) =>
       (r.cells || []).some((cell) => cell.inputId && String(state.hsdDrafts[cell.inputId] || "").trim().length > 0)
     );
+  }
+
+  function findHsQuestionById(qId) {
+    if (!qId) return null;
+    const cases = HSD_DATA.cases || [];
+    for (let i = 0; i < cases.length; i += 1) {
+      const qs = cases[i].questions || [];
+      for (let j = 0; j < qs.length; j += 1) {
+        if (qs[j] && qs[j].id === qId) return qs[j];
+      }
+    }
+    return null;
+  }
+
+  function persistHsdSubmittedQuestions() {
+    try {
+      localStorage.setItem(
+        "racm303_hs_disc_submitted_q_v1",
+        JSON.stringify(state.hsdSubmittedQuestions || {})
+      );
+    } catch (_) {}
+  }
+
+  function isHsQuestionSubmittedByStudent(qObj) {
+    if (!qObj || !qObj.id) return false;
+    if (state.hsdSubmittedQuestions && state.hsdSubmittedQuestions[qObj.id]) {
+      return true;
+    }
+    if (LIVE && typeof LIVE.hasSubmittedQuestionCells === "function" && LIVE.hasSubmittedQuestionCells(qObj)) {
+      return true;
+    }
+    return false;
+  }
+
+  function isConceptSummaryUnlockedForStudent(qObj) {
+    if (!qObj || !qObj.conceptSummarySlide || !qObj.id) return false;
+    if (LIVE && typeof LIVE.isConceptSummaryUnlocked === "function" && LIVE.isConceptSummaryUnlocked(qObj.id)) {
+      return true;
+    }
+    if (ROLE === "student" && isHsQuestionSubmittedByStudent(qObj)) {
+      return true;
+    }
+    return false;
+  }
+
+  function canShowConceptSummaryInCurrentMode(qObj) {
+    if (!qObj || !qObj.conceptSummarySlide) return false;
+    if (ROLE === "faculty" && state.hsdFacultyMode !== "student") return true;
+    return isConceptSummaryUnlockedForStudent(qObj);
+  }
+
+  function captureSlideRef(slideObj) {
+    if (!slideObj) return null;
+    return {
+      kind: slideObj.kind || "question",
+      modId: slideObj.mod ? slideObj.mod.id : "",
+      qId: slideObj.qObj ? slideObj.qObj.id : "",
+      pedStage: slideObj.pedStage || 1
+    };
+  }
+
+  function preserveSlideIdentityAfterDeckUpdate(prevRef, matchedCasesOpt) {
+    const matchedCases = matchedCasesOpt || getFilteredHsDiscussionCases();
+    const nextSlides = buildHsSlideDeckItems(matchedCases);
+    if (!nextSlides.length) {
+      state.hsdSlideIdx = 0;
+      return;
+    }
+    const ref = prevRef || state.hsdCurrentSlideRef;
+    if (!ref) {
+      if (state.hsdSlideIdx >= nextSlides.length) state.hsdSlideIdx = nextSlides.length - 1;
+      if (state.hsdSlideIdx < 0) state.hsdSlideIdx = 0;
+      return;
+    }
+    let nextIdx = -1;
+    if (ref.kind === "opening-kahoot") {
+      nextIdx = nextSlides.findIndex((s) => s.kind === "opening-kahoot" && (!ref.modId || (s.mod && s.mod.id === ref.modId)));
+    } else if (ref.kind === "concept-summary" && ref.qId) {
+      nextIdx = nextSlides.findIndex((s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ref.qId);
+      if (nextIdx < 0) {
+        nextIdx = nextSlides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId);
+      }
+    } else if (ref.qId) {
+      nextIdx = nextSlides.findIndex(
+        (s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId && (s.pedStage || 1) === (ref.pedStage || 1)
+      );
+      if (nextIdx < 0) {
+        nextIdx = nextSlides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId);
+      }
+    }
+    if (nextIdx >= 0) {
+      state.hsdSlideIdx = nextIdx;
+    } else {
+      state.hsdSlideIdx = Math.max(0, Math.min(nextSlides.length - 1, state.hsdSlideIdx));
+    }
+  }
+
+  function openConceptSummaryForQuestion(qObj) {
+    if (!qObj || !qObj.id || !canShowConceptSummaryInCurrentMode(qObj)) return;
+    if (state.hsdViewMode !== "slide") {
+      state.hsdViewMode = "slide";
+      state.hsdDriveFolderOpen = false;
+      try {
+        localStorage.setItem("racm303_hsd_vmode", "slide");
+      } catch (_) {}
+      syncViewModeButtonsUI();
+    }
+    jumpToQuestionPedStage(qObj.id, 5);
+  }
+
+  function markHsQuestionSubmitted(qObj, opts) {
+    if (!qObj || !qObj.id) return false;
+    const wasUnlocked = isConceptSummaryUnlockedForStudent(qObj);
+    const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
+    if (!state.hsdSubmittedQuestions || typeof state.hsdSubmittedQuestions !== "object") {
+      state.hsdSubmittedQuestions = {};
+    }
+    state.hsdSubmittedQuestions[qObj.id] = Date.now();
+    persistHsdSubmittedQuestions();
+    const nowUnlocked = isConceptSummaryUnlockedForStudent(qObj);
+    const justUnlocked = Boolean(qObj.conceptSummarySlide && !wasUnlocked && nowUnlocked);
+    preserveSlideIdentityAfterDeckUpdate(prevRef);
+    syncLiveBarQuestionPickerDOM();
+    if (justUnlocked || (opts && opts.forceRender)) {
+      renderHsDiscussionView();
+      broadcastPptPresentationState();
+    }
+    if (justUnlocked) {
+      const shortNum = getShortQuestionNumLabel(qObj, 0);
+      showStudentSlideSyncToast(
+        `ส่งคำตอบข้อ ${shortNum} แล้ว · ปลดล็อก Key Takeaway เรียบร้อย`
+      );
+    }
+    return justUnlocked;
+  }
+
+  function toggleFacultyConceptSummaryRelease(qObj, forceUnlockedOpt, opts) {
+    if (ROLE !== "faculty" || !qObj || !qObj.id || !LIVE || typeof LIVE.setConceptSummaryUnlocked !== "function") {
+      return false;
+    }
+    const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
+    const curUnlocked =
+      typeof LIVE.isConceptSummaryUnlocked === "function" && LIVE.isConceptSummaryUnlocked(qObj.id);
+    const nextUnlocked = typeof forceUnlockedOpt === "boolean" ? forceUnlockedOpt : !curUnlocked;
+    LIVE.setConceptSummaryUnlocked(qObj.id, nextUnlocked);
+    const roomNum = typeof LIVE.getRoomId === "function" ? LIVE.getRoomId() : 1;
+    const shortNum = getShortQuestionNumLabel(qObj, 0);
+    if (nextUnlocked) {
+      if (opts && opts.syncNow) {
+        broadcastActiveFacultySlideToStudents(true);
+      }
+      showStudentSlideSyncToast(
+        `เปิดปล่อย Key Takeaway ข้อ ${shortNum} ให้ นศพ. ห้องกลุ่ม ${roomNum} แล้ว`
+      );
+    } else {
+      const { cur } = getActiveSlideDeckContext();
+      if (cur && cur.kind === "concept-summary" && cur.qObj && cur.qObj.id === qObj.id) {
+        broadcastActiveFacultySlideToStudents(false);
+      }
+      showStudentSlideSyncToast(
+        `ซ่อน Key Takeaway ข้อ ${shortNum} จากมุมมอง นศพ. ห้องกลุ่ม ${roomNum} แล้ว`
+      );
+    }
+    preserveSlideIdentityAfterDeckUpdate(prevRef);
+    renderHsDiscussionView();
+    broadcastPptPresentationState();
+    return nextUnlocked;
   }
 
   function getShortQuestionNumLabel(qObj, fallbackIdx) {
@@ -16458,6 +16659,10 @@
 
   function jumpToQuestionPedStage(qId, targetPedStage) {
     if (!qId) return;
+    const stageNum = Math.max(1, Math.min(5, Number(targetPedStage) || 1));
+    if (stageNum === 5 && !canShowConceptSummaryInCurrentMode(findHsQuestionById(qId))) {
+      return;
+    }
     const ownerCase = (HSD_DATA.cases || []).find((c) => (c.questions || []).some((q) => q.id === qId));
     if (ownerCase && state.hsdModule !== ownerCase.module) {
       state.hsdModule = ownerCase.module;
@@ -16472,7 +16677,6 @@
     state.hsdFocusedConceptStep = 0;
     const matchedCases = getFilteredHsDiscussionCases();
     const slides = buildHsSlideDeckItems(matchedCases);
-    const stageNum = Math.max(1, Math.min(5, Number(targetPedStage) || 1));
     let idx = slides.findIndex((s) => s.qObj && s.qObj.id === qId && (s.pedStage || 1) === stageNum);
     if (idx < 0) idx = slides.findIndex((s) => s.qObj && s.qObj.id === qId);
     if (idx >= 0) {
@@ -16620,7 +16824,11 @@
 
     if (state.hsdViewMode === "slide") {
       const slides = buildHsSlideDeckItems(matchedCases);
-      const wantKind = ptr.slideKind === "concept-summary" ? "concept-summary" : "question";
+      const targetQObj = findHsQuestionById(ptr.questionId);
+      const wantKind =
+        ptr.slideKind === "concept-summary" && isConceptSummaryUnlockedForStudent(targetQObj)
+          ? "concept-summary"
+          : "question";
       let idx = slides.findIndex((s) => s.kind === wantKind && s.qObj && s.qObj.id === ptr.questionId);
       if (idx < 0) idx = slides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === ptr.questionId);
       if (idx >= 0 && (idx !== state.hsdSlideIdx || changed || ptr.forceSync)) {
@@ -16741,12 +16949,20 @@
     if ($("hsdClearAllDraftsBtn")) {
       $("hsdClearAllDraftsBtn").addEventListener("click", () => {
         if (!window.confirm("ต้องการล้างร่างคำตอบที่คุณพิมพ์ไว้ในใบงาน Discussion ทั้งหมดหรือไม่?")) return;
+        const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
         state.hsdDrafts = {};
+        state.hsdSubmittedQuestions = {};
         try {
           localStorage.removeItem("racm303_hs_disc_drafts_v1");
+          localStorage.removeItem("racm303_hs_disc_submitted_q_v1");
         } catch (_) {}
+        if (LIVE && typeof LIVE.clearSubmittedCells === "function") {
+          LIVE.clearSubmittedCells();
+        }
+        preserveSlideIdentityAfterDeckUpdate(prevRef);
         if ($("hsdSaveIndicator")) $("hsdSaveIndicator").textContent = "ล้างคำตอบแล้ว";
         renderHsDiscussionView();
+        broadcastPptPresentationState();
       });
     }
 
@@ -16868,7 +17084,9 @@
 
     document.querySelectorAll("[data-hsd-fmode]").forEach((btn) => {
       btn.addEventListener("click", () => {
+        const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
         state.hsdFacultyMode = btn.dataset.hsdFmode || "teacher";
+        preserveSlideIdentityAfterDeckUpdate(prevRef);
         markSlideBoxesAutoOptimize("both");
         document.querySelectorAll("[data-hsd-fmode]").forEach((b) =>
           b.setAttribute("aria-pressed", b.dataset.hsdFmode === state.hsdFacultyMode ? "true" : "false")
@@ -17395,8 +17613,12 @@
               const map = collectQuestionCellsMap(qObj);
               if (!String(ta.value || "").trim()) return;
               map[cell.inputId] = ta.value;
+              const wasUnlocked = isConceptSummaryUnlockedForStudent(qObj);
               LIVE.submitSingleCell(qObj.id, cell.inputId, map);
               syncCellSendBtnUI();
+              if (qObj.conceptSummarySlide && !wasUnlocked && isHsQuestionSubmittedByStudent(qObj)) {
+                markHsQuestionSubmitted(qObj);
+              }
             });
             foot.appendChild(cellSendBtn);
             if (isLiveNow) {
@@ -17445,8 +17667,12 @@
               if (!String(ta.value || "").trim()) return;
               const map = collectQuestionCellsMap(qObj);
               map[cell.inputId] = ta.value;
+              const wasUnlocked = isConceptSummaryUnlockedForStudent(qObj);
               LIVE.submitSingleCell(qObj.id, cell.inputId, map);
               syncCellSendBtnUI();
+              if (qObj.conceptSummarySlide && !wasUnlocked && isHsQuestionSubmittedByStudent(qObj)) {
+                markHsQuestionSubmitted(qObj);
+              }
             }
           });
 
@@ -17494,13 +17720,20 @@
     wsWrap.appendChild(tbl);
     frag.appendChild(wsWrap);
 
-    if (LIVE && ROLE === "student") {
-      const isLiveJoined = Boolean(state.hsdSessionJoined && state.myStudent);
+    if (ROLE === "student") {
+      const isLiveJoined = Boolean(LIVE && state.hsdSessionJoined && state.myStudent);
+      const hasCs = Boolean(qObj && qObj.conceptSummarySlide);
+      const csUnlocked = hasCs && isConceptSummaryUnlockedForStudent(qObj);
       const subBar = make("div", null, "hsd-q-submit-bar hsd-no-print");
-      const rNum = LIVE.getRoomId();
+      const rNum = LIVE ? LIVE.getRoomId() : 1;
       const hint = make(
         "span",
-        isLiveJoined
+        csUnlocked
+          ? tr(
+              "ปลดล็อก Key Takeaway ข้อนี้แล้ว · กดปุ่ม “เปิดดู Key Takeaway →” เพื่อทบทวนสรุปเชิงมโนทัศน์",
+              "Key Takeaway unlocked for this question · Click “View Key Takeaway →” to review"
+            )
+          : isLiveJoined
           ? tr(
               `● กด “ส่งช่องนี้ ✓” ใต้แต่ละช่องได้ทันทีโดยไม่ต้องรอกรอกครบทุกช่อง (ซิงค์เข้าห้องกลุ่มที่ ${rNum})`,
               `● Click “Send Cell ✓” under any cell anytime, or submit all filled cells to Group ${rNum}`
@@ -17516,45 +17749,87 @@
       const prevQBtn = make("button", tr("◀ ข้อก่อนหน้า", "◀ Prev Question"), "btn sm");
       prevQBtn.type = "button";
       prevQBtn.addEventListener("click", () => manualStepHsSlide(-1));
+      actWrap.appendChild(prevQBtn);
 
-      const sendBtn = make(
-        "button",
-        isLiveJoined
-          ? tr("ส่งทุกช่องที่กรอกแล้วขึ้นจอ ✓", "Submit All Filled Cells ✓")
-          : tr("🟢 เข้าห้องเรียนสดเพื่อส่งคำตอบ (Interactive)", "🟢 Join Live Class to Submit"),
-        "btn sm teal"
-      );
-      sendBtn.type = "button";
-      sendBtn.addEventListener("click", () => {
-        if (!state.hsdSessionJoined || !state.myStudent) {
-          state.hsdShowJoinGate = true;
-          renderHsDiscussionView();
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          return;
-        }
-        const map = collectQuestionCellsMap(qObj);
-        if (!Object.keys(map).length) {
-          hint.textContent = tr("กรุณาพิมพ์คำตอบอย่างน้อย 1 ช่องก่อนกดส่งขึ้นจอ", "Please type at least 1 cell before submitting");
-          return;
-        }
-        LIVE.submitQuestionFinal(qObj.id, map);
-        cellSyncCallbacks.forEach((fn) => fn());
-        sendBtn.textContent = tr("✓ ส่งทุกช่องที่กรอกแล้ว!", "✓ Submitted All Filled Cells!");
-        hint.textContent = tr(
-          `ส่งคำตอบทุกช่องที่กรอกขึ้นจอห้องกลุ่มที่ ${LIVE.getRoomId()} เรียบร้อยแล้ว`,
-          `Submitted all filled cells to Group ${LIVE.getRoomId()} screen`
+      if (!isLiveJoined && hasCs && !csUnlocked) {
+        const selfSubmitBtn = make("button", tr("ส่งคำตอบข้อนี้ ✓", "Submit Answer ✓"), "btn sm teal");
+        selfSubmitBtn.type = "button";
+        selfSubmitBtn.title = tr(
+          "ส่งคำตอบข้อนี้ที่พิมพ์ไว้เพื่อบันทึกและปลดล็อก Key Takeaway",
+          "Submit your written answer to save and unlock the Key Takeaway"
         );
-        syncLiveBarQuestionPickerDOM();
-        setTimeout(() => {
-          sendBtn.textContent = tr("ส่งทุกช่องที่กรอกแล้วขึ้นจอ ✓", "Submit All Filled Cells ✓");
-        }, 2000);
-      });
+        selfSubmitBtn.addEventListener("click", () => {
+          const map = collectQuestionCellsMap(qObj);
+          if (!Object.keys(map).length) {
+            hint.textContent = tr(
+              "กรุณาพิมพ์คำตอบอย่างน้อย 1 ช่องก่อนกดส่งคำตอบ",
+              "Please type at least 1 cell before submitting"
+            );
+            return;
+          }
+          markHsQuestionSubmitted(qObj, { forceRender: true });
+        });
+        actWrap.appendChild(selfSubmitBtn);
+      }
+
+      if (LIVE) {
+        const sendBtn = make(
+          "button",
+          isLiveJoined
+            ? tr("ส่งทุกช่องที่กรอกแล้วขึ้นจอ ✓", "Submit All Filled Cells ✓")
+            : tr("🟢 เข้าห้องเรียนสดเพื่อส่งคำตอบ (Interactive)", "🟢 Join Live Class to Submit"),
+          isLiveJoined || (!hasCs && !csUnlocked) ? "btn sm teal" : "btn sm"
+        );
+        sendBtn.type = "button";
+        sendBtn.addEventListener("click", () => {
+          if (!state.hsdSessionJoined || !state.myStudent) {
+            state.hsdShowJoinGate = true;
+            renderHsDiscussionView();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            return;
+          }
+          const map = collectQuestionCellsMap(qObj);
+          if (!Object.keys(map).length) {
+            hint.textContent = tr("กรุณาพิมพ์คำตอบอย่างน้อย 1 ช่องก่อนกดส่งขึ้นจอ", "Please type at least 1 cell before submitting");
+            return;
+          }
+          LIVE.submitQuestionFinal(qObj.id, map);
+          cellSyncCallbacks.forEach((fn) => fn());
+          const unlockedNow = markHsQuestionSubmitted(qObj);
+          if (!unlockedNow) {
+            sendBtn.textContent = tr("✓ ส่งทุกช่องที่กรอกแล้ว!", "✓ Submitted All Filled Cells!");
+            hint.textContent = tr(
+              `ส่งคำตอบทุกช่องที่กรอกขึ้นจอห้องกลุ่มที่ ${LIVE.getRoomId()} เรียบร้อยแล้ว`,
+              `Submitted all filled cells to Group ${LIVE.getRoomId()} screen`
+            );
+            setTimeout(() => {
+              sendBtn.textContent = tr("ส่งทุกช่องที่กรอกแล้วขึ้นจอ ✓", "Submit All Filled Cells ✓");
+            }, 2000);
+          }
+        });
+        actWrap.appendChild(sendBtn);
+      }
+
+      if (csUnlocked) {
+        const csBtn = make(
+          "button",
+          tr("เปิดดู Key Takeaway →", "View Key Takeaway →"),
+          "btn sm hsd-cs-unlock-cta"
+        );
+        csBtn.type = "button";
+        csBtn.title = tr(
+          "เปิดสไลด์ Key Takeaway (Conceptualized Summary)",
+          "Open Key Takeaway slide"
+        );
+        csBtn.addEventListener("click", () => openConceptSummaryForQuestion(qObj));
+        actWrap.appendChild(csBtn);
+      }
 
       const nextQBtn = make("button", tr("ข้อถัดไป ▶", "Next Question ▶"), "btn sm primary");
       nextQBtn.type = "button";
       nextQBtn.addEventListener("click", () => manualStepHsSlide(1));
+      actWrap.appendChild(nextQBtn);
 
-      actWrap.append(prevQBtn, sendBtn, nextQBtn);
       subBar.append(hint, actWrap);
       frag.appendChild(subBar);
     }
@@ -17698,6 +17973,7 @@
     if (ROLE === "faculty") {
       const curQId = cur && cur.qObj ? cur.qObj.id : state.hsdLastSelectedQId;
       if (nextLayout === "concept-summary" && curQId) {
+        if (!canShowConceptSummaryInCurrentMode(findHsQuestionById(curQId))) return;
         state.hsdSinglePaneOverride = "";
         jumpToQuestionPedStage(curQId, 5);
         return;
@@ -17733,6 +18009,7 @@
     } else {
       const curQId = cur && cur.qObj ? cur.qObj.id : state.hsdLastSelectedQId;
       if (nextLayout === "concept-summary" && curQId) {
+        if (!canShowConceptSummaryInCurrentMode(findHsQuestionById(curQId))) return;
         state.hsdSinglePaneOverride = "";
         jumpToQuestionPedStage(curQId, 5);
         return;
@@ -17916,7 +18193,7 @@
             qObj,
             shortNum
           });
-          if (qObj && qObj.conceptSummarySlide) {
+          if (qObj && qObj.conceptSummarySlide && isConceptSummaryUnlockedForStudent(qObj)) {
             const cs = qObj.conceptSummarySlide;
             items.push({
               kind: "concept-summary",
@@ -18249,6 +18526,7 @@
         hsdKeyStepByQ: state.hsdKeyStepByQ,
         hsdKeyVisibleSteps: state.hsdKeyVisibleSteps,
         hsdKeyPinAllOpen: state.hsdKeyPinAllOpen,
+        hsdSubmittedQuestions: state.hsdSubmittedQuestions,
         hsdBigSlideTimer: state.hsdBigSlideTimer,
         theme: state.theme,
         lang: state.lang
@@ -18323,6 +18601,9 @@
         }
         if (typeof p.hsdKeyPinAllOpen === "boolean") {
           state.hsdKeyPinAllOpen = p.hsdKeyPinAllOpen;
+        }
+        if (p.hsdSubmittedQuestions && typeof p.hsdSubmittedQuestions === "object") {
+          state.hsdSubmittedQuestions = Object.assign({}, p.hsdSubmittedQuestions);
         }
         if (typeof p.hsdBigSlideTimer === "boolean") {
           state.hsdBigSlideTimer = p.hsdBigSlideTimer;
@@ -19716,7 +19997,7 @@
 
     // 1. Pedagogical Stage & Layout Segmented Pill Bar
     const layoutSeg = make("div", null, "hsd-layout-seg");
-    const hasConceptSummary = Boolean(cur && cur.qObj && cur.qObj.conceptSummarySlide);
+    const hasConceptSummary = Boolean(cur && cur.qObj && canShowConceptSummaryInCurrentMode(cur.qObj));
     const layoutOpts =
       ROLE === "faculty" && state.hsdFacultyMode !== "student"
         ? [
@@ -19828,6 +20109,27 @@
       if (!state.isPptSlideSharePopup && LIVE) {
         row.appendChild(buildKahootLobbyTriggerBtnDOM("ppt-fs-tool-btn is-kahoot-fs-btn"));
         if (ROLE === "faculty") {
+          if (cur.qObj && cur.qObj.conceptSummarySlide && state.hsdFacultyMode !== "student") {
+            const isCsRel =
+              typeof LIVE.isConceptSummaryUnlocked === "function" &&
+              LIVE.isConceptSummaryUnlocked(cur.qObj.id);
+            const roomNum = typeof LIVE.getRoomId === "function" ? LIVE.getRoomId() : 1;
+            const fsCsRelBtn = make(
+              "button",
+              isCsRel ? "Key Takeaway: เปิดแล้ว" : "ปล่อย Key Takeaway นศพ.",
+              `ppt-fs-tool-btn${isCsRel ? " is-cs-release-open" : ""}`
+            );
+            fsCsRelBtn.type = "button";
+            fsCsRelBtn.title = isCsRel
+              ? `เปิดปล่อยสไลด์สาระสำคัญให้ นศพ. ห้องกลุ่ม ${roomNum} แล้ว (คลิกเพื่อซ่อนกลับ)`
+              : `เริ่มแรกซ่อนสไลด์สาระสำคัญจาก นศพ. อยู่ · คลิกเพื่อเปิดปล่อยให้ห้องกลุ่ม ${roomNum}`;
+            fsCsRelBtn.addEventListener("click", () => {
+              toggleFacultyConceptSummaryRelease(cur.qObj, !isCsRel, {
+                syncNow: !isCsRel && cur.kind === "concept-summary"
+              });
+            });
+            row.appendChild(fsCsRelBtn);
+          }
           const fsSyncBtn = make("button", "📡 Sync นศ.", "ppt-fs-tool-btn");
           fsSyncBtn.type = "button";
           fsSyncBtn.title = "ดึงหน้าจอนักศึกษาทุกคนในกลุ่มให้ซิงค์มาที่สไลด์ข้อนี้ทันที";
@@ -20651,6 +20953,27 @@
 
       if (!exp && !state.isPptSlideSharePopup) {
         const bActions = make("div", null, "ppt-cs-bridge-actions hsd-no-print");
+        if (ROLE === "faculty" && state.hsdFacultyMode !== "student" && LIVE && cur.qObj) {
+          const isReleased =
+            typeof LIVE.isConceptSummaryUnlocked === "function" &&
+            LIVE.isConceptSummaryUnlocked(cur.qObj.id);
+          const roomNum = typeof LIVE.getRoomId === "function" ? LIVE.getRoomId() : 1;
+          const relBtn = make(
+            "button",
+            isReleased
+              ? `เปิดให้ นศพ. กลุ่ม ${roomNum} แล้ว · ซ่อนกลับ`
+              : `ซ่อนจาก นศพ. อยู่ · เปิดปล่อยกลุ่ม ${roomNum}`,
+            `ppt-cs-action-btn ${isReleased ? "is-release-open" : "is-release-locked"}`
+          );
+          relBtn.type = "button";
+          relBtn.title = isReleased
+            ? `นักศึกษาห้องกลุ่ม ${roomNum} มองเห็นสไลด์สาระสำคัญนี้ได้แล้ว (คลิกเพื่อซ่อนกลับ)`
+            : `เริ่มแรกนักศึกษาจะยังไม่เห็นสไลด์นี้ใน Exercise · คลิกเพื่อเปิดปล่อยและซิงค์ให้นักศึกษาห้องกลุ่ม ${roomNum} เห็นทันที`;
+          relBtn.addEventListener("click", () => {
+            toggleFacultyConceptSummaryRelease(cur.qObj, !isReleased, { syncNow: !isReleased });
+          });
+          bActions.appendChild(relBtn);
+        }
         if (cs.docId) {
           const readBtn = make("button", null, "ppt-cs-action-btn is-link");
           readBtn.type = "button";
@@ -21373,6 +21696,7 @@
       ov.hidden = true;
       return;
     }
+    state.hsdCurrentSlideRef = captureSlideRef(cur);
 
     if (state.isPptSlideSharePopup) {
       document.title =
@@ -22657,7 +22981,9 @@
         );
         bStuPreview.type = "button";
         bStuPreview.addEventListener("click", () => {
+          const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
           state.hsdFacultyMode = state.hsdFacultyMode === "student" ? "teacher" : "student";
+          preserveSlideIdentityAfterDeckUpdate(prevRef);
           markSlideBoxesAutoOptimize("both");
           renderHsDiscussionView();
           broadcastPptPresentationState();
@@ -22742,7 +23068,7 @@
       // Group 2: 4/5-Stage Pedagogical Flow / Slide Layout
       const gLayout = makeGroup("ลำดับสไลด์ & เค้าโครง (Layout)");
       const layoutSeg = make("div", null, "hsd-layout-seg");
-      const hasConceptSummary = Boolean(cur && cur.qObj && cur.qObj.conceptSummarySlide);
+      const hasConceptSummary = Boolean(cur && cur.qObj && canShowConceptSummaryInCurrentMode(cur.qObj));
       const layoutOpts =
         ROLE === "faculty" && state.hsdFacultyMode !== "student"
           ? [
@@ -22805,6 +23131,29 @@
           hideKeyBtn.addEventListener("click", () => stepHsAnswerKeyClicker(0, "hide"));
 
           gKey.body.append(nextKeyBtn, allKeyBtn, hideKeyBtn);
+
+          if (cur.qObj.conceptSummarySlide && LIVE) {
+            const isCsRel =
+              typeof LIVE.isConceptSummaryUnlocked === "function" &&
+              LIVE.isConceptSummaryUnlocked(cur.qObj.id);
+            const roomNum = typeof LIVE.getRoomId === "function" ? LIVE.getRoomId() : 1;
+            const rbCsRelBtn = make(
+              "button",
+              isCsRel ? "Key Takeaway: เปิดแล้ว" : "ปล่อย Key Takeaway นศพ.",
+              `ppt-rb-cmd${isCsRel ? " is-cs-release-open" : ""}`
+            );
+            rbCsRelBtn.type = "button";
+            rbCsRelBtn.title = isCsRel
+              ? `เปิดให้ นศพ. ห้องกลุ่ม ${roomNum} เห็นสไลด์สาระสำคัญแล้ว (คลิกเพื่อซ่อนกลับ)`
+              : `เริ่มแรกซ่อนสไลด์สาระสำคัญจาก นศพ. อยู่ · คลิกเพื่อเปิดปล่อยให้ห้องกลุ่ม ${roomNum}`;
+            rbCsRelBtn.addEventListener("click", () => {
+              toggleFacultyConceptSummaryRelease(cur.qObj, !isCsRel, {
+                syncNow: !isCsRel && cur.kind === "concept-summary"
+              });
+            });
+            gKey.body.appendChild(rbCsRelBtn);
+          }
+
           ribbon.appendChild(gKey.grp);
         }
       }
@@ -23033,7 +23382,9 @@
             shortNum,
             blankWorksheet: cfg.contentMode === "blank"
           });
-          pushConceptSummary();
+          if (cfg.contentMode !== "blank" && isConceptSummaryUnlockedForStudent(qObj)) {
+            pushConceptSummary();
+          }
         }
       });
     });
@@ -23513,6 +23864,7 @@
   function renderHsSlideDeckMode(container, matchedCases) {
     const { slides, cur } = getActiveSlideDeckContext();
     if (!slides.length || !cur) return;
+    state.hsdCurrentSlideRef = captureSlideRef(cur);
     const layout = getEffectiveHsdSlideLayout(cur);
     state.activeHsModule = cur.mod.id;
 
@@ -24134,17 +24486,26 @@
         clearCaseBtn.type = "button";
         clearCaseBtn.addEventListener("click", () => {
           const ids = getCaseInputIds(c);
-          const hasAny = ids.some((id) => String(state.hsdDrafts[id] || "").trim().length > 0);
+          const hasAny =
+            ids.some((id) => String(state.hsdDrafts[id] || "").trim().length > 0) ||
+            (c.questions || []).some((q) => Boolean(state.hsdSubmittedQuestions && state.hsdSubmittedQuestions[q.id]));
           if (!hasAny) return;
           if (!window.confirm(`ต้องการล้างร่างคำตอบใน "${c.title}" หรือไม่?`)) return;
+          const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
           ids.forEach((id) => delete state.hsdDrafts[id]);
+          (c.questions || []).forEach((q) => {
+            if (q && q.id && state.hsdSubmittedQuestions) delete state.hsdSubmittedQuestions[q.id];
+          });
           try {
             localStorage.setItem("racm303_hs_disc_drafts_v1", JSON.stringify(state.hsdDrafts));
           } catch (_) {}
+          persistHsdSubmittedQuestions();
           if (LIVE && typeof LIVE.clearSubmittedCells === "function") {
             LIVE.clearSubmittedCells(ids);
           }
+          preserveSlideIdentityAfterDeckUpdate(prevRef);
           renderHsDiscussionView();
+          broadcastPptPresentationState();
         });
 
         hRight.append(slideJumpBtn, fsCaseBtn, popCaseBtn, printCaseBtn, clearCaseBtn);
