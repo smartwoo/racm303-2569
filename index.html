@@ -19,7 +19,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Anuphan:wght@500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script>(function(){try{var t=localStorage.getItem("racm303_theme");if(t==="dark")document.documentElement.setAttribute("data-theme","dark");var l=localStorage.getItem("racm303_lang");if(l==="en"){document.documentElement.lang="en";document.documentElement.setAttribute("data-lang","en");}}catch(_){}})();</script>
   <link rel="stylesheet" href="assets/styles.css?v=20261123atv2">
-  <link rel="stylesheet" href="assets/tv_ui.css?v=20261123atv2">
+  <link rel="stylesheet" href="assets/tv_ui.css?v=20261123man1">
 </head>
 <body class="role-student">
   <header class="masthead student-masthead tv-masthead">
@@ -77,11 +77,15 @@
             </button>
             <button class="nav-group-btn" type="button" data-nav-cat="knowledge" aria-expanded="false">
               <span class="ngb-top"><span class="ngb-ico">🏥</span><span class="ngb-title">ระบบสุขภาพ</span><span class="ngb-pill">HS1–HS6</span></span>
-              <span class="ngb-sub">บทเรียนระบบสุขภาพ · Discussion กรณีศึกษา (.pptx) · โจทย์ฝึกหัด · คู่มือ</span>
+              <span class="ngb-sub">บทเรียนระบบสุขภาพ · Discussion กรณีศึกษา (.pptx) · โจทย์ฝึกหัด</span>
             </button>
             <button class="nav-group-btn" type="button" data-nav-cat="epidemiology" aria-expanded="false">
               <span class="ngb-top"><span class="ngb-ico">📊</span><span class="ngb-title">ระบาดวิทยา</span><span class="ngb-pill">EP1–EP9</span></span>
               <span class="ngb-sub">คาบเรียน EP1–EP9 · Exercise 1–6 · ห้องเรียน Zoom · SPSS &amp; ฟอร์ม 4A</span>
+            </button>
+            <button class="nav-group-btn" type="button" data-nav-cat="manual" aria-expanded="false">
+              <span class="ngb-top"><span class="ngb-ico">📘</span><span class="ngb-title">คู่มือรายวิชา</span><span class="ngb-pill">17 บท</span></span>
+              <span class="ngb-sub">คู่มือรายวิชา 2569 · เกณฑ์การสอบ &amp; ภาคสนาม · แบบฟอร์ม 1A–4A</span>
             </button>
             <button class="nav-group-btn" type="button" data-nav-cat="admin" aria-expanded="false">
               <span class="ngb-top"><span class="ngb-ico">🗂️</span><span class="ngb-title">ส่งงานและธุรการ</span><span class="ngb-pill">2 หมวด</span></span>
@@ -102,8 +106,8 @@
               <button class="nav-tab" id="tabBtnTextbooks" role="tab" data-tab="textbooks" data-nav-cat="knowledge" aria-selected="false" type="button" hidden>บทเรียนระบบสุขภาพ <span class="tab-count">HS1–HS6</span></button>
               <button class="nav-tab" id="tabBtnHsDiscussion" role="tab" data-tab="hs-discussion" data-nav-cat="knowledge" aria-selected="false" type="button" hidden>Discussion ระบบสุขภาพ <span class="tab-count">HS1–HS6</span></button>
               <button class="nav-tab" id="tabBtnPractice" role="tab" data-tab="practice" data-nav-cat="knowledge" aria-selected="false" type="button" hidden>คำศัพท์และโจทย์ฝึกหัด <span class="tab-count">60 ข้อ</span></button>
-              <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" data-nav-cat="knowledge" aria-selected="false" type="button" hidden>คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
               <button class="nav-tab" id="tabBtnEpidemiology" role="tab" data-tab="epidemiology" data-nav-cat="epidemiology" aria-selected="false" type="button" hidden>ระบาดวิทยา <span class="tab-count">EP1–EP9</span></button>
+              <button class="nav-tab" id="tabBtnManual" role="tab" data-tab="manual" data-nav-cat="manual" aria-selected="false" type="button" hidden>คู่มือรายวิชา 2569 <span class="tab-count">17 บท</span></button>
               <button class="nav-tab" id="tabBtnSubmissions" role="tab" data-tab="submissions" data-nav-cat="admin" aria-selected="false" type="button" hidden>การส่งงานและ E-learning <span class="tab-count">4 งาน</span></button>
               <button class="nav-tab" id="tabBtnLeave" role="tab" data-tab="leave" data-nav-cat="admin" aria-selected="false" type="button" hidden>ใบลากิจ / ลาป่วย <span class="tab-count" id="leaveNavCountBadge">เซ็นออนไลน์</span></button>
             </nav>
@@ -587,8 +591,6 @@
 
     <!-- TAB 3: COURSE MANUAL 2569 -->
     <section class="tab-panel" id="panel-manual" aria-labelledby="tabBtnManual" hidden>
-      <div id="manualUnifiedBannerWrap" class="hsd-no-print"></div>
-
       <div class="section-header">
         <div>
           <h2>คู่มือการจัดการเรียนการสอน RACM 303 ปีการศึกษา 2569 (ฉบับนักศึกษา)</h2>
@@ -775,7 +777,7 @@
   <script src="assets/data_hs_discussion.js?v=20261123cs1"></script>
   <script src="assets/interactive_qa.js?v=20261123ai1"></script>
   <script src="assets/pptx_exporter.js?v=20261123cs2"></script>
-  <script src="assets/portal.js?v=20261123atv2"></script>
-  <script src="assets/tv_launcher.js?v=20261123atv2"></script>
+  <script src="assets/portal.js?v=20261123man1"></script>
+  <script src="assets/tv_launcher.js?v=20261123man1"></script>
 </body>
 </html>
