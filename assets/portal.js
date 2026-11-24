@@ -20620,8 +20620,8 @@
   function jumpToQuestionPedStage(qId, targetPedStage) {
     if (!qId) return;
     const rawNum = Number(targetPedStage);
-    const stageNum = Number.isFinite(rawNum) ? Math.max(0, Math.min(6, rawNum)) : 2;
-    if ((stageNum === 5 || stageNum === 6) && !canNavigateConceptSummarySlide(findHsQuestionById(qId))) {
+    const stageNum = Number.isFinite(rawNum) ? Math.max(0, Math.min(8, rawNum)) : 2;
+    if (stageNum >= 5 && !canNavigateConceptSummarySlide(findHsQuestionById(qId))) {
       return;
     }
     const ownerCase = (HSD_DATA.cases || []).find((c) => (c.questions || []).some((q) => q.id === qId));
@@ -23313,14 +23313,18 @@
         });
         if (hasCs) {
           const cs = qObj.conceptSummarySlide;
-          const fw = cs.frameworkSynthesisSlide || null;
+          const fwList = Array.isArray(cs.frameworkSynthesisSlides) && cs.frameworkSynthesisSlides.length
+            ? cs.frameworkSynthesisSlides
+            : cs.frameworkSynthesisSlide
+            ? [cs.frameworkSynthesisSlide]
+            : [];
           const unlockedNow = Boolean(uInfo && uInfo.unlockedForStudent);
-          if (fw) {
+          fwList.forEach((fw, fwIdx) => {
             items.push({
               kind: "concept-summary",
               subKind: "framework-visual",
-              pedStage: 5,
-              pedKey: "concept-framework",
+              pedStage: 5 + fwIdx,
+              pedKey: fwIdx === 0 ? "concept-framework" : `concept-framework-${fwIdx + 1}`,
               pedBadge: unlockedNow
                 ? `🔓 Unhide Slide · ${fw.studentBadge || "Key Takeaway Framework"}`
                 : `🔒 Hide Slide · ปลดล็อกหลัง ${uInfo.shortLabel}`,
@@ -23336,11 +23340,11 @@
               unlockInfo: uInfo,
               shortNum
             });
-          }
+          });
           items.push({
             kind: "concept-summary",
             subKind: "narrative",
-            pedStage: fw ? 6 : 5,
+            pedStage: 5 + fwList.length,
             pedKey: "concept-summary",
             pedBadge: unlockedNow
               ? `🔓 Unhide Slide · ${cs.studentBadge || "Key Takeaway"}`
@@ -24430,7 +24434,7 @@
       } else if (s.kind === "case-scenario") {
         optLabel = `[เนื้อหาโจทย์เต็มจอ] กรณีศึกษาที่ ${s.caseObj.caseNumber}: ${s.caseObj.subtitle || s.caseObj.title}`;
       } else if (s.kind === "concept-summary") {
-        const csTitle = (s.conceptSummary && s.conceptSummary.title) || "Key Takeaway";
+        const csTitle = ((s.frameworkVisual && s.frameworkVisual.title) || (s.conceptSummary && s.conceptSummary.title)) || "Key Takeaway";
         optLabel = `[${s.pedShort || "Key Takeaway #1"}] ข้อ ${s.shortNum}: ${csTitle}`;
       } else {
         const doneMark = isHsQuestionAnswered(s.qObj) ? "✓ " : "";
@@ -26405,7 +26409,7 @@
           const nextNarrBtn = make("button", null, "ppt-cs-action-btn is-primary");
           nextNarrBtn.type = "button";
           nextNarrBtn.innerHTML =
-            `<span>คำอธิบายบรรยาย 4 หมวด (Slide ถัดไป)</span>` +
+            `<span>${escapeHtml(fw.nextBtnLabel || "คำอธิบายบรรยาย 4 หมวด (Slide ถัดไป)")}</span>` +
             `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8H12.5M8.75 4.25L12.5 8L8.75 11.75" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
           nextNarrBtn.addEventListener("click", () => stepHsQuestionSlide(1));
           bActions.appendChild(nextNarrBtn);
@@ -26604,10 +26608,17 @@
     if (cur && cur.kind === "concept-summary") {
       const isHiddenNow = Boolean(cur.isHiddenSlide);
       const cs = isHiddenNow ? {} : cur.conceptSummary || (cur.qObj && cur.qObj.conceptSummarySlide) || {};
+      const fwList = !isHiddenNow
+        ? (Array.isArray(cs.frameworkSynthesisSlides) && cs.frameworkSynthesisSlides.length
+            ? cs.frameworkSynthesisSlides
+            : cs.frameworkSynthesisSlide
+            ? [cs.frameworkSynthesisSlide]
+            : [])
+        : [];
       const fw = !isHiddenNow && cur.subKind === "framework-visual"
-        ? (cur.frameworkVisual || cs.frameworkSynthesisSlide || null)
+        ? (cur.frameworkVisual || fwList[0] || null)
         : null;
-      const hasFwPair = Boolean(!isHiddenNow && (fw || cs.frameworkSynthesisSlide));
+      const hasFwPair = Boolean(!isHiddenNow && fwList.length > 0);
       const clearQLabel = cur.qObj ? getClearQuestionHeadingLabel(cur.qObj, 0) : `ข้อ ${cur.shortNum || ""}`;
       const ktLabel = isHiddenNow
         ? "🔒 Hide Slide"
@@ -26639,8 +26650,11 @@
           const fwPairBar = make("div", null, "ppt-sm-stage-pills hsd-no-print");
           [
             { st: 2, lbl: `← โจทย์ ${cur.shortNum}` },
-            { st: 5, lbl: "🖼 ภาพ Framework" },
-            { st: 6, lbl: "📝 คำอธิบาย" }
+            ...fwList.map((fwItem, fwIdx) => ({
+              st: 5 + fwIdx,
+              lbl: fwItem.studentStageBtnLabel || "🖼 ภาพ Framework"
+            })),
+            { st: 5 + fwList.length, lbl: "📝 คำอธิบาย" }
           ].forEach((sp) => {
             const isActSt = sp.st === (cur.pedStage || 5);
             const sb = make("button", sp.lbl, `ppt-sm-stage-btn${isActSt ? " is-active" : ""}`);
@@ -27193,7 +27207,7 @@
             `</div>` +
             `<div class="ppt-thumb-wire"><span></span><span></span></div>`;
         } else {
-          const csTitle = (s.conceptSummary && s.conceptSummary.title) || "Key Takeaway";
+          const csTitle = ((s.frameworkVisual && s.frameworkVisual.title) || (s.conceptSummary && s.conceptSummary.title)) || "Key Takeaway";
           const ktLabel = (s.conceptSummary && s.conceptSummary.kicker) || "Key Takeaway #1";
           card.innerHTML =
             `<div class="ppt-thumb-top">` +
@@ -27424,7 +27438,7 @@
             : s.kind === "concept-summary"
             ? s.isHiddenSlide
               ? `${idx + 1}/${slides.length} · [🔒 Hide Slide] ข้อ ${s.shortNum}`
-              : `${idx + 1}/${slides.length} · ${s.pedShort || "Takeaway"}: ${(s.conceptSummary && s.conceptSummary.title) || "Key Takeaway"}`
+              : `${idx + 1}/${slides.length} · ${s.pedShort || "Takeaway"}: ${((s.frameworkVisual && s.frameworkVisual.title) || (s.conceptSummary && s.conceptSummary.title)) || "Key Takeaway"}`
             : `${idx + 1}/${slides.length} · ${s.pedShort ? `[${s.pedShort}] ` : ""}ข้อ ${s.shortNum}: ${s.qObj.title}`;
         rSel.add(new Option(lbl, String(idx), false, idx === state.hsdSlideIdx));
       });
@@ -27671,7 +27685,7 @@
             : s.kind === "concept-summary"
             ? s.isHiddenSlide
               ? `${idx + 1}/${slides.length} · [🔒 Hide Slide] ข้อ ${s.shortNum}`
-              : `${idx + 1}/${slides.length} · ${s.pedShort || "Key Takeaway"}: ${(s.conceptSummary && s.conceptSummary.title) || "Key Takeaway"}`
+              : `${idx + 1}/${slides.length} · ${s.pedShort || "Key Takeaway"}: ${((s.frameworkVisual && s.frameworkVisual.title) || (s.conceptSummary && s.conceptSummary.title)) || "Key Takeaway"}`
             : `${idx + 1}/${slides.length} · ${s.pedShort ? `[${s.pedShort}] ` : ""}ข้อ ${s.shortNum}: ${s.qObj.title}`;
         mSel.add(new Option(lbl, String(idx), false, idx === state.hsdSlideIdx));
       });
@@ -29021,7 +29035,7 @@
               )
             );
           } else {
-            const csTitle = (s.conceptSummary && s.conceptSummary.title) || "Key Takeaway";
+            const csTitle = ((s.frameworkVisual && s.frameworkVisual.title) || (s.conceptSummary && s.conceptSummary.title)) || "Key Takeaway";
             picker.add(
               new Option(
                 `[${s.pedShort || "Key Takeaway #1"}] ข้อ ${s.shortNum}: ${csTitle}`,
@@ -29348,13 +29362,17 @@
         const isTeacherDeck = ROLE === "faculty" && state.hsdFacultyMode !== "student";
         const pushConceptSummary = () => {
           if (!cs) return;
-          const fw = cs.frameworkSynthesisSlide || null;
-          if (fw) {
+          const fwList = Array.isArray(cs.frameworkSynthesisSlides) && cs.frameworkSynthesisSlides.length
+            ? cs.frameworkSynthesisSlides
+            : cs.frameworkSynthesisSlide
+            ? [cs.frameworkSynthesisSlide]
+            : [];
+          fwList.forEach((fw, fwIdx) => {
             out.push({
               kind: "concept-summary",
               subKind: "framework-visual",
-              pedStage: 5,
-              pedKey: "concept-framework",
+              pedStage: 5 + fwIdx,
+              pedKey: fwIdx === 0 ? "concept-framework" : `concept-framework-${fwIdx + 1}`,
               forceLayout: "concept-summary",
               pedBadge: fw.studentBadge || "Key Takeaway #1 · Framework",
               pedShort: fw.studentShortLabel || "Framework #1",
@@ -29365,11 +29383,11 @@
               frameworkVisual: fw,
               shortNum
             });
-          }
+          });
           out.push({
             kind: "concept-summary",
             subKind: "narrative",
-            pedStage: fw ? 6 : 5,
+            pedStage: 5 + fwList.length,
             pedKey: "concept-summary",
             forceLayout: "concept-summary",
             pedBadge: isTeacherDeck
@@ -30175,7 +30193,7 @@
             `<div class="ppt-thumb-title">ซ่อนไว้ · ปลดล็อกหลัง ${escapeHtml(uShort)}</div>` +
             `<div class="ppt-thumb-wire"><span></span><span></span></div>`;
         } else {
-          const csTitle = (s.conceptSummary && s.conceptSummary.title) || "Key Takeaway";
+          const csTitle = ((s.frameworkVisual && s.frameworkVisual.title) || (s.conceptSummary && s.conceptSummary.title)) || "Key Takeaway";
           const ktNum = (s.conceptSummary && s.conceptSummary.takeawayNumber) || 1;
           const ktLabel = (s.conceptSummary && s.conceptSummary.kicker) || `Key Takeaway #${ktNum}`;
           item.title = `Slide ${idx + 1}: ${s.mod.code} · ข้อ ${s.shortNum} (${ktLabel}) — ${csTitle}`;
