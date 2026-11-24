@@ -19963,8 +19963,9 @@
     return {
       kind: slideObj.kind || "question",
       modId: slideObj.mod ? slideObj.mod.id : "",
+      caseId: slideObj.caseObj ? slideObj.caseObj.id : "",
       qId: slideObj.qObj ? slideObj.qObj.id : "",
-      pedStage: slideObj.pedStage || 1
+      pedStage: slideObj.pedStage !== undefined ? slideObj.pedStage : 2
     };
   }
 
@@ -19984,6 +19985,8 @@
     let nextIdx = -1;
     if (ref.kind === "opening-kahoot") {
       nextIdx = nextSlides.findIndex((s) => s.kind === "opening-kahoot" && (!ref.modId || (s.mod && s.mod.id === ref.modId)));
+    } else if (ref.kind === "case-scenario" && ref.caseId) {
+      nextIdx = nextSlides.findIndex((s) => s.kind === "case-scenario" && s.caseObj && s.caseObj.id === ref.caseId);
     } else if (ref.kind === "concept-summary" && ref.qId) {
       nextIdx = nextSlides.findIndex((s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ref.qId);
       if (nextIdx < 0) {
@@ -19991,7 +19994,7 @@
       }
     } else if (ref.qId) {
       nextIdx = nextSlides.findIndex(
-        (s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId && (s.pedStage || 1) === (ref.pedStage || 1)
+        (s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId && (s.pedStage || 2) === (ref.pedStage || 2)
       );
       if (nextIdx < 0) {
         nextIdx = nextSlides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId);
@@ -20168,7 +20171,8 @@
 
   function jumpToQuestionPedStage(qId, targetPedStage) {
     if (!qId) return;
-    const stageNum = Math.max(1, Math.min(5, Number(targetPedStage) || 1));
+    const rawNum = Number(targetPedStage);
+    const stageNum = Number.isFinite(rawNum) ? Math.max(0, Math.min(5, rawNum)) : 2;
     if (stageNum === 5 && !canNavigateConceptSummarySlide(findHsQuestionById(qId))) {
       return;
     }
@@ -20186,7 +20190,13 @@
     state.hsdFocusedConceptStep = 0;
     const matchedCases = getFilteredHsDiscussionCases();
     const slides = buildHsSlideDeckItems(matchedCases);
-    let idx = slides.findIndex((s) => s.qObj && s.qObj.id === qId && (s.pedStage || 1) === stageNum);
+    let idx = -1;
+    if (stageNum === 0 && ownerCase) {
+      idx = slides.findIndex((s) => s.kind === "case-scenario" && s.caseObj && s.caseObj.id === ownerCase.id);
+    } else {
+      idx = slides.findIndex((s) => s.qObj && s.qObj.id === qId && (s.pedStage || 2) === stageNum);
+    }
+    if (idx < 0) idx = slides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === qId && s.pedStage === 2);
     if (idx < 0) idx = slides.findIndex((s) => s.qObj && s.qObj.id === qId);
     if (idx >= 0) {
       state.hsdSlideIdx = idx;
@@ -20199,7 +20209,7 @@
     }
   }
 
-  function selectHsQuestionById(qId, isManual = true, targetStageOpt = 1) {
+  function selectHsQuestionById(qId, isManual = true, targetStageOpt = 2) {
     if (!qId) return;
     if (isManual) pauseFollowTeacherIfDiverged(qId);
 
@@ -20221,8 +20231,8 @@
     const matchedCases = getFilteredHsDiscussionCases();
     if (state.hsdViewMode === "slide") {
       const slides = buildHsSlideDeckItems(matchedCases);
-      const wantStage = Math.max(1, Math.min(3, Number(targetStageOpt) || 1));
-      let idx = slides.findIndex((s) => s.kind === "question" && s.qObj.id === qId && (s.pedStage || 1) === wantStage);
+      const wantStage = Math.max(1, Math.min(2, Number(targetStageOpt) || 2));
+      let idx = slides.findIndex((s) => s.kind === "question" && s.qObj.id === qId && (s.pedStage || 2) === wantStage);
       if (idx < 0) idx = slides.findIndex((s) => s.kind === "question" && s.qObj.id === qId);
       if (idx >= 0) {
         state.hsdSlideIdx = idx;
@@ -20335,10 +20345,22 @@
       const slides = buildHsSlideDeckItems(matchedCases);
       const targetQObj = findHsQuestionById(ptr.questionId);
       const wantKind =
-        ptr.slideKind === "concept-summary" && isConceptSummaryUnlockedForStudent(targetQObj)
+        ptr.slideKind === "case-scenario"
+          ? "case-scenario"
+          : ptr.slideKind === "concept-summary" && isConceptSummaryUnlockedForStudent(targetQObj)
           ? "concept-summary"
           : "question";
-      let idx = slides.findIndex((s) => s.kind === wantKind && s.qObj && s.qObj.id === ptr.questionId);
+      let idx = -1;
+      if (wantKind === "case-scenario" && ptr.caseId) {
+        idx = slides.findIndex((s) => s.kind === "case-scenario" && s.caseObj && s.caseObj.id === ptr.caseId);
+      } else if (wantKind === "concept-summary") {
+        idx = slides.findIndex((s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ptr.questionId);
+      } else {
+        const wantStuStage = ptr.studentStage === 1 ? 1 : 2;
+        idx = slides.findIndex(
+          (s) => s.kind === "question" && s.qObj && s.qObj.id === ptr.questionId && (s.pedStage || 2) === wantStuStage
+        );
+      }
       if (idx < 0) idx = slides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === ptr.questionId);
       if (idx >= 0 && (idx !== state.hsdSlideIdx || changed || ptr.forceSync)) {
         state.hsdSlideIdx = idx;
@@ -20347,7 +20369,7 @@
         renderHsDiscussionView();
         broadcastPptPresentationState();
         showStudentSlideSyncToast(
-          `📡 ซิงค์ตามสไลด์อาจารย์: ${findQuestionLabelByQId(ptr.questionId)}${wantKind === "concept-summary" ? " (สาระสำคัญ)" : ""}`
+          `📡 ซิงค์ตามสไลด์อาจารย์: ${findQuestionLabelByQId(ptr.questionId)}${wantKind === "concept-summary" ? " (สาระสำคัญ)" : wantKind === "case-scenario" ? " (เนื้อหาโจทย์)" : ""}`
         );
       }
     } else {
@@ -20614,20 +20636,20 @@
       }
       const envNow = typeof getPptViewportEnv === "function" ? getPptViewportEnv() : { isCoarse: false, isKbdOpen: false, w: window.innerWidth };
       if (!fsActive && state.hsdTheater && !state.isPptSlideSharePopup) {
-        // On touch/mobile/tablet or when virtual keyboard triggers browser FS exit, keep the Slide Discussion overlay open!
-        if (!envNow.isCoarse && !envNow.isKbdOpen && envNow.w >= 1100 && state.hsdNativeFsEntered) {
+        if (!envNow.isKbdOpen && state.hsdNativeFsEntered) {
           state.hsdNativeFsEntered = false;
           state.hsdTheater = false;
           state.hsdFsGridOpen = false;
           syncViewModeButtonsUI();
           renderPptPresentationOverlay();
+          requestAnimationFrame(() => applySlideBoxesZoom(document));
         } else {
           state.hsdNativeFsEntered = false;
           if (typeof syncPptOverlayViewportMetrics === "function") {
             syncPptOverlayViewportMetrics(true);
           }
         }
-      } else if (!fsActive && state.hsdPptWindowMax && !envNow.isCoarse && !envNow.isKbdOpen) {
+      } else if (!fsActive && state.hsdPptWindowMax && !envNow.isKbdOpen) {
         togglePptStudioWindowMax(false);
       } else if (state.isPptSlideSharePopup) {
         renderPptPresentationOverlay();
