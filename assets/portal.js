@@ -20426,6 +20426,8 @@
     let nextIdx = -1;
     if (ref.kind === "opening-kahoot") {
       nextIdx = nextSlides.findIndex((s) => s.kind === "opening-kahoot" && (!ref.modId || (s.mod && s.mod.id === ref.modId)));
+    } else if (ref.kind === "case-cover" && ref.caseId) {
+      nextIdx = nextSlides.findIndex((s) => s.kind === "case-cover" && s.caseObj && s.caseObj.id === ref.caseId);
     } else if (ref.kind === "case-scenario" && ref.caseId) {
       nextIdx = nextSlides.findIndex((s) => s.kind === "case-scenario" && s.caseObj && s.caseObj.id === ref.caseId);
     } else if (ref.kind === "concept-summary" && ref.qId) {
@@ -20793,13 +20795,17 @@
       const slides = buildHsSlideDeckItems(matchedCases);
       const targetQObj = findHsQuestionById(ptr.questionId);
       const wantKind =
-        ptr.slideKind === "case-scenario"
+        ptr.slideKind === "case-cover"
+          ? "case-cover"
+          : ptr.slideKind === "case-scenario"
           ? "case-scenario"
           : ptr.slideKind === "concept-summary" && isConceptSummaryUnlockedForStudent(targetQObj)
           ? "concept-summary"
           : "question";
       let idx = -1;
-      if (wantKind === "case-scenario" && ptr.caseId) {
+      if (wantKind === "case-cover" && ptr.caseId) {
+        idx = slides.findIndex((s) => s.kind === "case-cover" && s.caseObj && s.caseObj.id === ptr.caseId);
+      } else if (wantKind === "case-scenario" && ptr.caseId) {
         idx = slides.findIndex((s) => s.kind === "case-scenario" && s.caseObj && s.caseObj.id === ptr.caseId);
       } else if (wantKind === "concept-summary") {
         idx = slides.findIndex((s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ptr.questionId);
