@@ -22237,8 +22237,9 @@
       useResponsiveSlide = true;
     } else if (state.hsdFsCanvasMode === "16x9" && !isKbdOpen) {
       useResponsiveSlide = false;
+    } else if (state.hsdTheater || state.isPptSlideSharePopup) {
+      useResponsiveSlide = true;
     } else {
-      // Auto: responsive adaptive slide for vertical/horizontal/Duo phones, vertical/horizontal tablets, compact windows, or virtual keyboard!
       useResponsiveSlide = Boolean(
         isKbdOpen ||
         isCoarse ||
@@ -22559,29 +22560,19 @@
       const deck = buildHsSlideDeckItems(matched);
       return deck[Math.max(0, Math.min(deck.length - 1, state.hsdSlideIdx))] || null;
     })();
+    if (activeCur && activeCur.kind === "opening-kahoot") return "opening-kahoot";
+    if (activeCur && activeCur.kind === "case-scenario") return "case-scenario";
     if (activeCur && activeCur.kind === "concept-summary") return "concept-summary";
-    if (ROLE !== "faculty") {
-      const rawStu = state.hsdSinglePaneOverride || state.hsdSlideLayout || "split-sheet";
-      return ["scenario", "sheet", "split-sheet"].includes(rawStu) ? rawStu : "split-sheet";
-    }
-    if (state.hsdFacultyMode === "student") {
-      return state.hsdSinglePaneOverride === "scenario" || state.hsdSinglePaneOverride === "sheet"
-        ? state.hsdSinglePaneOverride
-        : "split-sheet";
-    }
+
+    const pedStage = (activeCur && activeCur.pedStage) || 2;
     if (
       state.hsdSinglePaneOverride === "scenario" ||
       state.hsdSinglePaneOverride === "sheet" ||
-      state.hsdSinglePaneOverride === "key-only"
+      state.hsdSinglePaneOverride === "split-sheet"
     ) {
       return state.hsdSinglePaneOverride;
     }
-    const pedStage = (activeCur && activeCur.pedStage) || 1;
-    if (pedStage === 1) return "split-sheet";
-    if (pedStage === 2) return "split-key";
-    if (pedStage === 3) return "split-key-all";
-    if (pedStage === 4) return "split-concept";
-    if (pedStage === 5) return "concept-summary";
+    if (pedStage === 1) return "sheet";
     return "split-sheet";
   }
 
@@ -22626,72 +22617,49 @@
     const deckCtx = getActiveSlideDeckContext();
     let cur = deckCtx.cur;
     if (cur && cur.kind === "opening-kahoot") {
-      const firstQIdx = deckCtx.slides.findIndex((s) => s.kind === "question" && s.mod.id === cur.mod.id);
-      if (firstQIdx >= 0) {
-        state.hsdSlideIdx = firstQIdx;
-        cur = deckCtx.slides[firstQIdx];
+      const firstScenOrQIdx = deckCtx.slides.findIndex(
+        (s) => (s.kind === "case-scenario" || s.kind === "question") && s.mod.id === cur.mod.id
+      );
+      if (firstScenOrQIdx >= 0) {
+        state.hsdSlideIdx = firstScenOrQIdx;
+        cur = deckCtx.slides[firstScenOrQIdx];
         if (cur && cur.qObj) state.hsdLastSelectedQId = cur.qObj.id;
       }
     }
 
-    if (ROLE === "faculty") {
-      const curQId = cur && cur.qObj ? cur.qObj.id : state.hsdLastSelectedQId;
-      if (nextLayout === "concept-summary" && curQId) {
-        if (!canNavigateConceptSummarySlide(findHsQuestionById(curQId))) return;
-        state.hsdSinglePaneOverride = "";
-        jumpToQuestionPedStage(curQId, 5);
-        return;
-      }
-      if (nextLayout === "scenario" || nextLayout === "sheet" || nextLayout === "key-only") {
-        if (cur && cur.kind === "concept-summary" && curQId) {
-          const wantSt = nextLayout === "key-only" ? 2 : 1;
-          const qIdx = deckCtx.slides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === curQId && (s.pedStage || 1) === wantSt);
-          if (qIdx >= 0) state.hsdSlideIdx = qIdx;
-          state.hsdSinglePaneOverride = nextLayout;
-        } else {
-          state.hsdSinglePaneOverride = state.hsdSinglePaneOverride === nextLayout ? "" : nextLayout;
-        }
-      } else if (nextLayout === "split-sheet" && curQId) {
-        state.hsdSinglePaneOverride = "";
-        jumpToQuestionPedStage(curQId, 1);
-        return;
-      } else if (nextLayout === "split-key" && curQId) {
-        state.hsdSinglePaneOverride = "";
-        jumpToQuestionPedStage(curQId, 2);
-        return;
-      } else if (nextLayout === "split-key-all" && curQId) {
-        state.hsdSinglePaneOverride = "";
-        jumpToQuestionPedStage(curQId, 3);
-        return;
-      } else if (nextLayout === "split-concept" && curQId) {
-        state.hsdSinglePaneOverride = "";
-        jumpToQuestionPedStage(curQId, 4);
-        return;
-      } else {
-        state.hsdSinglePaneOverride = "";
-      }
-    } else {
-      const curQId = cur && cur.qObj ? cur.qObj.id : state.hsdLastSelectedQId;
-      if (nextLayout === "concept-summary" && curQId) {
-        if (!canNavigateConceptSummarySlide(findHsQuestionById(curQId))) return;
-        state.hsdSinglePaneOverride = "";
-        jumpToQuestionPedStage(curQId, 5);
-        return;
-      }
-      if (cur && cur.kind === "concept-summary" && curQId) {
-        const qIdx = deckCtx.slides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === curQId);
-        if (qIdx >= 0) state.hsdSlideIdx = qIdx;
-      }
-      state.hsdSlideLayout = nextLayout;
-      state.hsdSinglePaneOverride = nextLayout === "scenario" || nextLayout === "sheet" ? nextLayout : "";
+    const curQId = cur && cur.qObj ? cur.qObj.id : state.hsdLastSelectedQId;
+    if (nextLayout === "case-scenario" && curQId) {
+      state.hsdSinglePaneOverride = "";
+      jumpToQuestionPedStage(curQId, 0);
+      return;
     }
+    if (nextLayout === "concept-summary" && curQId) {
+      if (!canNavigateConceptSummarySlide(findHsQuestionById(curQId))) return;
+      state.hsdSinglePaneOverride = "";
+      jumpToQuestionPedStage(curQId, 5);
+      return;
+    }
+    if (nextLayout === "sheet" && curQId) {
+      state.hsdSinglePaneOverride = "";
+      jumpToQuestionPedStage(curQId, 1);
+      return;
+    }
+    if (nextLayout === "split-sheet" && curQId) {
+      state.hsdSinglePaneOverride = "";
+      jumpToQuestionPedStage(curQId, 2);
+      return;
+    }
+    if (nextLayout === "scenario" && curQId) {
+      state.hsdSinglePaneOverride = "";
+      jumpToQuestionPedStage(curQId, 0);
+      return;
+    }
+    state.hsdSlideLayout = nextLayout;
+    state.hsdSinglePaneOverride = nextLayout === "scenario" ? "scenario" : "";
 
     markSlideBoxesAutoOptimize("both");
     renderHsDiscussionView();
     broadcastPptPresentationState();
-    if (ROLE === "faculty") {
-      broadcastActiveFacultySlideToStudents(false);
-    }
   }
 
   function setHsdSplitOrientation(nextOrient, nextPctOpt) {
@@ -22719,20 +22687,29 @@
     markSlideBoxesAutoOptimize("both");
     renderHsDiscussionView();
     broadcastPptPresentationState();
-    if (ROLE === "faculty") {
-      broadcastActiveFacultySlideToStudents(false);
-    }
   }
 
   function toggleHsdBoxVisibility(boxSide, forceShow) {
-    const curLayout = getEffectiveHsdSlideLayout();
-    const isSplit =
-      curLayout === "split-key" ||
-      curLayout === "split-key-all" ||
-      curLayout === "split-sheet" ||
-      curLayout === "split-concept";
+    const { cur } = getActiveSlideDeckContext();
+    const curLayout = getEffectiveHsdSlideLayout(cur);
+    const isSplit = curLayout === "split-sheet";
 
     if (forceShow === true) {
+      if (state.hsdSinglePaneOverride) {
+        state.hsdSinglePaneOverride = "";
+        markSlideBoxesAutoOptimize("both");
+        renderHsDiscussionView();
+        broadcastPptPresentationState();
+        return;
+      }
+      if (cur && cur.kind === "case-scenario" && cur.qObj) {
+        jumpToQuestionPedStage(cur.qObj.id, 2);
+        return;
+      }
+      if (cur && cur.qObj && cur.pedStage === 1) {
+        jumpToQuestionPedStage(cur.qObj.id, 2);
+        return;
+      }
       state.hsdSinglePaneOverride = "";
       markSlideBoxesAutoOptimize("both");
       renderHsDiscussionView();
@@ -22742,11 +22719,11 @@
 
     if (forceShow === false && isSplit) {
       if (boxSide === "left") {
-        state.hsdSinglePaneOverride =
-          (curLayout === "split-key" || curLayout === "split-key-all" || curLayout === "split-concept") &&
-          ROLE === "faculty"
-            ? "key-only"
-            : "sheet";
+        if (cur && cur.qObj) {
+          jumpToQuestionPedStage(cur.qObj.id, 1);
+          return;
+        }
+        state.hsdSinglePaneOverride = "sheet";
       } else {
         state.hsdSinglePaneOverride = "scenario";
       }
@@ -22781,95 +22758,67 @@
           shortNum: "เปิดคาบ"
         });
       }
+      if ((Array.isArray(c.scenarioBlocks) && c.scenarioBlocks.length > 0) || c.scenarioHtml) {
+        const firstQObj = (Array.isArray(c.questions) && c.questions[0]) || null;
+        items.push({
+          kind: "case-scenario",
+          pedStage: 0,
+          pedKey: "case-scenario",
+          pedBadge: "เนื้อหาโจทย์ (Scenario Full Screen)",
+          pedShort: "เนื้อหาโจทย์",
+          mod,
+          caseObj: c,
+          qObj: firstQObj,
+          shortNum: `กรณีที่ ${c.caseNumber}`
+        });
+      }
       (c.questions || []).forEach((qObj, qIdx) => {
         const shortNum = getShortQuestionNumLabel(qObj, qIdx);
         const hasCs = Boolean(qObj && qObj.conceptSummarySlide);
         const uInfo = hasCs ? getHsSessionUnlockInfo(qObj, mod.id) : null;
-        if (ROLE === "faculty" && state.hsdFacultyMode !== "student") {
+        items.push({
+          kind: "question",
+          pedStage: 1,
+          pedKey: "sheet-full",
+          pedBadge: "ประเด็นคำถาม & Answer Sheet (เต็มจอ)",
+          pedShort: "① Sheet เต็มจอ",
+          mod,
+          caseObj: c,
+          qObj,
+          shortNum
+        });
+        items.push({
+          kind: "question",
+          pedStage: 2,
+          pedKey: "sheet",
+          pedBadge: "โจทย์ประกบกับ Answer Sheet",
+          pedShort: "② โจทย์+Sheet",
+          mod,
+          caseObj: c,
+          qObj,
+          shortNum
+        });
+        if (hasCs) {
+          const cs = qObj.conceptSummarySlide;
+          const unlockedNow = Boolean(uInfo && uInfo.unlockedForStudent);
           items.push({
-            kind: "question",
-            pedStage: 1,
-            pedKey: "sheet",
-            pedBadge: "ขั้น ① โจทย์ + Answer Sheet",
-            pedShort: "① Sheet",
+            kind: "concept-summary",
+            pedStage: 5,
+            pedKey: "concept-summary",
+            pedBadge: unlockedNow
+              ? `🔓 Unhide Slide · ${cs.studentBadge || "Key Takeaway"}`
+              : `🔒 Hide Slide · ปลดล็อกหลัง ${uInfo.shortLabel}`,
+            pedShort: unlockedNow
+              ? `🔓 ${cs.studentShortLabel || "Key Takeaway"}`
+              : "🔒 Hide Slide",
             mod,
             caseObj: c,
             qObj,
+            conceptSummary: unlockedNow ? cs : null,
+            isHiddenSlide: !unlockedNow,
+            unlockInfo: uInfo,
             shortNum
           });
-          items.push({
-            kind: "question",
-            pedStage: 2,
-            pedKey: "key-hide",
-            pedBadge: "ขั้น ② โจทย์ + Answer Key (Hide/Unhide รายข้อ + ไฮไลต์หลักฐาน)",
-            pedShort: "② Key",
-            mod,
-            caseObj: c,
-            qObj,
-            shortNum
-          });
-          items.push({
-            kind: "question",
-            pedStage: 3,
-            pedKey: "key-unhide-all",
-            pedBadge: "ขั้น ③ โจทย์ + Answer Key (Unhide All · ไฮไลต์ครบทุกประเด็น)",
-            pedShort: "③ Unhide All",
-            mod,
-            caseObj: c,
-            qObj,
-            shortNum
-          });
-          if (hasCs) {
-            const cs = qObj.conceptSummarySlide;
-            items.push({
-              kind: "concept-summary",
-              pedStage: 5,
-              pedKey: "concept-summary",
-              pedBadge: cs.badge || "ขั้น ④ Key Takeaway #1",
-              pedShort: cs.shortLabel || "④ Key Takeaway #1",
-              mod,
-              caseObj: c,
-              qObj,
-              conceptSummary: cs,
-              isHiddenSlide: false,
-              unlockInfo: uInfo,
-              shortNum
-            });
-          }
-        } else {
-          items.push({
-            kind: "question",
-            pedStage: 1,
-            pedKey: "sheet",
-            pedBadge: "โจทย์ + ใบงาน",
-            pedShort: "",
-            mod,
-            caseObj: c,
-            qObj,
-            shortNum
-          });
-          if (hasCs) {
-            const cs = qObj.conceptSummarySlide;
-            const unlockedNow = Boolean(uInfo && uInfo.unlockedForStudent);
-            items.push({
-              kind: "concept-summary",
-              pedStage: 5,
-              pedKey: "concept-summary",
-              pedBadge: unlockedNow
-                ? `🔓 Unhide Slide · ${cs.studentBadge || "Key Takeaway"}`
-                : `🔒 Hide Slide · ปลดล็อกหลัง ${uInfo.shortLabel}`,
-              pedShort: unlockedNow
-                ? `🔓 ${cs.studentShortLabel || "Key Takeaway"}`
-                : "🔒 Hide Slide",
-              mod,
-              caseObj: c,
-              qObj,
-              conceptSummary: unlockedNow ? cs : null,
-              isHiddenSlide: !unlockedNow,
-              unlockInfo: uInfo,
-              shortNum
-            });
-          }
         }
       });
     });
@@ -23383,6 +23332,39 @@
     }
   }
 
+  function requestNativeBrowserFullscreen() {
+    const docEl = document.documentElement;
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      state.hsdNativeFsEntered = true;
+      return;
+    }
+    if (docEl.requestFullscreen) {
+      try {
+        const p = docEl.requestFullscreen({ navigationUI: "hide" });
+        if (p && typeof p.catch === "function") {
+          p.catch(() => {
+            try {
+              const p2 = docEl.requestFullscreen();
+              if (p2 && typeof p2.catch === "function") p2.catch(() => {});
+            } catch (_) {}
+          });
+        }
+        return;
+      } catch (_) {
+        try {
+          const pFallback = docEl.requestFullscreen();
+          if (pFallback && typeof pFallback.catch === "function") pFallback.catch(() => {});
+          return;
+        } catch (_2) {}
+      }
+    }
+    if (docEl.webkitRequestFullscreen) {
+      try {
+        docEl.webkitRequestFullscreen();
+      } catch (_) {}
+    }
+  }
+
   function togglePptStudioWindowMax(forceBool) {
     const nextMax = typeof forceBool === "boolean" ? forceBool : !state.hsdPptWindowMax;
     if (nextMax && state.hsdTheater) {
@@ -23391,22 +23373,10 @@
     }
     state.hsdPptWindowMax = nextMax;
     document.body.classList.toggle("is-ppt-window-max-open", nextMax);
-    const envNow = getPptViewportEnv();
     if (nextMax) {
+      requestNativeBrowserFullscreen();
       ensureStudentRoomReadyForPresentation();
       state.hsdViewMode = "slide";
-      if (!envNow.isCoarse && envNow.w >= 1140) {
-        const docEl = document.documentElement;
-        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-          if (docEl.requestFullscreen) {
-            docEl.requestFullscreen().catch(() => {});
-          } else if (docEl.webkitRequestFullscreen) {
-            try {
-              docEl.webkitRequestFullscreen();
-            } catch (_) {}
-          }
-        }
-      }
     } else if (document.fullscreenElement && document.exitFullscreen && !state.hsdTheater) {
       document.exitFullscreen().catch(() => {});
     } else if (document.webkitFullscreenElement && document.webkitExitFullscreen && !state.hsdTheater) {
@@ -23420,6 +23390,7 @@
   }
 
   function enterPptFullscreenFromBeginning() {
+    requestNativeBrowserFullscreen();
     state.hsdSlideIdx = 0;
     state.hsdSinglePaneOverride = "";
     state.hsdFocusedConceptStep = 0;
@@ -23429,6 +23400,7 @@
   }
 
   function enterPptFullscreenShow(targetCaseOrQId) {
+    requestNativeBrowserFullscreen();
     ensureStudentRoomReadyForPresentation();
     if (state.hsdPptWindowMax) {
       state.hsdPptWindowMax = false;
@@ -23443,25 +23415,11 @@
     state.hsdFsGridOpen = false;
     state.hsdFsZoomScale = 1;
     state.hsdFsScenFolded = false;
-    state.hsdNativeFsEntered = false;
+    state.hsdNativeFsEntered = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
     markSlideBoxesAutoOptimize("both");
     syncViewModeButtonsUI();
     renderHsDiscussionView();
     broadcastPptPresentationState();
-
-    const envNow = getPptViewportEnv();
-    if (!envNow.isCoarse && envNow.w >= 1140) {
-      const docEl = document.documentElement;
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (docEl.requestFullscreen) {
-          docEl.requestFullscreen().catch(() => {});
-        } else if (docEl.webkitRequestFullscreen) {
-          try {
-            docEl.webkitRequestFullscreen();
-          } catch (_) {}
-        }
-      }
-    }
   }
 
   function exitPptFullscreenShow() {
@@ -23493,13 +23451,7 @@
         } catch (_) {}
       }
     } else {
-      const docEl = document.documentElement;
-      if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
-      else if (docEl.webkitRequestFullscreen) {
-        try {
-          docEl.webkitRequestFullscreen();
-        } catch (_) {}
-      }
+      requestNativeBrowserFullscreen();
     }
   }
 
@@ -23938,6 +23890,8 @@
       let optLabel = "";
       if (s.kind === "opening-kahoot") {
         optLabel = `Slide ${idx + 1}: สไลด์เปิดคาบ & เช็คชื่อกลุ่มย่อย (${s.mod.code})`;
+      } else if (s.kind === "case-scenario") {
+        optLabel = `[เนื้อหาโจทย์เต็มจอ] กรณีศึกษาที่ ${s.caseObj.caseNumber}: ${s.caseObj.subtitle || s.caseObj.title}`;
       } else if (s.kind === "concept-summary") {
         const csTitle = (s.conceptSummary && s.conceptSummary.title) || "Key Takeaway";
         optLabel = `[${s.pedShort || "Key Takeaway #1"}] ข้อ ${s.shortNum}: ${csTitle}`;
