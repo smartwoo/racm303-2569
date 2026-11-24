@@ -11037,7 +11037,7 @@
     },
     HS6: {
       thread:
-        "เส้นทางการเรียนรู้ 6 ขั้นตอน: ปูฐานทฤษฎีประกันสุขภาพ–3 กองทุนไทย–กลไกจ่ายเงิน–Moral Hazard → สกัดตารางเปรียบเทียบแรงจูงใจ → เช็กความแม่นยำด้วย Self-Quiz → ฟังบรรยายต้นคาบจาก Slide อาจารย์ → วิเคราะห์ UHC โลก ช่องว่างแรงงานนอกระบบ และ FFS/Capitation/P4P ในห้องเรียน → VDO Lecture ประจำคาบ (รอแขวน VDO)",
+        "เส้นทางการเรียนรู้ 6 ขั้นตอน: ปูฐานทฤษฎีประกันสุขภาพ–3 กองทุนไทย–กลไกจ่ายเงิน–Moral Hazard → สกัดตารางเปรียบเทียบแรงจูงใจ → เช็กความแม่นยำด้วย Self-Quiz → ฟังบรรยายต้นคาบจาก Slide อาจารย์ → วิเคราะห์ UHC โลก ช่องว่างแรงงานนอกระบบ และ FFS/Capitation/P4P ในห้องเรียน → VDO Lecture ประจำคาบ (พร้อมรับชม Interactive Studio ครบ 6 ตอน · 141:09 นาที)",
       fullDesc:
         "ปูพื้นฐานหลักการและองค์ประกอบการประกันสุขภาพ, ระบบ 3 กองทุนสุขภาพไทย, รูปแบบการจ่ายค่าบริการผู้ให้บริการ (FFS, Capitation, DRG, Global Budget) และปัญหา Moral Hazard ฉบับสมบูรณ์",
       fullBridge: "เข้าใจหลักการคลังสุขภาพและกลไกการจ่ายเงิน เพื่อต่อยอดสู่การสกัดตารางเปรียบเทียบในขั้นที่ 2",
@@ -17054,6 +17054,7 @@
 
     // Interactive VDO Lecture Studio (when studioGlobalKey data is loaded) OR 16:9 VDO Player / Pending Standby Frame
     const studioDataObj = rec.studioGlobalKey && window[rec.studioGlobalKey] ? window[rec.studioGlobalKey] : null;
+    let studioMountEl = null;
     if (
       vInfo.uploaded &&
       studioDataObj &&
@@ -17061,6 +17062,7 @@
       typeof window.RACM303_EP_STUDIO.render === "function"
     ) {
       const studioMount = make("div", null, "hs-vdo-interactive-studio-mount");
+      studioMountEl = studioMount;
       stage.appendChild(studioMount);
       window.RACM303_EP_STUDIO.render(studioMount, {
         standaloneData: studioDataObj,
@@ -17208,7 +17210,25 @@
           `<span class="hs-vdo-comp-play">▶</span>` +
           `<span class="hs-vdo-comp-txt">${escapeHtml(cl.label)}</span>`;
         b.addEventListener("click", () => {
-          window.RACM_HE_VIDEO_BRIDGE.open(cl.clipId, cl.startSec || 0, cl.label || "");
+          if (
+            studioMountEl &&
+            studioDataObj &&
+            studioDataObj.isMultiEpisode &&
+            studioDataObj.episodes &&
+            studioDataObj.episodes[cl.clipId] &&
+            window.RACM303_EP_STUDIO
+          ) {
+            window.RACM303_EP_STUDIO.render(studioMountEl, {
+              standaloneData: studioDataObj,
+              moduleCode: curMod.code,
+              episodeCode: cl.clipId,
+              initialSeekSec: cl.startSec || 0,
+              autoPlay: true
+            });
+            studioMountEl.scrollIntoView({ behavior: "smooth", block: "start" });
+          } else {
+            window.RACM_HE_VIDEO_BRIDGE.open(cl.clipId, cl.startSec || 0, cl.label || "");
+          }
         });
         clipGrid.appendChild(b);
       });
