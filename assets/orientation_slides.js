@@ -169,8 +169,53 @@
       isCover: true
     },
     {
-      id: "s02-third-pillar-why",
+      id: "s02-prem-buri-founder",
       num: "02",
+      section: "objectives",
+      sectionLabel: "Act I · Start with Why",
+      actClass: "",
+      actLabel: "ACT I · FOUNDING FATHER",
+      timeWindow: "09.02 – 09.03 น. (1 นาที)",
+      kicker: "01 · RAMATHIBODI COMMUNITY MEDICINE HERITAGE",
+      title: "Prof. Dr. Prem Buri — บิดาผู้วางรากฐานและต้นแบบการสอนเวชศาสตร์ชุมชน รามาธิบดี",
+      keyTag: "ต้นแบบครูแพทย์",
+      keyMessageHtml:
+        "<strong>Prof. Dr. Prem Buri</strong>, our founding father and our role model of teaching community medicine in Ramathibodi",
+      notes:
+        "รำลึกถึงศาสตราจารย์เกียรติคุณ นายแพทย์เปรม บุรี หัวหน้าภาควิชาศัลยศาสตร์ท่านแรก และผู้อำนวยการโครงการเวชศาสตร์ชุมชนท่านแรกของคณะแพทยศาสตร์โรงพยาบาลรามาธิบดี (พ.ศ. 2512–2520) ผู้วางรากฐานการจัดการเรียนการสอนเวชศาสตร์ชุมชนแบบสหสาขาวิชาชีพ ณ อำเภอบางปะอิน จังหวัดพระนครศรีอยุธยา ร่วมกับกระทรวงสาธารณสุข เพื่อให้บัณฑิตแพทย์เข้าใจชีวิตจริงของประชาชนและเป็นผู้นำการเปลี่ยนแปลงในระบบสุขภาพ",
+      render: () => `
+        <div class="or-infog-split is-fig-left">
+          ${figPlate(
+            "orient_s02_prem_buri.png",
+            "Prof. Dr. Prem Buri — กตเวทิตาคารวะ ๑๐๐ ปี ศาสตราจารย์เกียรติคุณ นายแพทย์เปรม บุรี",
+            "<strong>กตเวทิตาคารวะ ๑๐๐ ปี เปรม บุรี</strong> · ศาสตราจารย์เกียรติคุณ นายแพทย์เปรม บุรี"
+          )}
+
+          <div class="or-stack-col is-s03-stack" data-fit-group="cards">
+            <div class="or-card is-navy-tint">
+              <span class="or-card-kicker">FOUNDING DIRECTOR · พ.ศ. 2512 – 2520</span>
+              <h3 class="or-card-title">ผู้อำนวยการโครงการเวชศาสตร์ชุมชนท่านแรก</h3>
+              <p class="or-card-text">จากหัวหน้าภาควิชาศัลยศาสตร์ท่านแรกของรามาธิบดี สู่การบุกเบิก<strong>โครงการเวชศาสตร์ชุมชน อ.บางปะอิน จ.พระนครศรีอยุธยา</strong> เพื่อปูรากฐานให้บัณฑิตแพทย์เข้าใจบริบทสังคมชนบทไทยอย่างแท้จริง</p>
+            </div>
+
+            <div class="or-card is-white">
+              <span class="or-card-kicker">MULTIDISCIPLINARY MODEL · บูรณาการข้ามศาสตร์</span>
+              <h3 class="or-card-title">เชื่อมโรงเรียนแพทย์เข้ากับระบบสาธารณสุขระดับอำเภอ</h3>
+              <p class="or-card-text">ริเริ่มหน่วยทำงาน<strong>สหสาขาวิชาชีพ (Multidisciplinary Unit)</strong> ร่วมกับกระทรวงสาธารณสุข ผสานการรักษา การป้องกันโรค และการสร้างเสริมสุขภาพ ตั้งแต่ระดับบุคคล ครอบครัว หมู่บ้าน ตำบล ถึงอำเภอ</p>
+            </div>
+
+            <div class="or-card is-teal-tint">
+              <span class="or-card-kicker">LIVING LEGACY · สู่ RACM 303 ในปัจจุบัน</span>
+              <h3 class="or-card-title">เรียนรู้จากชีวิตจริง สู่ผู้นำการเปลี่ยนแปลง (Change Agent)</h3>
+              <p class="or-card-text">สืบสานปณิธานการพาแพทย์ออกจากข้างเตียงไปเรียนรู้ร่วมกับชุมชนจริง (<code>Experiential Learning</code>) เพื่อให้เข้าใจปัจจัยกำหนดสุขภาพและร่วมพัฒนาระบบสุขภาพอย่างยั่งยืน</p>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    {
+      id: "s02-third-pillar-why",
+      num: "03",
       section: "objectives",
       sectionLabel: "Act I · Start with Why",
       actClass: "",
@@ -225,7 +270,7 @@
     },
     {
       id: "s03-beyond-bedside",
-      num: "03",
+      num: "04",
       section: "objectives",
       sectionLabel: "Act I · Start with Why",
       actClass: "",
@@ -273,7 +318,7 @@
     },
     {
       id: "s04-course-objectives",
-      num: "04",
+      num: "05",
       section: "objectives",
       sectionLabel: "Act I · Start with Why",
       actClass: "",
@@ -339,7 +384,7 @@
     },
     {
       id: "s05-hs-5objectives",
-      num: "05",
+      num: "06",
       section: "objectives",
       sectionLabel: "Act I · Start with Why",
       actClass: "",
@@ -391,7 +436,7 @@
     },
     {
       id: "s06-roadmap-6weeks",
-      num: "06",
+      num: "07",
       section: "experience",
       sectionLabel: "Act II · Learning Journey",
       actClass: "is-act-2",
@@ -486,7 +531,7 @@
     },
     {
       id: "s07-hs-guided-learning",
-      num: "07",
+      num: "08",
       section: "experience",
       sectionLabel: "Act II · Learning Journey",
       actClass: "is-act-2",
@@ -534,7 +579,7 @@
     },
     {
       id: "s08-epidemiology",
-      num: "08",
+      num: "09",
       section: "experience",
       sectionLabel: "Act II · Learning Journey",
       actClass: "is-act-2",
@@ -593,7 +638,7 @@
     },
     {
       id: "s09-fieldwork-9sites",
-      num: "09",
+      num: "10",
       section: "experience",
       sectionLabel: "Act II · Learning Journey",
       actClass: "is-act-2",
@@ -657,7 +702,7 @@
     },
     {
       id: "s10-competency-blueprint",
-      num: "10",
+      num: "11",
       section: "evaluation",
       sectionLabel: "Act III · Evaluation",
       actClass: "is-act-3",
@@ -745,7 +790,7 @@
     },
     {
       id: "s11-eval-written-exams",
-      num: "11",
+      num: "12",
       section: "evaluation",
       sectionLabel: "Act III · Evaluation",
       actClass: "is-act-3",
@@ -808,7 +853,7 @@
     },
     {
       id: "s12-eval-practical-rubrics",
-      num: "12",
+      num: "13",
       section: "evaluation",
       sectionLabel: "Act III · Evaluation",
       actClass: "is-act-3",
@@ -870,7 +915,7 @@
     },
     {
       id: "s13-attendance-safety",
-      num: "13",
+      num: "14",
       section: "action",
       sectionLabel: "Act IV · Conduct & Launch",
       actClass: "is-act-4",
@@ -924,7 +969,7 @@
     },
     {
       id: "s14-quiz-osmu",
-      num: "14",
+      num: "15",
       section: "evaluation",
       sectionLabel: "Act IV · Live Quiz O/S/M/U",
       actClass: "is-act-4",
@@ -950,7 +995,7 @@
     },
     {
       id: "s15-osmu-criteria",
-      num: "15",
+      num: "16",
       section: "evaluation",
       sectionLabel: "Act IV · เกณฑ์ O / S / M / U",
       actClass: "is-act-3",
@@ -1008,7 +1053,7 @@
     },
     {
       id: "s16-grading-milestones",
-      num: "16",
+      num: "17",
       section: "evaluation",
       sectionLabel: "Act IV · ผังเกรด & 7 กำหนดการ",
       actClass: "is-act-3",
@@ -1070,7 +1115,7 @@
     },
     {
       id: "s17-digital-launch",
-      num: "17",
+      num: "18",
       section: "action",
       sectionLabel: "Act IV · Conduct & Launch",
       actClass: "is-act-4",
@@ -1127,9 +1172,9 @@
   ];
 
   const SECTION_FILTERS = [
-    { id: "all", labelTh: "ทั้งหมด (17)", labelEn: "All Slides (17)" },
+    { id: "all", labelTh: "ทั้งหมด (18)", labelEn: "All Slides (18)" },
     { id: "intro", labelTh: "เปิดเรื่อง & QR Lobby (1)", labelEn: "Opening & Lobby (1)" },
-    { id: "objectives", labelTh: "Act I · ความสำคัญและเป้าหมาย (4)", labelEn: "Act I · Start with Why (4)" },
+    { id: "objectives", labelTh: "Act I · รากฐานและเป้าหมาย (5)", labelEn: "Act I · Heritage & Why (5)" },
     { id: "experience", labelTh: "Act II · เส้นทางเรียนรู้ (4)", labelEn: "Act II · Experience (4)" },
     { id: "evaluation", labelTh: "Act III · วัดผล & Quiz O/S/M/U (6)", labelEn: "Act III · Evaluation & O/S/M/U (6)" },
     { id: "action", labelTh: "Act IV · เวลาเรียน & ก้าวแรก (2)", labelEn: "Act IV · Conduct & Launch (2)" }
