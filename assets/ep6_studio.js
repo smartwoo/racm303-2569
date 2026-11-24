@@ -117,6 +117,7 @@
 
   const studioState = {
     activeModule: "EP4",
+    perBundleEpisode: {},
     perLectureSec: { EP4: 0, EP5: 0, EP6: 4, EP7: 0, EP8: 0, EP9: 0 },
     currentSec: 4,
     activeSlideId: 1,
@@ -295,15 +296,30 @@
   function renderEpStudio(container, opts) {
     if (!container) return;
     const standaloneData = opts && opts.standaloneData && typeof opts.standaloneData === "object" ? opts.standaloneData : null;
+    const isMultiStandalone = Boolean(standaloneData && standaloneData.isMultiEpisode && standaloneData.episodes);
     const standaloneCode = standaloneData
       ? String((opts && opts.moduleCode) || (standaloneData.meta && standaloneData.meta.moduleCode) || "VDO")
       : "";
-    const modules = standaloneData ? { [standaloneCode]: standaloneData } : getModulesMap();
-    const availableCodes = standaloneData ? [standaloneCode] : MODULE_ORDER.filter((c) => Boolean(modules[c]));
+    const modules = isMultiStandalone
+      ? standaloneData.episodes
+      : standaloneData
+      ? { [standaloneCode]: standaloneData }
+      : getModulesMap();
+    const availableCodes = isMultiStandalone
+      ? (standaloneData.episodeOrder || Object.keys(modules)).filter((c) => Boolean(modules[c]))
+      : standaloneData
+      ? [standaloneCode]
+      : MODULE_ORDER.filter((c) => Boolean(modules[c]));
     if (!availableCodes.length) return;
 
     let modCode = standaloneCode;
-    if (!standaloneData) {
+    if (isMultiStandalone) {
+      const wantedEp = opts && opts.episodeCode && modules[opts.episodeCode] ? opts.episodeCode : null;
+      const savedEp = studioState.perBundleEpisode[standaloneCode];
+      const defEp = standaloneData.defaultEpisode && modules[standaloneData.defaultEpisode] ? standaloneData.defaultEpisode : availableCodes[0];
+      modCode = wantedEp || (savedEp && modules[savedEp] ? savedEp : defEp);
+      studioState.perBundleEpisode[standaloneCode] = modCode;
+    } else if (!standaloneData) {
       if (opts && opts.moduleCode && modules[opts.moduleCode]) {
         studioState.activeModule = opts.moduleCode;
       } else if (!modules[studioState.activeModule]) {
@@ -344,9 +360,13 @@
       };
     }
 
-    // Restore saved position for this specific lecture
-    const savedSec = studioState.perLectureSec[modCode];
+    // Restore saved position (or explicit initialSeekSec) for this specific lecture
+    const savedSec =
+      opts && typeof opts.initialSeekSec === "number"
+        ? opts.initialSeekSec
+        : studioState.perLectureSec[modCode];
     studioState.currentSec = Math.max(MIN_SEC, Math.min(MAX_SEC - 1, savedSec != null ? savedSec : MIN_SEC));
+    studioState.perLectureSec[modCode] = studioState.currentSec;
     studioState.activeSlideId = findSlideAtTime(DATA, studioState.currentSec);
     studioState.activeStageId = getSlideById(DATA, studioState.activeSlideId).stageId;
     studioState.stageFilter = 0;
@@ -373,35 +393,44 @@
       videoEl: null,
       activePartIdx: initPartInfo.partIdx,
       pendingLocalSeek: initPartInfo.localSec,
-      pendingAutoPlay: false,
+      pendingAutoPlay: Boolean(opts && opts.autoPlay),
       flashTimer: null,
       dockedMeasuredHeight: 0,
       cleanupListeners: null
     };
     activeInstance = instance;
 
-    // 0. Multi-Lecture Switcher Ribbon (EP6 · EP7 · EP8 · EP9)
+    // 0. Multi-Lecture Switcher Ribbon
     if (availableCodes.length > 1) {
+      const switcherHeading = standaloneData
+        ? standaloneData.switcherLabel || "🎬 เลือกตอนวิดีโอบรรยายประจำคาบ"
+        : "🎬 เลือกคาบบรรยายระบาดวิทยา";
       const switcher = document.createElement("div");
       switcher.className = "ep6-module-switcher";
       switcher.setAttribute("role", "tablist");
-      switcher.setAttribute("aria-label", "เลือกบทเรียนวิดีโอบรรยายระบาดวิทยา (EP4–EP9)");
+      switcher.setAttribute("aria-label", switcherHeading);
       switcher.innerHTML = `
-        <div class="ep6-ms-label">🎬 เลือกคาบบรรยายระบาดวิทยา</div>
+        <div class="ep6-ms-label">${esc(switcherHeading)}</div>
         <div class="ep6-ms-grid">
           ${availableCodes
             .map((code) => {
               const m = modules[code];
-              const info = MODULE_SHORT_LABELS[code] || { short: m.meta.courseTitle, sub: "" };
+              const info =
+                (standaloneData && standaloneData.shortLabels && standaloneData.shortLabels[code]) ||
+                MODULE_SHORT_LABELS[code] ||
+                { short: m.meta.courseTitle, sub: "" };
+              const cardBadgeRight = m.meta.examWeight
+                ? `สอบ ${m.meta.examWeight}`
+                : m.meta.cardTag || m.meta.sessionTag || standaloneCode || "VDO";
               const active = code === modCode;
               return `
                 <button type="button" role="tab" aria-selected="${active}" class="ep6-ms-card ${active ? "is-active" : ""}" data-switch-ep-mod="${code}">
                   <div class="ep6-ms-top">
-                    <span class="ep6-ms-code">${esc(code)} · สอบ ${esc(m.meta.examWeight || "—")}</span>
+                    <span class="ep6-ms-code">${esc(code)} · ${esc(cardBadgeRight)}</span>
                     <span class="ep6-ms-dur">⏱ ${esc(m.meta.durationLabel || fmtTime(m.meta.durationSec))} · ${m.slides.length} สไลด์</span>
                   </div>
                   <div class="ep6-ms-title">${esc(info.short)}</div>
-                  <div class="ep6-ms-sub">${esc(m.meta.lecturer || "")} — ${esc(info.sub)}</div>
+                  <div class="ep6-ms-sub">${esc(m.meta.lecturer || "")}${info.sub ? ` — ${esc(info.sub)}` : ""}</div>
                 </button>
               `;
             })
@@ -1344,6 +1373,17 @@
 
     function switchActiveModule(nextCode) {
       if (!modules[nextCode] || nextCode === modCode) return;
+      if (isMultiStandalone) {
+        studioState.perBundleEpisode[standaloneCode] = nextCode;
+        window.dispatchEvent(new CustomEvent("racm:epmodulechange", { detail: { moduleCode: nextCode } }));
+        renderEpStudio(container, {
+          ...opts,
+          episodeCode: nextCode,
+          initialSeekSec: undefined,
+          autoPlay: false
+        });
+        return;
+      }
       studioState.activeModule = nextCode;
       savePersistedPrefs();
       window.dispatchEvent(new CustomEvent("racm:epmodulechange", { detail: { moduleCode: nextCode } }));
