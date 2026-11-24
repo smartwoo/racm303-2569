@@ -29154,6 +29154,13 @@
       `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2.5" width="12" height="8" rx="1"/><path d="M8 10.5v3M5.5 13.5h5"/><polygon points="6.8,4.8 10.2,6.5 6.8,8.2" fill="currentColor" stroke="none"/></svg>`;
     qatShowBtn.addEventListener("click", () => enterPptFullscreenFromBeginning());
 
+    const qatReadBtn = make("button", null, "ppt-qat-btn");
+    qatReadBtn.type = "button";
+    qatReadBtn.title = "เปิดโหมดการอ่าน (PowerPoint Reading View) ในแท็บใหม่";
+    qatReadBtn.innerHTML =
+      `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3.5h4.6a1.4 1.4 0 0 1 1.4 1.4v8.1a1.1 1.1 0 0 0-1.1-1.1H2z"/><path d="M14 3.5H9.4A1.4 1.4 0 0 0 8 4.9v8.1a1.1 1.1 0 0 1 1.1-1.1H14z"/></svg>`;
+    qatReadBtn.addEventListener("click", () => openPptSlideShareWindow());
+
     const qatExportBtn = make("button", null, "ppt-qat-btn");
     qatExportBtn.type = "button";
     qatExportBtn.title = "ส่งออกไฟล์ .pptx หรือพิมพ์สไลด์ Handout 16:9 (รองรับ Light & Dark Theme)";
@@ -29171,10 +29178,14 @@
       renderHsDiscussionView();
     });
 
+    const appBadge = make("span", "P", "ppt-app-badge");
+    appBadge.title = `Microsoft PowerPoint Studio · คาบ ${cur.mod.code}`;
+
     tbLeft.append(
-      make("span", cur.mod.code, "ppt-app-badge"),
+      appBadge,
       make("span", "บันทึกอัตโนมัติ", "ppt-autosave-pill"),
       qatShowBtn,
+      qatReadBtn,
       qatExportBtn,
       qatAutoFitBtn
     );
@@ -29182,7 +29193,7 @@
     const tbCenter = make("div", null, "ppt-titlebar-center");
     const docFileBtn = make(
       "span",
-      `คาบ ${cur.mod.code} · ${cur.mod.title}  ▾`,
+      `${cur.mod.code}.pptx — ${cur.mod.title}  ▾`,
       "ppt-doc-filename"
     );
     docFileBtn.style.cursor = "pointer";
@@ -29191,7 +29202,7 @@
     tbCenter.appendChild(docFileBtn);
 
     if (state.pptPopupConnected) {
-      tbCenter.appendChild(make("span", "กำลัง Share Slide แยกจอ", "ppt-live-share-pill"));
+      tbCenter.appendChild(make("span", "📖 Reading Mode เปิดอยู่", "ppt-live-share-pill"));
     }
 
     const tbRight = make("div", null, "ppt-titlebar-right");
@@ -29565,15 +29576,16 @@
       renderHsDiscussionView();
     });
 
-    const handoutBarBtn = make("button", null, "ppt-view-ico-btn");
+    const handoutBarBtn = make("button", null, "ppt-status-btn");
     handoutBarBtn.type = "button";
     handoutBarBtn.dataset.pptBottomExport = "1";
     handoutBarBtn.title = "ส่งออกไฟล์ .pptx หรือพิมพ์สไลด์ Handout 16:9 (แนวตั้ง/แนวนอน, 1×1 ถึง 4×4)";
     handoutBarBtn.innerHTML =
-      `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8"/><polyline points="5 7 8 10 11 7"/><rect x="2" y="11.5" width="12" height="2.5" rx="0.6"/></svg>` +
+      `<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8"/><polyline points="5 7 8 10 11 7"/><rect x="2" y="11.5" width="12" height="2.5" rx="0.6"/></svg>` +
       `<span>Handout / .pptx</span>`;
     handoutBarBtn.addEventListener("click", () => openHsdPptExportStudioModal());
 
+    // Authentic PowerPoint 4-Icon View Strip: [Normal | Slide Sorter | Reading View (New Tab) | Slide Show (F5)]
     const shareSlideBtn = make(
       "button",
       null,
@@ -29582,27 +29594,27 @@
     shareSlideBtn.type = "button";
     shareSlideBtn.dataset.pptBottomShareSlide = "1";
     shareSlideBtn.setAttribute("aria-pressed", state.pptPopupConnected ? "true" : "false");
-    shareSlideBtn.title = "Share Slide — เปิดหน้าต่างสไลด์ 16:9 แยกสำหรับแชร์หน้าจอใน Zoom / Teams หรือลากขึ้นโปรเจกเตอร์";
+    shareSlideBtn.title = "มุมมองการอ่าน (PowerPoint Reading Mode) — เปิดสไลด์ในแท็บเบราว์เซอร์ใหม่ พร้อมปุ่มฉายสไลด์เต็มจอ";
     shareSlideBtn.innerHTML =
-      `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="3" width="10" height="7.5" rx="1"/><path d="M5.5 13h9v-7.5"/><path d="M8.5 7.5L13.5 2.5"/><polyline points="10.2 2.5 13.5 2.5 13.5 5.8"/></svg>` +
-      `<span>${state.pptPopupConnected ? "กำลัง Share Slide ↗" : "Share Slide"}</span>`;
+      `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1.8 3.5h4.7a1.5 1.5 0 0 1 1.5 1.5v8a1.2 1.2 0 0 0-1.2-1.2H1.8z"/><path d="M14.2 3.5H9.5A1.5 1.5 0 0 0 8 5v8a1.2 1.2 0 0 1 1.2-1.2h5z"/></svg>` +
+      `<span>Reading Mode ↗</span>`;
     shareSlideBtn.addEventListener("click", () => openPptSlideShareWindow());
 
     const showBarBtn = make("button", null, "ppt-view-ico-btn is-slideshow-btn");
     showBarBtn.type = "button";
     showBarBtn.dataset.pptBottomSlideShow = "1";
-    showBarBtn.title = "การนำเสนอสไลด์เต็มจอ 16:9 (Slide Show · F5)";
+    showBarBtn.title = "ฉายสไลด์เต็มหน้าจอแบบไร้แถบหัวข้อ (Slide Show · F5)";
     showBarBtn.innerHTML =
       `<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h12v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3z"/><line x1="1" y1="3" x2="15" y2="3"/><line x1="8" y1="11" x2="8" y2="14.2"/><path d="M5.2 14.5L8 12.2l2.8 2.3"/></svg>` +
       `<span>ฉายสไลด์ (F5)</span>`;
     showBarBtn.addEventListener("click", () => enterPptFullscreenShow());
 
-    viewStrip.append(normalViewBtn, sorterViewBtn, handoutBarBtn, shareSlideBtn, showBarBtn);
+    viewStrip.append(normalViewBtn, sorterViewBtn, shareSlideBtn, showBarBtn);
 
     if (state.pptPopupConnected) {
-      const stopShareBtn = make("button", "✕ หยุดแชร์", "ppt-status-stop-share-btn");
+      const stopShareBtn = make("button", "✕ ปิดแท็บ", "ppt-status-stop-share-btn");
       stopShareBtn.type = "button";
-      stopShareBtn.title = "ปิดหน้าต่าง Share Slide ที่แยกออกไป";
+      stopShareBtn.title = "ปิดแท็บ Reading Mode ที่เปิดแยกออกไป";
       stopShareBtn.addEventListener("click", () => closePptSlideShareWindow());
       viewStrip.appendChild(stopShareBtn);
     }
@@ -29671,7 +29683,7 @@
     });
 
     zoomGroup.append(zMinus, zSlider, zPlus, zPctBtn, zFitWinBtn);
-    stRight.append(notesToggle, thumbToggle, viewStrip, zoomGroup);
+    stRight.append(handoutBarBtn, notesToggle, thumbToggle, viewStrip, zoomGroup);
     statusBar.append(stLeft, stRight);
     shell.appendChild(statusBar);
 
@@ -29747,14 +29759,14 @@
           broadcastPptPresentationState();
         });
 
-        const fsCaseBtn = make("button", "▶ ฉาย Full Screen 16:9", "btn sm ppt-launch-fs-btn");
+        const fsCaseBtn = make("button", "📺 ฉายสไลด์ Full Screen", "btn sm ppt-launch-fs-btn");
         fsCaseBtn.type = "button";
-        fsCaseBtn.title = "ฉายกรณีศึกษานี้แบบเต็มหน้าจอ 16:9 เหมือนกด Slide Show ใน PowerPoint";
+        fsCaseBtn.title = "ฉายกรณีศึกษานี้แบบเต็มหน้าจอไร้แถบหัวข้อเหมือนกด Slide Show ใน PowerPoint";
         fsCaseBtn.addEventListener("click", () => enterPptFullscreenShow(c.id));
 
-        const popCaseBtn = make("button", "🪟 แยกหน้าต่าง Slide Share", "btn sm ppt-launch-win-btn");
+        const popCaseBtn = make("button", "📖 Reading Mode (แท็บใหม่ ↗)", "btn sm ppt-launch-win-btn");
         popCaseBtn.type = "button";
-        popCaseBtn.title = "เปิดกรณีศึกษานี้ในหน้าต่าง Presentation View 16:9 แยกต่างหาก";
+        popCaseBtn.title = "เปิดกรณีศึกษานี้ในโหมดการอ่าน (PowerPoint Reading View) ในแท็บใหม่ พร้อมปุ่มฉายสไลด์เต็มจอ";
         popCaseBtn.addEventListener("click", () => openPptSlideShareWindow(c.id));
 
         const printCaseBtn = make("button", "พิมพ์กรณีนี้", "btn sm");
