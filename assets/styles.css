@@ -35019,9 +35019,9 @@ html[data-theme="dark"] .or-slide-canvas .or-card-text.is-s07-note {
 }
 
 .or-slide-canvas .or-card.is-s08-card {
-  justify-content: center;
-  gap: 0.24cqw;
-  padding: 0.54cqw 0.78cqw;
+  justify-content: safe center;
+  gap: calc(0.22cqw * clamp(0.70, var(--fit-scale, 1), 1.18));
+  padding: calc(0.52cqw * clamp(0.70, var(--fit-scale, 1), 1.14)) calc(0.76cqw * clamp(0.74, var(--fit-scale, 1), 1.12));
 }
 
 .or-slide-canvas .or-card.is-s08-card .or-card-text {
@@ -35058,7 +35058,7 @@ html[data-theme="dark"] .or-slide-canvas .or-card-text.is-s07-note {
   padding: 0.34cqw 0.58cqw;
   gap: 0.12cqw;
   height: 100%;
-  justify-content: center;
+  justify-content: safe center;
 }
 
 .or-s09-pins-grid {
@@ -35248,8 +35248,8 @@ html[data-theme="dark"] .or-s11-foot-badge.is-teal {
   --fit-scale: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 0.18cqw;
+  justify-content: safe center;
+  gap: calc(0.18cqw * clamp(0.70, var(--fit-scale, 1), 1.2));
   min-height: 0;
   min-width: 0;
   overflow: hidden;
@@ -35370,25 +35370,25 @@ html[data-theme="dark"] .or-s14-subhead {
 
 .or-slide-canvas .or-card.is-s14-shield-note {
   padding: 0.46cqw 0.74cqw;
-  justify-content: center;
+  justify-content: safe center;
   height: 100%;
 }
 
 .or-slide-canvas .or-card.is-s14-shield-note .or-card-text {
   font-size: calc(0.95cqw * var(--fit-scale, 1));
-  line-height: 1.32;
+  line-height: 1.36;
 }
 
 .or-slide-canvas .or-card.is-s15-hub-note {
   padding: 0.48cqw 0.78cqw;
   gap: 0.14cqw;
-  justify-content: center;
+  justify-content: safe center;
   height: 100%;
 }
 
 .or-slide-canvas .or-card.is-s15-hub-note .or-card-text {
   font-size: calc(0.98cqw * var(--fit-scale, 1));
-  line-height: 1.34;
+  line-height: 1.36;
 }
 
 .or-inspector-box.is-s15-right {

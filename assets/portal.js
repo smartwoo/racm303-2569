@@ -20091,6 +20091,8 @@
     if (!slideObj) return null;
     return {
       kind: slideObj.kind || "question",
+      subKind: slideObj.subKind || "",
+      pedKey: slideObj.pedKey || "",
       modId: slideObj.mod ? slideObj.mod.id : "",
       caseId: slideObj.caseObj ? slideObj.caseObj.id : "",
       qId: slideObj.qObj ? slideObj.qObj.id : "",
@@ -20117,7 +20119,14 @@
     } else if (ref.kind === "case-scenario" && ref.caseId) {
       nextIdx = nextSlides.findIndex((s) => s.kind === "case-scenario" && s.caseObj && s.caseObj.id === ref.caseId);
     } else if (ref.kind === "concept-summary" && ref.qId) {
-      nextIdx = nextSlides.findIndex((s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ref.qId);
+      if (ref.pedKey) {
+        nextIdx = nextSlides.findIndex(
+          (s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ref.qId && s.pedKey === ref.pedKey
+        );
+      }
+      if (nextIdx < 0) {
+        nextIdx = nextSlides.findIndex((s) => s.kind === "concept-summary" && s.qObj && s.qObj.id === ref.qId);
+      }
       if (nextIdx < 0) {
         nextIdx = nextSlides.findIndex((s) => s.kind === "question" && s.qObj && s.qObj.id === ref.qId);
       }
@@ -20301,8 +20310,8 @@
   function jumpToQuestionPedStage(qId, targetPedStage) {
     if (!qId) return;
     const rawNum = Number(targetPedStage);
-    const stageNum = Number.isFinite(rawNum) ? Math.max(0, Math.min(5, rawNum)) : 2;
-    if (stageNum === 5 && !canNavigateConceptSummarySlide(findHsQuestionById(qId))) {
+    const stageNum = Number.isFinite(rawNum) ? Math.max(0, Math.min(6, rawNum)) : 2;
+    if ((stageNum === 5 || stageNum === 6) && !canNavigateConceptSummarySlide(findHsQuestionById(qId))) {
       return;
     }
     const ownerCase = (HSD_DATA.cases || []).find((c) => (c.questions || []).some((q) => q.id === qId));
@@ -22929,10 +22938,34 @@
         });
         if (hasCs) {
           const cs = qObj.conceptSummarySlide;
+          const fw = cs.frameworkSynthesisSlide || null;
           const unlockedNow = Boolean(uInfo && uInfo.unlockedForStudent);
+          if (fw) {
+            items.push({
+              kind: "concept-summary",
+              subKind: "framework-visual",
+              pedStage: 5,
+              pedKey: "concept-framework",
+              pedBadge: unlockedNow
+                ? `🔓 Unhide Slide · ${fw.studentBadge || "Key Takeaway Framework"}`
+                : `🔒 Hide Slide · ปลดล็อกหลัง ${uInfo.shortLabel}`,
+              pedShort: unlockedNow
+                ? `🔓 ${fw.studentShortLabel || "Framework"}`
+                : "🔒 Hide Slide",
+              mod,
+              caseObj: c,
+              qObj,
+              conceptSummary: unlockedNow ? cs : null,
+              frameworkVisual: unlockedNow ? fw : null,
+              isHiddenSlide: !unlockedNow,
+              unlockInfo: uInfo,
+              shortNum
+            });
+          }
           items.push({
             kind: "concept-summary",
-            pedStage: 5,
+            subKind: "narrative",
+            pedStage: fw ? 6 : 5,
             pedKey: "concept-summary",
             pedBadge: unlockedNow
               ? `🔓 Unhide Slide · ${cs.studentBadge || "Key Takeaway"}`
@@ -24957,7 +24990,12 @@
     ) {
       const csStage = sheetEl.querySelector(".ppt-concept-summary-stage");
       if (csStage) {
-        if (isCompactResp || sheetEl.offsetWidth < 860 || sheetEl.offsetHeight < 480) {
+        if (
+          csStage.classList.contains("is-framework-visual-stage") ||
+          isCompactResp ||
+          sheetEl.offsetWidth < 860 ||
+          sheetEl.offsetHeight < 480
+        ) {
           csStage.style.zoom = "";
         } else {
           csStage.style.zoom = "1";
