@@ -22039,20 +22039,34 @@
 
   function scrollFocusedFieldIntoSlideView(fieldEl) {
     if (!fieldEl || !fieldEl.isConnected) return;
+    const paneScroller = fieldEl.closest(
+      ".hsd-slide-right, .hsd-slide-left, .hsd-key-slide-stage, .ppt-opening-kahoot-stage, .ppt-concept-summary-stage"
+    );
+    if (paneScroller) {
+      const sRect = paneScroller.getBoundingClientRect();
+      const fRect = fieldEl.getBoundingClientRect();
+      if (sRect.height > 0) {
+        const padTop = 44;
+        const padBot = 24;
+        if (fRect.top < sRect.top + padTop) {
+          paneScroller.scrollBy({ top: fRect.top - (sRect.top + padTop), behavior: "smooth" });
+        } else if (fRect.bottom > sRect.bottom - padBot) {
+          paneScroller.scrollBy({ top: fRect.bottom - (sRect.bottom - padBot), behavior: "smooth" });
+        }
+      }
+    }
     const ov = $("pptPresentationOverlay");
-    const scroller =
-      (ov && !ov.hidden && ov.querySelector(".ppt-fs-stage-wrap")) ||
-      fieldEl.closest(".hsd-slide-right, .hsd-slide-left, .ppt-canvas-stage");
-    if (!scroller) return;
-    const sRect = scroller.getBoundingClientRect();
-    const fRect = fieldEl.getBoundingClientRect();
-    if (!sRect.height) return;
-    const padTop = 52;
-    const padBot = 28;
-    if (fRect.top < sRect.top + padTop) {
-      scroller.scrollBy({ top: fRect.top - (sRect.top + padTop), behavior: "smooth" });
-    } else if (fRect.bottom > sRect.bottom - padBot) {
-      scroller.scrollBy({ top: fRect.bottom - (sRect.bottom - padBot), behavior: "smooth" });
+    const stageScroller = ov && !ov.hidden ? ov.querySelector(".ppt-fs-stage-wrap.is-pinch-zoomed") : null;
+    if (stageScroller) {
+      const stRect = stageScroller.getBoundingClientRect();
+      const fRect = fieldEl.getBoundingClientRect();
+      if (stRect.height > 0) {
+        if (fRect.top < stRect.top + 28) {
+          stageScroller.scrollBy({ top: fRect.top - (stRect.top + 28), behavior: "smooth" });
+        } else if (fRect.bottom > stRect.bottom - 24) {
+          stageScroller.scrollBy({ top: fRect.bottom - (stRect.bottom - 24), behavior: "smooth" });
+        }
+      }
     }
   }
 
@@ -23508,7 +23522,10 @@
         ev.preventDefault();
         resizerEl.setPointerCapture(ev.pointerId);
         stageEl.classList.add("is-resizing-split");
-        const isHoriz = state.hsdSplitOrient === "horizontal";
+        const isHoriz =
+          resizerEl.classList.contains("is-horizontal") ||
+          stageEl.classList.contains("is-orient-horizontal") ||
+          Boolean(stageEl.closest(".is-auto-horiz-split"));
         let pendingSnap = "";
 
         const onMove = (mev) => {
@@ -23535,6 +23552,7 @@
           if (isHoriz) {
             state.hsdSplitTopPct = clamped;
             stageEl.style.setProperty("--hsd-top-pct", `${clamped}%`);
+            stageEl.style.setProperty("--hsd-eff-top-pct", `${clamped}%`);
           } else {
             state.hsdSplitPct = clamped;
             stageEl.style.setProperty("--hsd-left-pct", `${clamped}%`);
@@ -24264,8 +24282,8 @@
       [
         {
           id: "responsive",
-          label: "📱 พอดีจอ·เลื่อนได้",
-          tip: "ขยายสไลด์เต็มพื้นที่หน้าจอ เลื่อนขึ้น–ลงภายในขอบเขตสไลด์ปัจจุบัน และรองรับคีย์บอร์ดมือถือ"
+          label: "📱 เต็มจอ·แยกเลื่อน",
+          tip: "ขยายสไลด์เต็มพื้นที่จอ แยกเลื่อนขึ้น–ลงอิสระระหว่างฝั่งโจทย์กับใบงาน/เฉลย และรองรับ Pinch Zoom"
         },
         {
           id: "16x9",
@@ -24322,8 +24340,8 @@
       [
         {
           id: "responsive",
-          label: "📱 เต็มจอ·เลื่อนในสไลด์",
-          tip: "เหมาะกับมือถือ/แท็บเล็ต/จอพับ: เลื่อนขึ้น–ลงภายในขอบเขตสไลด์นี้ และรองรับ Pinch Zoom"
+          label: "📱 เต็มจอ·แยกเลื่อน",
+          tip: "เหมาะกับมือถือ/แท็บเล็ต/จอพับ: แยกเลื่อนขึ้น–ลงอิสระระหว่างฝั่งโจทย์กับใบงาน/เฉลย และรองรับ Pinch Zoom"
         },
         {
           id: "16x9",
@@ -24576,9 +24594,11 @@
 
   function autoFitSingleSheetBoxes(sheetEl, forceBoxRefit) {
     if (!sheetEl || !sheetEl.isConnected) return;
-    const isRespFlow = sheetEl.classList.contains("is-responsive-flow");
-    const isRespSplit = sheetEl.classList.contains("is-responsive-split");
-    const fitZ = isRespFlow ? 1 : Number(sheetEl.dataset.pptFitZoom) || 0.84;
+    const isRespSlide = sheetEl.classList.contains("is-responsive-slide");
+    const isAutoHoriz = sheetEl.classList.contains("is-auto-horiz-split");
+    const isCompactResp =
+      isRespSlide && (isAutoHoriz || sheetEl.offsetWidth < 900 || sheetEl.offsetHeight < 560);
+    const fitZ = isCompactResp ? 0.96 : Number(sheetEl.dataset.pptFitZoom) || 0.84;
 
     sheetEl.querySelectorAll(".hsd-box-zoom-body").forEach((boxEl) => {
       const side = boxEl.getAttribute("data-box-side") || "right";
@@ -24587,14 +24607,14 @@
       const manualPct = (isLeft ? state.hsdLeftFontPct : state.hsdRightFontPct) || 100;
       const paneEl = boxEl.closest(".hsd-slide-left, .hsd-slide-right, .hsd-key-slide-stage");
 
-      if (isRespFlow) {
+      if (isCompactResp) {
         boxEl._lastFitSig = "";
         if (paneEl) {
-          paneEl.style.overflowY = "";
-          paneEl.style.overflowX = "";
+          paneEl.style.overflowY = "auto";
+          paneEl.style.overflowX = "hidden";
         }
         const effPct = isAuto ? 100 : manualPct;
-        boxEl.style.zoom = effPct === 100 ? "1" : (effPct / 100).toFixed(4);
+        boxEl.style.zoom = ((effPct / 100) * fitZ).toFixed(4);
         boxEl.dataset.effectivePct = String(effPct);
         sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
           b.textContent = isAuto ? "Auto 100%" : `${effPct}%`;
@@ -24640,10 +24660,13 @@
         return;
       }
 
-      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}:${isRespSplit ? "rs" : "16x9"}`;
+      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}:${isRespSlide ? "rs" : "16x9"}`;
       if (!forceBoxRefit && boxEl._lastFitSig === fitSig) {
         return;
       }
+
+      const prevScrollTop = paneEl.scrollTop;
+      const prevScrollLeft = paneEl.scrollLeft;
 
       // Lock overflow hidden during measurement so OS scrollbars never toggle clientWidth/clientHeight
       paneEl.style.overflowY = "hidden";
@@ -24657,7 +24680,7 @@
         boxEl.scrollWidth <= boxEl.clientWidth + 4;
 
       const isHandout = sheetEl.classList.contains("is-handout-sheet");
-      const minAutoPct = isHandout ? 24 : isRespSplit ? 86 : 64;
+      const minAutoPct = isHandout ? 24 : isRespSlide ? 88 : 64;
       let chosenPct = 100;
 
       if (!fitsCleanly()) {
@@ -24705,14 +24728,14 @@
         }
       }
 
-      if (!fitsCleanly()) {
+      if (!isHandout && (isRespSlide || !fitsCleanly())) {
         paneEl.style.overflowY = "auto";
       }
 
       boxEl._lastFitSig = fitSig;
       boxEl.dataset.effectivePct = String(chosenPct);
-      paneEl.scrollTop = 0;
-      paneEl.scrollLeft = 0;
+      paneEl.scrollTop = Math.min(prevScrollTop, Math.max(0, paneEl.scrollHeight - paneEl.clientHeight));
+      paneEl.scrollLeft = prevScrollLeft;
       sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
         b.textContent = `Auto ${chosenPct}%`;
       });
@@ -25889,36 +25912,44 @@
 
       if (isSplit && !exp && !state.isPptSlideSharePopup) {
         const mobileJumpBar = make("div", null, "hsd-mobile-slide-jumpbar hsd-no-print");
-        const jumpScenBtn = make("button", "📖 โจทย์สถานการณ์", "hsd-msj-btn");
-        jumpScenBtn.type = "button";
-        jumpScenBtn.addEventListener("click", () => {
+        const applyQuickTopPct = (pctVal) => {
           if (state.hsdFsScenFolded) {
             state.hsdFsScenFolded = false;
             sheet.classList.remove("is-mobile-scen-folded");
-            foldScenBtn.textContent = "▾ ย่อโจทย์";
+            foldScenBtn.textContent = "▾ ซ่อนโจทย์";
           }
-          leftPane.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+          state.hsdSplitTopPct = pctVal;
+          stage.style.setProperty("--hsd-top-pct", `${pctVal}%`);
+          stage.style.setProperty("--hsd-eff-top-pct", `${pctVal}%`);
+          markSlideBoxesAutoOptimize("both");
+          autoFitSingleSheetBoxes(sheet, true);
+        };
+
+        const jumpScenBtn = make("button", "📖 ขยายโจทย์", "hsd-msj-btn");
+        jumpScenBtn.type = "button";
+        jumpScenBtn.title = "เพิ่มสัดส่วนกล่องโจทย์ด้านบน (เลื่อนอ่านแยกอิสระจากใบงาน)";
+        jumpScenBtn.addEventListener("click", () => applyQuickTopPct(56));
 
         const rightLabelTxt =
-          ROLE === "faculty" && layout !== "split-sheet" ? "★ ไปส่วนเฉลย ↓" : "✍️ ไปช่องตอบใบงาน ↓";
+          ROLE === "faculty" && layout !== "split-sheet" ? "★ ขยายส่วนเฉลย" : "✍️ ขยายใบงาน";
         const jumpAnsBtn = make("button", rightLabelTxt, "hsd-msj-btn is-primary");
         jumpAnsBtn.type = "button";
-        jumpAnsBtn.addEventListener("click", () => {
-          rightPane.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
+        jumpAnsBtn.title = "เพิ่มสัดส่วนกล่องคำตอบด้านล่าง (เลื่อนแยกอิสระจากโจทย์)";
+        jumpAnsBtn.addEventListener("click", () => applyQuickTopPct(30));
 
         const foldScenBtn = make(
           "button",
-          state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ย่อโจทย์",
+          state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ซ่อนโจทย์",
           "hsd-msj-btn is-fold-toggle"
         );
         foldScenBtn.type = "button";
-        foldScenBtn.title = "พับย่อ/กางเนื้อหาโจทย์ชั่วคราวเพื่อให้เห็นตารางคำตอบเต็มหน้าจอมือถือ";
+        foldScenBtn.title = "ซ่อน/แสดงกล่องโจทย์ด้านบนชั่วคราวเพื่อให้เห็นตารางคำตอบเต็มจอ";
         foldScenBtn.addEventListener("click", () => {
           state.hsdFsScenFolded = !state.hsdFsScenFolded;
           sheet.classList.toggle("is-mobile-scen-folded", state.hsdFsScenFolded);
-          foldScenBtn.textContent = state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ย่อโจทย์";
+          foldScenBtn.textContent = state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ซ่อนโจทย์";
+          markSlideBoxesAutoOptimize("both");
+          autoFitSingleSheetBoxes(sheet, true);
         });
 
         sheet.classList.toggle("is-mobile-scen-folded", Boolean(state.hsdFsScenFolded));
@@ -26011,10 +26042,7 @@
       requestAnimationFrame(() => {
         const justRow = sheet.querySelector("[data-ppt-just-revealed='1']");
         if (!justRow) return;
-        const paneEl = justRow.closest(".hsd-slide-right, .hsd-key-slide-stage");
-        const stageScrollEl = sheet.closest(".ppt-fs-stage-wrap, .ppt-canvas-stage");
-        const scroller =
-          sheet.classList.contains("is-responsive-flow") && stageScrollEl ? stageScrollEl : paneEl;
+        const scroller = justRow.closest(".hsd-slide-right, .hsd-key-slide-stage");
         if (scroller && scroller.scrollHeight > scroller.clientHeight + 14) {
           const pRect = scroller.getBoundingClientRect();
           const rRect = justRow.getBoundingClientRect();
@@ -26046,35 +26074,48 @@
     const useRespSlide = !isHandout && (
       isProjected
         ? env.useResponsiveSlide
-        : Boolean(env.isKbdOpen || stageW < 880 || stageH < 460)
+        : Boolean(env.isKbdOpen || stageW < 920 || stageH < 500)
     );
 
-    const isPortraitStage = stageH > stageW * 1.02;
-    const userForcedVertSplit = state.hsdUserPickedOrient === "vertical" && state.hsdSplitOrient === "vertical";
-    const useRespFlow = Boolean(
-      useRespSlide &&
-      (
-        !isProjected ||
-        env.isKbdOpen ||
-        stageW < 820 ||
-        stageH < 520 ||
-        state.hsdSplitOrient === "horizontal" ||
-        (isPortraitStage && !userForcedVertSplit && stageW < 980)
-      )
-    );
+    let padX = 0;
+    let padY = 0;
+    if (!isProjected) {
+      const cs = window.getComputedStyle(stageEl);
+      padX =
+        (parseFloat(cs.paddingLeft) || 0) +
+        (parseFloat(cs.paddingRight) || 0) +
+        (parseFloat(cs.borderLeftWidth) || 0) +
+        (parseFloat(cs.borderRightWidth) || 0) +
+        (useRespSlide ? 0 : 6);
+      padY =
+        (parseFloat(cs.paddingTop) || 0) +
+        (parseFloat(cs.paddingBottom) || 0) +
+        (parseFloat(cs.borderTopWidth) || 0) +
+        (parseFloat(cs.borderBottomWidth) || 0) +
+        (useRespSlide ? 0 : 6);
+    }
+
+    const clientW = stageEl.clientWidth || stageW;
+    const clientH = stageEl.clientHeight || stageH;
+    const availW = Math.max(220, clientW - padX);
+    const availH = Math.max(150, clientH - padY);
+
     const curLayout = getEffectiveHsdSlideLayout();
-    const isSinglePane = curLayout === "scenario" || curLayout === "sheet" || curLayout === "key-only";
-    const isMobileStack = Boolean(
-      useRespFlow &&
-      (
-        env.isKbdOpen ||
-        isSinglePane ||
-        state.hsdSplitOrient === "horizontal" ||
-        stageW < 700 ||
-        (isPortraitStage && !userForcedVertSplit)
-      )
+    const isSplitLayout =
+      curLayout === "split-key" ||
+      curLayout === "split-key-all" ||
+      curLayout === "split-sheet" ||
+      curLayout === "split-concept";
+    const userForcedVertSplit =
+      state.hsdUserPickedOrient === "vertical" && state.hsdSplitOrient === "vertical";
+    const isAutoHorizSplit = Boolean(
+      useRespSlide &&
+      isSplitLayout &&
+      state.hsdSplitOrient !== "horizontal" &&
+      !userForcedVertSplit &&
+      availW < 650
     );
-    const modeSig = `${useRespSlide ? 1 : 0}:${useRespFlow ? 1 : 0}:${isMobileStack ? 1 : 0}`;
+    const modeSig = `${useRespSlide ? 1 : 0}:${isAutoHorizSplit ? 1 : 0}:${env.isKbdOpen ? 1 : 0}`;
 
     if (
       !forceRefit &&
@@ -26104,37 +26145,29 @@
       sheetEl._lastScaleFactor = scaleFactor;
       sheetEl._lastModeSig = modeSig;
 
-      stageEl.classList.toggle("is-stage-resp-flow", useRespFlow);
-      stageEl.classList.toggle("is-stage-resp-split", Boolean(useRespSlide && !useRespFlow));
+      stageEl.classList.remove("is-stage-resp-flow");
+      stageEl.classList.toggle("is-stage-resp-split", useRespSlide);
 
       sheetEl.classList.toggle("is-responsive-slide", useRespSlide);
-      sheetEl.classList.toggle("is-responsive-flow", useRespFlow);
-      sheetEl.classList.toggle("is-responsive-split", Boolean(useRespSlide && !useRespFlow));
-      sheetEl.classList.toggle("is-mobile-stack", isMobileStack);
-      sheetEl.classList.toggle("is-flow-two-col", Boolean(useRespFlow && !isMobileStack));
+      sheetEl.classList.toggle("is-responsive-split", useRespSlide);
+      sheetEl.classList.toggle("is-auto-horiz-split", isAutoHorizSplit);
+      sheetEl.classList.remove("is-responsive-flow", "is-mobile-stack", "is-flow-two-col");
 
-      let padX = 0;
-      let padY = 0;
-      if (!isProjected) {
-        const cs = window.getComputedStyle(stageEl);
-        padX =
-          (parseFloat(cs.paddingLeft) || 0) +
-          (parseFloat(cs.paddingRight) || 0) +
-          (parseFloat(cs.borderLeftWidth) || 0) +
-          (parseFloat(cs.borderRightWidth) || 0) +
-          (useRespSlide ? 0 : 6);
-        padY =
-          (parseFloat(cs.paddingTop) || 0) +
-          (parseFloat(cs.paddingBottom) || 0) +
-          (parseFloat(cs.borderTopWidth) || 0) +
-          (parseFloat(cs.borderBottomWidth) || 0) +
-          (useRespSlide ? 0 : 6);
+      const stg = sheetEl.querySelector(".hsd-slide-stage");
+      if (stg) {
+        const baseTop = state.hsdSplitTopPct || 38;
+        const effTop = env.isKbdOpen ? Math.min(baseTop, 28) : baseTop;
+        stg.style.setProperty("--hsd-eff-top-pct", `${effTop}%`);
+        const resEl = stg.querySelector(".hsd-split-resizer");
+        if (resEl) {
+          const horizNow = state.hsdSplitOrient === "horizontal" || isAutoHorizSplit;
+          resEl.classList.toggle("is-horizontal", horizNow);
+          const pill = resEl.querySelector(".hsd-resizer-pill");
+          if (pill && !stg.classList.contains("is-resizing-split")) {
+            pill.textContent = horizNow ? "⋯" : "⋮";
+          }
+        }
       }
-
-      const clientW = stageEl.clientWidth || stageW;
-      const clientH = stageEl.clientHeight || stageH;
-      const availW = Math.max(220, clientW - padX);
-      const availH = Math.max(150, clientH - padY);
 
       if (!useRespSlide) {
         const fitW = Math.min(availW, availH * (16 / 9));
@@ -26148,16 +26181,8 @@
         sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
         const fitZoom = Math.max(0.45, Math.min(1.32, finalW / 1540));
         sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
-      } else if (useRespFlow) {
-        const finalW = Math.floor(availW * scaleFactor);
-        sheetEl.style.width = `${finalW}px`;
-        sheetEl.style.minHeight = `${Math.floor(availH)}px`;
-        sheetEl.style.height = "auto";
-        sheetEl.style.maxWidth = "none";
-        sheetEl.style.setProperty("--ppt-scale", "0.94");
-        sheetEl.dataset.pptFitZoom = "1.0000";
       } else {
-        // Full-stage Bento Split (Unfolded Duo/Foldable & Horizontal Tablet — zero black bars!)
+        // Bounded Full-Stage Slide with Independent Per-Pane Scrolling (0% black bars, 0% whole-slide scroll!)
         const finalW = Math.floor(availW * scaleFactor);
         const finalH = Math.floor(availH * scaleFactor);
         sheetEl.style.width = `${finalW}px`;
@@ -26166,7 +26191,7 @@
         sheetEl.style.maxWidth = "none";
         const fontScale = Math.max(0.84, Math.min(1.18, finalW / 1140));
         sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
-        const fitZoom = Math.max(0.86, Math.min(1.06, finalW / 1260));
+        const fitZoom = Math.max(0.88, Math.min(1.06, finalW / 1260));
         sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
       }
 
@@ -26454,16 +26479,21 @@
       kNext.addEventListener("mousedown", (e) => e.preventDefault());
       kNext.addEventListener("click", () => stepHsQuestionSlide(1));
 
-      const kJumpScen = make("button", "📖 โจทย์", "ppt-fs-tool-btn is-kbd-mini");
+      const kJumpScen = make(
+        "button",
+        state.hsdFsScenFolded ? "📖 แสดงโจทย์" : "📖 ซ่อนโจทย์",
+        "ppt-fs-tool-btn is-kbd-mini"
+      );
       kJumpScen.type = "button";
       kJumpScen.addEventListener("mousedown", (e) => e.preventDefault());
       kJumpScen.addEventListener("click", () => {
-        const lp = sheet.querySelector(".hsd-slide-left");
-        if (lp) {
-          sheet.classList.remove("is-mobile-scen-folded");
-          state.hsdFsScenFolded = false;
-          lp.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
+        state.hsdFsScenFolded = !state.hsdFsScenFolded;
+        sheet.classList.toggle("is-mobile-scen-folded", state.hsdFsScenFolded);
+        kJumpScen.textContent = state.hsdFsScenFolded ? "📖 แสดงโจทย์" : "📖 ซ่อนโจทย์";
+        const fb = sheet.querySelector(".hsd-msj-btn.is-fold-toggle");
+        if (fb) fb.textContent = state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ซ่อนโจทย์";
+        markSlideBoxesAutoOptimize("both");
+        autoFitSingleSheetBoxes(sheet, true);
       });
 
       const kJumpAns = make("button", "✍️ ช่องตอบ", "ppt-fs-tool-btn is-kbd-mini");
@@ -26473,8 +26503,8 @@
         if (isEditableElementFocusedInOverlay()) {
           scrollFocusedFieldIntoSlideView(document.activeElement);
         } else {
-          const rp = sheet.querySelector(".hsd-slide-right, .hsd-key-slide-stage");
-          if (rp) rp.scrollIntoView({ behavior: "smooth", block: "start" });
+          const firstTa = sheet.querySelector(".hsd-slide-right textarea, .hsd-slide-right input");
+          if (firstTa) scrollFocusedFieldIntoSlideView(firstTa);
         }
       });
 
