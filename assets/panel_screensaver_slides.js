@@ -575,8 +575,8 @@
       id: "w3-d3-dhs-panel",
       hashSlug: "panel-dhs",
       code: "PANEL-DHS",
-      seriesTag: "RACM 303 PANEL SERIES · EPISODE 02",
-      shortTitle: "PANEL-DHS · ระบบสุขภาพอำเภอ 6BB+1 (9 ธ.ค. 69)",
+      seriesTag: "RACM 303 WORKSHOP SERIES · EPISODE 02",
+      shortTitle: "Workshop: Learning How to Learn (9 ธ.ค. 69)",
       sessionMeta: "วันพุธที่ 9 ธันวาคม 2569 · 09.00 – 12.00 น. · ห้อง 2C2-02..03",
       sessionLimitMin: 180,
       pptxHref: "",
@@ -584,15 +584,15 @@
         {
           id: "dhs-01",
           num: "01",
-          navLabel: "01 · เปิดเวที DHS",
+          navLabel: "01 · เปิดเวที Workshop",
           type: "cover",
           bg: "bg_02_nahwa_to_world.jpg",
           kb: "kb-a",
           orbs: ["rgba(16,185,129,0.28)", "rgba(245,158,11,0.22)", "rgba(56,189,248,0.2)"],
           kicker: "RACM 303 · พุธ 9 ธ.ค. 2569 · 09.00–12.00 น. · ก่อนเดินทางออกภาคสนาม",
           kickerSub: "Learning How to Learn & Experiential Fieldwork Compass",
-          title: "District Health Systems – Six Building Blocks Plus One",
-          subtitle: "ฝึกทักษะการฟังอย่างลึกซึ้งและท่าทีการเรียนรู้ร่วมกับชุมชนและระบบสุขภาพอำเภอ ก่อนลงพื้นที่จริงทั้ง 9 แห่ง",
+          title: "Workshop: Learning How to Learn",
+          subtitle: "ฝึกทักษะการฟังอย่างลึกซึ้งและท่าทีการเรียนรู้จากการปฏิบัติจริงร่วมกับชุมชนและระบบสุขภาพอำเภอ ก่อนลงพื้นที่จริงทั้ง 9 แห่ง",
           cast: [
             { initials: "สก", name: "รศ. นพ.สุรเกียรติ อาชานานุภาพ", role: "วิทยากรหลัก · ระบบสุขภาพอำเภอและการเรียนรู้จากการปฏิบัติจริง" }
           ]
