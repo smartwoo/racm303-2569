@@ -5,7 +5,7 @@
 ## เข้าใช้งานเว็บพอร์ทัลสำหรับนักศึกษา
 
 - **เว็บไซต์พอร์ทัลนักศึกษา (GitHub Pages):** https://smartwoo.github.io/racm303-2569-student/
-  - **Discussion ระบบสุขภาพ (`HS1–HS6` · 10 กรณีศึกษาและตารางใบงาน):** https://smartwoo.github.io/racm303-2569-student/#hs-discussion
+  - **Discussion ระบบสุขภาพ (`HS1–HS6` · 11 กรณีศึกษาและตารางใบงาน):** https://smartwoo.github.io/racm303-2569-student/#hs-discussion
   - **รายชื่อสมาชิกกลุ่ม Discussion (`HS1–HS6` · 6 กลุ่มย่อย แยกอิสระ):** https://smartwoo.github.io/racm303-2569-student/#discussion
   - **ข้อมูลโรงพยาบาลชุมชน รูปถ่ายอาจารย์ที่ปรึกษา-ผู้ประสานงาน & รายชื่อ 9 พื้นที่ภาคสนาม:** https://smartwoo.github.io/racm303-2569-student/#fieldwork
   - **ศูนย์การส่งงาน (`SRN 1` · `SRN 2` · สไลด์ · Health Survey) & เชื่อมห้องวิชา RACM 303 (`id=398`):** https://smartwoo.github.io/racm303-2569-student/#submissions
@@ -14,7 +14,7 @@
 ## เอกสารหลักในคลัง GitHub สำหรับนักศึกษา
 
 ### 1. คู่มือรายวิชา ใบงาน Discussion และปฏิทินตารางสอน (ฝังลิงก์ Zoom ในตัว)
-- **ใบงานและกรณีศึกษา Discussion ระบบสุขภาพ (`HS1–HS6` · 10 กรณีศึกษา):** [downloads/ใบงาน_Discussion_ระบบสุขภาพ_HS1-HS6_2569.md](downloads/ใบงาน_Discussion_ระบบสุขภาพ_HS1-HS6_2569.md)
+- **ใบงานและกรณีศึกษา Discussion ระบบสุขภาพ (`HS1–HS6` · 11 กรณีศึกษา):** [downloads/ใบงาน_Discussion_ระบบสุขภาพ_HS1-HS6_2569.md](downloads/ใบงาน_Discussion_ระบบสุขภาพ_HS1-HS6_2569.md)
 - **คู่มือรายวิชา RACM 303 ปีการศึกษา 2569 (ครบ 17 บท + ภาคผนวก 1A–4A):** [คู่มือรายวิชา_RACM303_2569.md](คู่มือรายวิชา_RACM303_2569.md)
 - **ไฟล์ปฏิทินมาตรฐาน Apple Calendar / iCal / Outlook (`.ics` พร้อมลิงก์ Zoom & แจ้งเตือนล่วงหน้า 15 นาที):** [downloads/RACM303_2569_Calendar.ics](downloads/RACM303_2569_Calendar.ics)
 - **ไฟล์ปฏิทินสำหรับนำเข้า Google Calendar (`.csv` พร้อมลิงก์ Zoom):** [downloads/RACM303_2569_GoogleCalendar.csv](downloads/RACM303_2569_GoogleCalendar.csv)

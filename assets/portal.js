@@ -110,6 +110,12 @@
     hsdFsAutoHideHud: false,
     hsdFsHudCollapsed: false,
     hsdFsGridOpen: false,
+    hsdFsCanvasMode: localStorage.getItem("racm303_hsd_fs_canvas_mode") || "auto", // auto | responsive | 16x9
+    hsdFsZoomScale: 1,
+    hsdFsToolsExpanded: false,
+    hsdFsScenFolded: false,
+    hsdUserPickedOrient: "",
+    hsdNativeFsEntered: false,
     hsdBigSlideTimer: false,
     hsdPptWindowMax: false,
     hsdLeftAutoFit: true,
@@ -10858,7 +10864,7 @@
       abridgedBridge: "จับโครงสร้างบทเรียนให้คมชัด แล้วทดสอบจุดที่ยังสับสนในขั้นที่ 3",
       quizFocus: "การแยกมิติความป่วย ปัจจัยกำหนดสุขภาพ และระดับการป้องกันโรค (Primordial–Quaternary)",
       quizBridge: "เช็กความแม่นยำก่อนเข้าฟังบรรยายสรุปจากอาจารย์ในขั้นที่ 4 และอภิปรายกลุ่มย่อยในขั้นที่ 5",
-      caseFocus: "สุขภาวะคนทำงานโรงงานอุตสาหกรรม ปัจจัยกำหนดสุขภาพ และระดับการป้องกันโรค",
+      caseFocus: "สุขภาวะคนทำงานโรงงานอุตสาหกรรม (เคส 1), ภาวะอ้วนในเด็กและการสร้าง Diagram ปัจจัยกำหนดสุขภาพ (เคส 2) และระดับการป้องกันโรค",
       caseBridge: "ถกปัญหาจริงร่วมกับเพื่อนและอาจารย์ในชั้นเรียน และทบทวนด้วย VDO Lecture ในขั้นที่ 6"
     },
     HS2: {
@@ -12262,10 +12268,10 @@
           fileName: "RACM303_ใบงาน_Discussion_รวมทุกบท_HS1-HS6_(เลื่อนอ่านยาว).web",
           kicker: "📜 ใบงาน Discussion รวมทุกบท (Scroll)",
           headCls: "is-concise",
-          title: "ใบงานกรณีศึกษารวมครบ HS1–HS6 (10 กรณี · 20 ข้อย่อย)",
+          title: "ใบงานกรณีศึกษารวมครบ HS1–HS6 (11 กรณี · 21 ข้อย่อย)",
           subDesc: "เปิดหน้าเว็บโหมดเลื่อนอ่านยาวครบทุกกรณีศึกษาในหน้าเดียว สำหรับทบทวนภาพรวมหรือพิมพ์เตรียมสอบ Open Note",
           chipLabel: "Web Scroll · ครบ 6 บท",
-          meta: "HS1–HS6 · 10 กรณีศึกษา",
+          meta: "HS1–HS6 · 11 กรณีศึกษา",
           onOpen: () => {
             state.hsdViewMode = "scroll";
             state.hsdModule = "ALL";
@@ -19753,6 +19759,7 @@
   }
 
   function getShortQuestionNumLabel(qObj, fallbackIdx) {
+    if (qObj && qObj.shortLabel) return String(qObj.shortLabel);
     const raw = String((qObj && qObj.label) || "");
     const matches = raw.match(/\d+\.\d+/g);
     if (matches && matches.length > 0) {
@@ -19762,6 +19769,9 @@
   }
 
   function getClearQuestionHeadingLabel(qObj, fallbackIdx) {
+    if (qObj && qObj.headingLabel) {
+      return tr(String(qObj.headingLabel), String(qObj.enHeadingLabel || qObj.headingLabel));
+    }
     const raw = String((qObj && qObj.label) || "").trim();
     const cleanedNum = raw.replace(/^ประเด็นอภิปรายที่\s*/i, "").trim();
     if (cleanedNum && /\d/.test(cleanedNum)) {
@@ -20279,12 +20289,25 @@
 
     const handleNativeFullscreenChange = () => {
       const fsActive = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      if (fsActive) {
+        state.hsdNativeFsEntered = true;
+      }
+      const envNow = typeof getPptViewportEnv === "function" ? getPptViewportEnv() : { isCoarse: false, isKbdOpen: false, w: window.innerWidth };
       if (!fsActive && state.hsdTheater && !state.isPptSlideSharePopup) {
-        state.hsdTheater = false;
-        state.hsdFsGridOpen = false;
-        syncViewModeButtonsUI();
-        renderPptPresentationOverlay();
-      } else if (!fsActive && state.hsdPptWindowMax) {
+        // On touch/mobile/tablet or when virtual keyboard triggers browser FS exit, keep the Slide Discussion overlay open!
+        if (!envNow.isCoarse && !envNow.isKbdOpen && envNow.w >= 1100 && state.hsdNativeFsEntered) {
+          state.hsdNativeFsEntered = false;
+          state.hsdTheater = false;
+          state.hsdFsGridOpen = false;
+          syncViewModeButtonsUI();
+          renderPptPresentationOverlay();
+        } else {
+          state.hsdNativeFsEntered = false;
+          if (typeof syncPptOverlayViewportMetrics === "function") {
+            syncPptOverlayViewportMetrics(true);
+          }
+        }
+      } else if (!fsActive && state.hsdPptWindowMax && !envNow.isCoarse && !envNow.isKbdOpen) {
         togglePptStudioWindowMax(false);
       } else if (state.isPptSlideSharePopup) {
         renderPptPresentationOverlay();
@@ -20292,6 +20315,9 @@
     };
     document.addEventListener("fullscreenchange", handleNativeFullscreenChange);
     document.addEventListener("webkitfullscreenchange", handleNativeFullscreenChange);
+    if (typeof initPptVisualViewportListeners === "function") {
+      initPptVisualViewportListeners();
+    }
 
     // Spotlight modal close handlers & PowerPoint keyboard shortcuts (F5 / ← / → / K / G / L / Esc)
     const spot = $("hsdSpotlightModal");
@@ -20484,7 +20510,7 @@
         id: "ALL",
         code: "📄 HS1–HS6 รวมทุกบท (เอกสารยาว)",
         countText: `${allProg.caseCount} กรณี`,
-        title: "เปิดโหมดเอกสารยาวรวมครบ 10 กรณีศึกษาเพื่ออ่านรวดเดียวหรือพิมพ์/Export",
+        title: `เปิดโหมดเอกสารยาวรวมครบ ${allProg.caseCount || 11} กรณีศึกษาเพื่ออ่านรวดเดียวหรือพิมพ์/Export`,
         dateShort: "26 พ.ย.–4 ธ.ค."
       }
     ];
@@ -20717,7 +20743,7 @@
           const remoteVal = teamRec.cells[cell.inputId];
           if (remoteVal === undefined) return;
           const clamped = enforceA4ConciseText(String(remoteVal), cell, false);
-          document.querySelectorAll(`textarea[data-input-id="${cell.inputId}"]`).forEach((ta) => {
+          document.querySelectorAll(`[data-input-id="${cell.inputId}"]`).forEach((ta) => {
             if (ta.id && ta.id.startsWith("demo_")) return;
             if (document.activeElement === ta) return;
             if (ta.value !== clamped) {
@@ -20730,7 +20756,7 @@
               ta._refreshFromTeamSync();
             }
           });
-          if (!document.querySelector(`textarea[data-input-id="${cell.inputId}"]`)) {
+          if (!document.querySelector(`[data-input-id="${cell.inputId}"]`)) {
             persistHsdDraft(cell.inputId, clamped);
           }
         });
@@ -20745,10 +20771,688 @@
     syncLiveBarQuestionPickerDOM();
   }
 
+  let dohInstanceSeq = 0;
+  const DOH_EDGE_DEFS = [
+    { id: "ind_to_out", label: "ปัจเจก→ปัญหา", revLabel: "ปัญหา→ปัจเจก", biLabel: "ปัจเจก↔ปัญหา", std: "fwd" },
+    { id: "soc_to_out", label: "สังคม→ปัญหา", revLabel: "ปัญหา→สังคม", biLabel: "สังคม↔ปัญหา", std: "fwd" },
+    { id: "hsys_to_out", label: "บริการ→ปัญหา", revLabel: "ปัญหา→บริการ", biLabel: "บริการ↔ปัญหา", std: "fwd" },
+    { id: "ind_bi_soc", label: "ปัจเจก→สังคม", revLabel: "สังคม→ปัจเจก", biLabel: "ปัจเจก↔สังคม", std: "bi" },
+    { id: "ind_bi_hsys", label: "ปัจเจก→บริการ", revLabel: "บริการ→ปัจเจก", biLabel: "ปัจเจก↔บริการ", std: "bi" },
+    { id: "soc_bi_hsys", label: "สังคม→บริการ", revLabel: "บริการ→สังคม", biLabel: "สังคม↔บริการ", std: "bi" }
+  ];
+
+  function parseDohLinksString(raw) {
+    const st = {
+      edges: {
+        ind_to_out: "off",
+        soc_to_out: "off",
+        hsys_to_out: "off",
+        ind_bi_soc: "off",
+        ind_bi_hsys: "off",
+        soc_bi_hsys: "off"
+      },
+      innerRing: false,
+      outerRing: false
+    };
+    const str = String(raw || "").trim();
+    if (!str) return st;
+    DOH_EDGE_DEFS.forEach((ed) => {
+      if (str.includes(ed.biLabel) || str.includes(`${ed.id}:bi`)) st.edges[ed.id] = "bi";
+      else if (str.includes(ed.label) || str.includes(`${ed.id}:fwd`)) st.edges[ed.id] = "fwd";
+      else if (str.includes(ed.revLabel) || str.includes(`${ed.id}:rev`)) st.edges[ed.id] = "rev";
+    });
+    if (/วงล้อมใน:เปิด|innerRing:1/i.test(str)) st.innerRing = true;
+    if (/วงล้อมนอก:เปิด|outerRing:1/i.test(str)) st.outerRing = true;
+    return st;
+  }
+
+  function serializeDohLinksState(st) {
+    if (!st || !st.edges) return "";
+    const activeEdges = [];
+    DOH_EDGE_DEFS.forEach((ed) => {
+      const dir = st.edges[ed.id] || "off";
+      if (dir === "bi") activeEdges.push(ed.biLabel);
+      else if (dir === "fwd") activeEdges.push(ed.label);
+      else if (dir === "rev") activeEdges.push(ed.revLabel);
+    });
+    const rings = [];
+    if (st.innerRing) rings.push("วงล้อมใน:เปิด");
+    if (st.outerRing) rings.push("วงล้อมนอก:เปิด");
+    if (!activeEdges.length && !rings.length) return "";
+    if (activeEdges.length && rings.length) return `${activeEdges.join(", ")} | ${rings.join(", ")}`;
+    return activeEdges.length ? activeEdges.join(", ") : rings.join(", ");
+  }
+
+  function mountDohArenaArrows(arenaEl, svgEl, badgeLayerEl, getEdgesFn, onCycleEdgeFn) {
+    if (!arenaEl || !svgEl) return () => {};
+    dohInstanceSeq += 1;
+    const uid = dohInstanceSeq;
+    const svgNS = "http://www.w3.org/2000/svg";
+    let rafId = 0;
+
+    const redrawNow = () => {
+      rafId = 0;
+      if (!arenaEl.isConnected) return;
+      const W = Math.max(300, arenaEl.offsetWidth || 540);
+      const H = Math.max(150, arenaEl.offsetHeight || 230);
+      svgEl.setAttribute("viewBox", `0 0 ${W} ${H}`);
+      svgEl.replaceChildren();
+      if (badgeLayerEl) badgeLayerEl.replaceChildren();
+
+      const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+      const strokeHex = isDark ? "#60a5fa" : "#2e6eb5";
+      const offHex = isDark ? "#475569" : "#94a3b8";
+
+      const defs = document.createElementNS(svgNS, "defs");
+      const mkEnd = document.createElementNS(svgNS, "marker");
+      mkEnd.setAttribute("id", `dohArrEnd_${uid}`);
+      mkEnd.setAttribute("viewBox", "0 0 10 10");
+      mkEnd.setAttribute("refX", "8.6");
+      mkEnd.setAttribute("refY", "5");
+      mkEnd.setAttribute("markerWidth", "5.8");
+      mkEnd.setAttribute("markerHeight", "5.8");
+      mkEnd.setAttribute("orient", "auto");
+      const pEnd = document.createElementNS(svgNS, "path");
+      pEnd.setAttribute("d", "M 0 1.2 L 9.2 5 L 0 8.8 z");
+      pEnd.setAttribute("fill", strokeHex);
+      mkEnd.appendChild(pEnd);
+
+      const mkStart = document.createElementNS(svgNS, "marker");
+      mkStart.setAttribute("id", `dohArrStart_${uid}`);
+      mkStart.setAttribute("viewBox", "0 0 10 10");
+      mkStart.setAttribute("refX", "1.4");
+      mkStart.setAttribute("refY", "5");
+      mkStart.setAttribute("markerWidth", "5.8");
+      mkStart.setAttribute("markerHeight", "5.8");
+      mkStart.setAttribute("orient", "auto");
+      const pStart = document.createElementNS(svgNS, "path");
+      pStart.setAttribute("d", "M 9.2 1.2 L 0 5 L 9.2 8.8 z");
+      pStart.setAttribute("fill", strokeHex);
+      mkStart.appendChild(pStart);
+
+      defs.append(mkEnd, mkStart);
+      svgEl.appendChild(defs);
+
+      const aRect = arenaEl.getBoundingClientRect();
+      const sx = aRect.width > 10 ? W / aRect.width : 1;
+      const sy = aRect.height > 10 ? H / aRect.height : 1;
+
+      const getBox = (slotName, fb) => {
+        const el = arenaEl.querySelector(`[data-doh-slot="${slotName}"]`);
+        if (!el || aRect.width < 20) return fb;
+        const r = el.getBoundingClientRect();
+        if (r.width < 4 || r.height < 4) return fb;
+        const left = (r.left - aRect.left) * sx;
+        const top = (r.top - aRect.top) * sy;
+        const width = r.width * sx;
+        const height = r.height * sy;
+        return {
+          left,
+          top,
+          width,
+          height,
+          right: left + width,
+          bottom: top + height,
+          cx: left + width / 2,
+          cy: top + height / 2
+        };
+      };
+
+      const ind = getBox("individual", { left: 4, top: 4, width: W * 0.34, height: H * 0.56, right: 4 + W * 0.34, bottom: 4 + H * 0.56, cx: 4 + W * 0.17, cy: 4 + H * 0.28 });
+      const soc = getBox("soc_env", { left: W * 0.65, top: 4, width: W * 0.34, height: H * 0.56, right: W * 0.99, bottom: 4 + H * 0.56, cx: W * 0.82, cy: 4 + H * 0.28 });
+      const out = getBox("outcome", { left: W * 0.39, top: H * 0.30, width: W * 0.22, height: H * 0.24, right: W * 0.61, bottom: H * 0.54, cx: W * 0.50, cy: H * 0.42 });
+      const hsys = getBox("health_sys", { left: W * 0.26, top: H * 0.68, width: W * 0.48, height: H * 0.28, right: W * 0.74, bottom: H * 0.96, cx: W * 0.50, cy: H * 0.82 });
+
+      const topBridgeY = Math.max(10, Math.min(out.top - 10, Math.min(ind.top, soc.top) + 14));
+      const coords = {
+        ind_bi_soc: {
+          x1: ind.right + 5,
+          y1: topBridgeY,
+          x2: soc.left - 5,
+          y2: topBridgeY
+        },
+        ind_to_out: {
+          x1: ind.right + 4,
+          y1: Math.max(topBridgeY + 14, Math.min(ind.bottom - 8, out.cy - 6)),
+          x2: out.left - 5,
+          y2: out.cy - 2
+        },
+        soc_to_out: {
+          x1: soc.left - 4,
+          y1: Math.max(topBridgeY + 14, Math.min(soc.bottom - 8, out.cy - 6)),
+          x2: out.right + 5,
+          y2: out.cy - 2
+        },
+        hsys_to_out: {
+          x1: hsys.cx,
+          y1: hsys.top - 4,
+          x2: out.cx,
+          y2: out.bottom + 5
+        },
+        ind_bi_hsys: {
+          x1: ind.left + ind.width * 0.62,
+          y1: ind.bottom + 4,
+          x2: hsys.left - 6,
+          y2: hsys.cy
+        },
+        soc_bi_hsys: {
+          x1: soc.left + soc.width * 0.38,
+          y1: soc.bottom + 4,
+          x2: hsys.right + 6,
+          y2: hsys.cy
+        }
+      };
+
+      const edgesMap = (typeof getEdgesFn === "function" ? getEdgesFn() : null) || {};
+      const interactive = typeof onCycleEdgeFn === "function";
+
+      DOH_EDGE_DEFS.forEach((ed) => {
+        const dir = edgesMap[ed.id] || "off";
+        if (dir === "off" && !interactive) return;
+        const c = coords[ed.id];
+        if (!c) return;
+
+        const ln = document.createElementNS(svgNS, "line");
+        ln.setAttribute("x1", c.x1.toFixed(1));
+        ln.setAttribute("y1", c.y1.toFixed(1));
+        ln.setAttribute("x2", c.x2.toFixed(1));
+        ln.setAttribute("y2", c.y2.toFixed(1));
+        ln.setAttribute("stroke", dir === "off" ? offHex : strokeHex);
+        ln.setAttribute("stroke-width", dir === "off" ? "1.6" : "2.35");
+        ln.setAttribute("stroke-linecap", "round");
+        if (dir === "off") {
+          ln.setAttribute("stroke-dasharray", "4 4");
+          ln.setAttribute("opacity", "0.65");
+        } else {
+          if (dir === "fwd" || dir === "bi") {
+            ln.setAttribute("marker-end", `url(#dohArrEnd_${uid})`);
+          }
+          if (dir === "rev" || dir === "bi") {
+            ln.setAttribute("marker-start", `url(#dohArrStart_${uid})`);
+          }
+        }
+        svgEl.appendChild(ln);
+
+        if (interactive) {
+          const hit = document.createElementNS(svgNS, "line");
+          hit.setAttribute("x1", c.x1.toFixed(1));
+          hit.setAttribute("y1", c.y1.toFixed(1));
+          hit.setAttribute("x2", c.x2.toFixed(1));
+          hit.setAttribute("y2", c.y2.toFixed(1));
+          hit.setAttribute("stroke", "transparent");
+          hit.setAttribute("stroke-width", "14");
+          hit.setAttribute("class", "doh-hit-line");
+          hit.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            onCycleEdgeFn(ed.id);
+          });
+          svgEl.appendChild(hit);
+
+          if (badgeLayerEl) {
+            const midX = ((c.x1 + c.x2) / 2 / W) * 100;
+            const midY = ((c.y1 + c.y2) / 2 / H) * 100;
+            const sym = dir === "bi" ? "↔" : dir === "fwd" ? "→" : dir === "rev" ? "←" : "⇢";
+            const btn = make(
+              "button",
+              sym,
+              `doh-arrow-mid-btn hsd-no-print${dir === "off" ? " is-off" : ""}`
+            );
+            btn.type = "button";
+            btn.style.left = `${midX.toFixed(2)}%`;
+            btn.style.top = `${midY.toFixed(2)}%`;
+            btn.title =
+              dir === "off"
+                ? `คลิกเพื่อลากเส้นลูกศร (${ed.label} / ${ed.biLabel})`
+                : `คลิกเพื่อเปลี่ยนทิศทางลูกศร (ปัจจุบัน: ${sym})`;
+            btn.addEventListener("click", (ev) => {
+              ev.stopPropagation();
+              onCycleEdgeFn(ed.id);
+            });
+            badgeLayerEl.appendChild(btn);
+          }
+        }
+      });
+    };
+
+    const scheduleRedraw = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(redrawNow);
+    };
+
+    if (typeof ResizeObserver === "function") {
+      const ro = new ResizeObserver(() => scheduleRedraw());
+      ro.observe(arenaEl);
+    }
+    scheduleRedraw();
+    setTimeout(scheduleRedraw, 80);
+    return scheduleRedraw;
+  }
+
+  function buildDohDiagramWorksheetDOM(qObj, forceInteractive) {
+    const frag = document.createDocumentFragment();
+    const ws = qObj.worksheet;
+    if (!ws || ws.type !== "doh-diagram") return frag;
+
+    const isStudentLiveSheet = Boolean(LIVE && ROLE === "student" && !forceInteractive);
+    const activeTeamId =
+      isStudentLiveSheet && state.hsdSessionJoined && typeof LIVE.getTeamId === "function"
+        ? LIVE.getTeamId()
+        : 0;
+    const teamRecOnMount =
+      activeTeamId && typeof LIVE.getMyTeamResponse === "function"
+        ? LIVE.getMyTeamResponse(qObj.id)
+        : null;
+
+    if (isStudentLiveSheet && !state.isPptSlideSharePopup) {
+      if (activeTeamId && state.myStudent) {
+        const st = getKahootRoomRosterStatus();
+        const sNo = String(state.myStudent.id || "").slice(-3);
+        const nick = state.myStudent.nickname ? ` ${state.myStudent.nickname}` : "";
+        const memberCnt = (st.teamCounts && st.teamCounts[activeTeamId]) || 1;
+        const banner = make("div", null, `hsd-team-sheet-banner is-team-${activeTeamId} hsd-no-print`);
+        const leftMeta = make("div", null, "hsd-tsb-left");
+        leftMeta.innerHTML =
+          `<span class="hsd-tsb-pill is-team-${activeTeamId}">กลุ่ม ${activeTeamId}</span>` +
+          `<span class="hsd-tsb-title">ใบงาน Diagram ร่วมกัน (${memberCnt} คน) · เบอร์ ${escapeHtml(sNo)}${escapeHtml(nick)}</span>`;
+        const rightMeta = make("div", null, "hsd-tsb-right");
+        const editorTag = make(
+          "span",
+          teamRecOnMount && teamRecOnMount.editorLabel
+            ? `อัปเดตล่าสุดโดย ${teamRecOnMount.editorLabel}`
+            : "ร่วมกันสร้าง Diagram ในนามกลุ่ม",
+          "hsd-tsb-editor"
+        );
+        editorTag.setAttribute("data-team-live-editor", qObj.id);
+        const switchBtn = make("button", "เปลี่ยนเบอร์/กลุ่ม", "hsd-tsb-switch-btn");
+        switchBtn.type = "button";
+        switchBtn.addEventListener("click", () => logoutFromHsDiscussionSession());
+        rightMeta.append(editorTag, switchBtn);
+        banner.append(leftMeta, rightMeta);
+        frag.appendChild(banner);
+      } else {
+        const inlineGate = make("div", null, "hsd-inline-team-gate hsd-no-print");
+        inlineGate.appendChild(
+          buildSmartTeamCheckinWidgetDOM({
+            compact: true,
+            modId: state.hsdModule !== "ALL" ? state.hsdModule : "HS1"
+          })
+        );
+        frag.appendChild(inlineGate);
+      }
+    }
+
+    const ensureJoinedBeforeLiveSend = () => {
+      const curTid = LIVE && typeof LIVE.getTeamId === "function" ? LIVE.getTeamId() : 0;
+      if (state.hsdSessionJoined && curTid >= 1 && curTid <= 3) return curTid;
+      const numInp = document.querySelector("[data-ppt-ok-sid-input='1']");
+      if (numInp) {
+        numInp.scrollIntoView({ behavior: "smooth", block: "center" });
+        numInp.focus();
+      }
+      showStudentSlideSyncToast("กรุณากรอกเบอร์ตัวเอง 3 หลัก และเลือกเข้า กลุ่ม 1 / 2 / 3 ก่อนส่งคำตอบกลุ่ม");
+      return 0;
+    };
+
+    const meta = ws.diagramMeta || {};
+    const nodesMeta = meta.nodes || {};
+    const linksInputId = meta.linksInputId || "c1b_q1_links";
+
+    const cellSpecById = {};
+    (ws.rows || []).forEach((r) => {
+      (r.cells || []).forEach((c) => {
+        if (c && c.inputId) cellSpecById[c.inputId] = c;
+      });
+    });
+
+    Object.keys(cellSpecById).forEach((cid) => {
+      const remoteVal =
+        teamRecOnMount && teamRecOnMount.cells && teamRecOnMount.cells[cid]
+          ? String(teamRecOnMount.cells[cid])
+          : "";
+      if (remoteVal && state.hsdDrafts[cid] !== remoteVal) {
+        state.hsdDrafts[cid] = remoteVal;
+      }
+    });
+
+    let linkState = parseDohLinksString(state.hsdDrafts[linksInputId] || "");
+    const cellSyncCallbacks = [];
+    let redrawDiagramArrows = () => {};
+
+    const container = make("div", null, "doh-ws-container");
+
+    const hiddenLinksInput = document.createElement("input");
+    hiddenLinksInput.type = "hidden";
+    hiddenLinksInput.id = `${forceInteractive ? "demo_" : "input_"}${linksInputId}`;
+    hiddenLinksInput.dataset.inputId = linksInputId;
+    hiddenLinksInput.value = state.hsdDrafts[linksInputId] || "";
+    container.appendChild(hiddenLinksInput);
+
+    const toolbar = make("div", null, "doh-ws-toolbar hsd-no-print");
+    const leftTools = make("div", null, "doh-toolbar-group");
+    const rightTools = make("div", null, "doh-toolbar-group");
+
+    const viewDiagBtn = make("button", "🗺️ สร้างผัง Diagram", "doh-tool-pill is-active");
+    viewDiagBtn.type = "button";
+    const viewTblBtn = make("button", "▦ มุมมองตาราง", "doh-tool-pill");
+    viewTblBtn.type = "button";
+
+    const innerOvalBtn = make("button", "⭕ วงล้อมชั้นใน", "doh-tool-pill");
+    innerOvalBtn.type = "button";
+    innerOvalBtn.title = "เปิด/ปิดวงล้อมชั้นในเชื่อมโยงปัจจัยด้านปัจเจก–สังคมสิ่งแวดล้อม–ระบบบริการสุขภาพ";
+
+    const outerOvalBtn = make("button", "🟠 วงล้อมโครงสร้าง", "doh-tool-pill");
+    outerOvalBtn.type = "button";
+    outerOvalBtn.title = "เปิด/ปิดวงล้อมชั้นนอกของปัจจัยด้านโครงสร้างที่ครอบคลุมทั้งระบบ";
+
+    const autoArrowsBtn = make("button", "⚡ เชื่อมลูกศรครบวงจร", "doh-tool-pill");
+    autoArrowsBtn.type = "button";
+    autoArrowsBtn.title = "ลากลูกศรเชื่อมโยงทั้ง 6 เส้นพร้อมเปิดวงล้อมทั้ง 2 ชั้นอัตโนมัติ (คลิกแก้รายเส้นต่อได้)";
+
+    const clearArrowsBtn = make("button", "↺ ล้างเส้น", "doh-tool-pill");
+    clearArrowsBtn.type = "button";
+    clearArrowsBtn.title = "ล้างลูกศรและวงล้อมทั้งหมดเพื่อฝึกวาดใหม่";
+
+    leftTools.append(viewDiagBtn, viewTblBtn, innerOvalBtn, outerOvalBtn);
+    rightTools.append(
+      make("span", "คลิกปุ่ม ⇢ บนเส้นเพื่อเปลี่ยนลูกศร (→ / ↔ / ←)", "doh-toolbar-hint"),
+      autoArrowsBtn,
+      clearArrowsBtn
+    );
+    toolbar.append(leftTools, rightTools);
+    if (!state.isPptSlideSharePopup) {
+      container.appendChild(toolbar);
+    }
+
+    const shell = make("div", null, "doh-diagram-shell");
+    const structZone = make("div", null, "doh-structural-zone");
+    const innerOval = make("div", null, "doh-inner-oval");
+    const arena = make("div", null, "doh-inner-arena");
+    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.setAttribute("class", "doh-arrows-svg");
+    svgEl.setAttribute("aria-hidden", "true");
+    const badgeLayer = make("div", null, "doh-arrow-badges-layer");
+
+    const buildEditableNodeCard = (nodeKey, extraCardCls) => {
+      const nMeta = nodesMeta[nodeKey] || {};
+      const cid = nMeta.inputId || `c1b_q1_${nodeKey}`;
+      const cellSpec = cellSpecById[cid] || { inputId: cid, maxWords: 55, maxChars: 280, compact: nodeKey === "outcome" };
+      const isOutcome = nodeKey === "outcome";
+      const card = make("div", null, `doh-node-card${extraCardCls ? ` ${extraCardCls}` : ""}`);
+      card.setAttribute("data-doh-slot", nodeKey);
+
+      const head = make("div", null, "doh-node-head");
+      head.appendChild(make("span", nMeta.title || nodeKey, "doh-node-title"));
+      card.appendChild(head);
+
+      const savedVal = enforceA4ConciseText(state.hsdDrafts[cid] || "", cellSpec, false);
+      const ta = document.createElement("textarea");
+      ta.className = `hsd-input${isOutcome ? " is-compact" : ""}`;
+      ta.id = `${forceInteractive ? "demo_" : "input_"}${cid}`;
+      ta.dataset.inputId = cid;
+      ta.maxLength = cellSpec.maxChars || 280;
+      ta.rows = isOutcome ? 1 : nodeKey === "health_sys" ? 2 : 3;
+      ta.placeholder = nMeta.placeholder || cellSpec.placeholder || "พิมพ์ประเด็นในโหนดนี้…";
+      ta.value = savedVal;
+
+      const mirror = make(
+        "div",
+        savedVal || `(พื้นที่เขียน ${nMeta.title || ""})`,
+        "hsd-print-mirror"
+      );
+
+      let composing = false;
+      const fitTa = () => {
+        ta.style.height = "auto";
+        const minH = isOutcome ? 32 : 44;
+        const maxH = isOutcome ? 64 : 112;
+        const sh = ta.scrollHeight;
+        ta.style.overflowY = sh > maxH ? "auto" : "hidden";
+        ta.style.height = `${Math.min(maxH, Math.max(minH, sh))}px`;
+        redrawDiagramArrows();
+      };
+
+      ta._refreshFromTeamSync = () => {
+        mirror.textContent = ta.value.trim() || `(พื้นที่เขียน ${nMeta.title || ""})`;
+        fitTa();
+      };
+
+      const onValChange = (clampNow) => {
+        if (clampNow) {
+          const clamped = enforceA4ConciseText(ta.value, cellSpec, false);
+          if (clamped !== ta.value) ta.value = clamped;
+        }
+        mirror.textContent = ta.value.trim() || `(พื้นที่เขียน ${nMeta.title || ""})`;
+        persistHsdDraft(cid, ta.value);
+        container.querySelectorAll(`textarea[data-table-mirror-id="${cid}"]`).forEach((mTa) => {
+          if (mTa.value !== ta.value) mTa.value = ta.value;
+        });
+        fitTa();
+        if (LIVE && ROLE === "student" && state.hsdSessionJoined && LIVE.getTeamId()) {
+          LIVE.queueLiveTyping(qObj.id, collectQuestionCellsMap(qObj), cid);
+        }
+      };
+
+      ta.addEventListener("compositionstart", () => {
+        composing = true;
+      });
+      ta.addEventListener("compositionend", () => {
+        composing = false;
+        onValChange(true);
+      });
+      ta.addEventListener("input", () => onValChange(!composing));
+      ta.addEventListener("change", () => {
+        if (LIVE && ROLE === "student" && state.hsdSessionJoined && LIVE.getTeamId() && typeof LIVE.flushLiveTyping === "function") {
+          LIVE.flushLiveTyping(qObj.id, collectQuestionCellsMap(qObj));
+        }
+      });
+
+      requestAnimationFrame(fitTa);
+      card.append(ta, mirror);
+      return card;
+    };
+
+    structZone.appendChild(buildEditableNodeCard("structural", "is-structural-card"));
+
+    const posInd = make("div", null, "doh-pos-ind");
+    posInd.appendChild(buildEditableNodeCard("individual", ""));
+    const posSoc = make("div", null, "doh-pos-soc");
+    posSoc.appendChild(buildEditableNodeCard("soc_env", ""));
+    const posOut = make("div", null, "doh-pos-out");
+    posOut.appendChild(buildEditableNodeCard("outcome", "is-outcome-card"));
+    const posHsys = make("div", null, "doh-pos-hsys");
+    posHsys.appendChild(buildEditableNodeCard("health_sys", ""));
+
+    arena.append(svgEl, posInd, posOut, posSoc, posHsys, badgeLayer);
+    innerOval.appendChild(arena);
+    shell.append(structZone, innerOval);
+    container.appendChild(shell);
+
+    const tblViewWrap = make("div", null, "hsd-ws-wrap");
+    tblViewWrap.hidden = true;
+    const cmpTbl = make("table", null, "hsd-ws-table");
+    const thead = document.createElement("thead");
+    const hr = document.createElement("tr");
+    (ws.headers || []).forEach((h) => hr.appendChild(make("th", h)));
+    thead.appendChild(hr);
+    const tbody = document.createElement("tbody");
+    (ws.rows || []).forEach((r) => {
+      if (r.isDiagramLinksRow) return;
+      const trEl = document.createElement("tr");
+      (r.cells || []).forEach((cell) => {
+        const td = document.createElement("td");
+        if (cell.static) {
+          td.className = "hsd-ws-static";
+          td.innerHTML = escapeHtml(cell.static).replace(/\n/g, "<br>");
+        } else if (cell.inputId) {
+          const mTa = document.createElement("textarea");
+          mTa.className = `hsd-input${cell.compact ? " is-compact" : ""}`;
+          mTa.dataset.tableMirrorId = cell.inputId;
+          mTa.maxLength = cell.maxChars || 280;
+          mTa.rows = cell.compact ? 1 : 2;
+          mTa.placeholder = cell.placeholder || "";
+          mTa.value = state.hsdDrafts[cell.inputId] || "";
+          mTa.addEventListener("input", () => {
+            const diagTa = shell.querySelector(`textarea[data-input-id="${cell.inputId}"]`);
+            if (diagTa) {
+              diagTa.value = mTa.value;
+              diagTa.dispatchEvent(new Event("input", { bubbles: true }));
+            }
+          });
+          td.appendChild(mTa);
+        }
+        trEl.appendChild(td);
+      });
+      tbody.appendChild(trEl);
+    });
+    cmpTbl.append(thead, tbody);
+    tblViewWrap.appendChild(cmpTbl);
+    container.appendChild(tblViewWrap);
+
+    const syncVisualLinkState = (broadcastLive) => {
+      shell.classList.toggle("is-outer-oval-on", Boolean(linkState.outerRing));
+      innerOval.classList.toggle("is-inner-oval-on", Boolean(linkState.innerRing));
+      innerOvalBtn.classList.toggle("is-active", Boolean(linkState.innerRing));
+      outerOvalBtn.classList.toggle("is-outer-active", Boolean(linkState.outerRing));
+      const serialized = serializeDohLinksState(linkState);
+      hiddenLinksInput.value = serialized;
+      persistHsdDraft(linksInputId, serialized);
+      redrawDiagramArrows();
+      if (broadcastLive && LIVE && ROLE === "student" && state.hsdSessionJoined && LIVE.getTeamId()) {
+        LIVE.queueLiveTyping(qObj.id, collectQuestionCellsMap(qObj), linksInputId);
+      }
+    };
+
+    hiddenLinksInput._refreshFromTeamSync = () => {
+      linkState = parseDohLinksString(hiddenLinksInput.value || "");
+      shell.classList.toggle("is-outer-oval-on", Boolean(linkState.outerRing));
+      innerOval.classList.toggle("is-inner-oval-on", Boolean(linkState.innerRing));
+      innerOvalBtn.classList.toggle("is-active", Boolean(linkState.innerRing));
+      outerOvalBtn.classList.toggle("is-outer-active", Boolean(linkState.outerRing));
+      redrawDiagramArrows();
+    };
+
+    const cycleOrder = ["off", "fwd", "bi", "rev"];
+    redrawDiagramArrows = mountDohArenaArrows(
+      arena,
+      svgEl,
+      state.isPptSlideSharePopup ? null : badgeLayer,
+      () => linkState.edges,
+      state.isPptSlideSharePopup
+        ? null
+        : (edgeId) => {
+            const curDir = linkState.edges[edgeId] || "off";
+            const nextDir = cycleOrder[(cycleOrder.indexOf(curDir) + 1) % cycleOrder.length];
+            linkState.edges[edgeId] = nextDir;
+            syncVisualLinkState(true);
+          }
+    );
+
+    innerOvalBtn.addEventListener("click", () => {
+      linkState.innerRing = !linkState.innerRing;
+      syncVisualLinkState(true);
+    });
+    outerOvalBtn.addEventListener("click", () => {
+      linkState.outerRing = !linkState.outerRing;
+      syncVisualLinkState(true);
+    });
+    autoArrowsBtn.addEventListener("click", () => {
+      DOH_EDGE_DEFS.forEach((ed) => {
+        linkState.edges[ed.id] = ed.std;
+      });
+      linkState.innerRing = true;
+      linkState.outerRing = true;
+      syncVisualLinkState(true);
+    });
+    clearArrowsBtn.addEventListener("click", () => {
+      DOH_EDGE_DEFS.forEach((ed) => {
+        linkState.edges[ed.id] = "off";
+      });
+      linkState.innerRing = false;
+      linkState.outerRing = false;
+      syncVisualLinkState(true);
+    });
+
+    viewDiagBtn.addEventListener("click", () => {
+      shell.hidden = false;
+      tblViewWrap.hidden = true;
+      viewDiagBtn.classList.add("is-active");
+      viewTblBtn.classList.remove("is-active");
+      redrawDiagramArrows();
+      const parentSheet = container.closest(".ppt-slide-sheet");
+      if (parentSheet) autoFitSingleSheetBoxes(parentSheet, true);
+    });
+    viewTblBtn.addEventListener("click", () => {
+      shell.hidden = true;
+      tblViewWrap.hidden = false;
+      viewTblBtn.classList.add("is-active");
+      viewDiagBtn.classList.remove("is-active");
+      const parentSheet = container.closest(".ppt-slide-sheet");
+      if (parentSheet) autoFitSingleSheetBoxes(parentSheet, true);
+    });
+
+    syncVisualLinkState(false);
+    frag.appendChild(container);
+
+    if (LIVE && ROLE === "student" && !forceInteractive) {
+      const subBar = make("div", null, "hsd-q-submit-bar hsd-no-print");
+      const rNum = LIVE.getRoomId();
+      const curTid = typeof LIVE.getTeamId === "function" ? LIVE.getTeamId() : 0;
+      const hint = make(
+        "span",
+        curTid
+          ? `● แผนภาพ Diagram ร่วมกันของกลุ่ม ${curTid} (ห้อง ${rNum}) — พิมพ์และลากลูกศรแล้วกดส่งในนามกลุ่ม`
+          : `● กรอกเบอร์ 3 หลักและเลือกเข้า กลุ่ม 1 / 2 / 3 ด้านบนเพื่อส่งแผนภาพร่วมกันในนามกลุ่ม`,
+        "hsd-live-sync-hint"
+      );
+
+      const actWrap = make("div", null, "hsd-q-submit-actions");
+      const prevQBtn = make("button", tr("◀ ข้อก่อนหน้า", "◀ Prev Question"), "btn sm");
+      prevQBtn.type = "button";
+      prevQBtn.addEventListener("click", () => manualStepHsSlide(-1));
+
+      const defaultSendLbl = curTid
+        ? `ส่งแผนภาพกลุ่ม ${curTid} ขึ้นจอ ✓`
+        : "เลือกกลุ่ม 1–3 & ส่งแผนภาพ ✓";
+      const sendBtn = make("button", defaultSendLbl, "btn sm teal");
+      sendBtn.type = "button";
+      sendBtn.addEventListener("click", () => {
+        const map = collectQuestionCellsMap(qObj);
+        if (!Object.keys(map).length) {
+          hint.textContent = "กรุณาพิมพ์วิเคราะห์ในแผนภาพอย่างน้อย 1 โหนดก่อนกดส่งขึ้นจอ";
+          return;
+        }
+        const tidNow = ensureJoinedBeforeLiveSend();
+        if (!tidNow) return;
+        LIVE.submitQuestionFinal(qObj.id, map);
+        cellSyncCallbacks.forEach((fn) => fn());
+        sendBtn.textContent = `✓ ส่งแผนภาพกลุ่ม ${tidNow} แล้ว!`;
+        hint.textContent = `ส่งแผนภาพ Diagram ของกลุ่ม ${tidNow} ขึ้นจอห้องที่ ${LIVE.getRoomId()} เรียบร้อยแล้ว`;
+        syncLiveBarQuestionPickerDOM();
+        setTimeout(() => {
+          sendBtn.textContent = `ส่งแผนภาพกลุ่ม ${tidNow} ขึ้นจอ ✓`;
+        }, 2000);
+      });
+
+      const nextQBtn = make("button", tr("ข้อถัดไป ▶", "Next Question ▶"), "btn sm primary");
+      nextQBtn.type = "button";
+      nextQBtn.addEventListener("click", () => manualStepHsSlide(1));
+
+      actWrap.append(prevQBtn, sendBtn, nextQBtn);
+      subBar.append(hint, actWrap);
+      frag.appendChild(subBar);
+    }
+
+    return frag;
+  }
+
   function buildWideWorksheetTableDOM(qObj, forceInteractive) {
     const frag = document.createDocumentFragment();
     const ws = qObj.worksheet;
-    if (!ws || ws.type !== "table") return frag;
+    if (!ws) return frag;
+    if (ws.type === "doh-diagram") {
+      return buildDohDiagramWorksheetDOM(qObj, forceInteractive);
+    }
+    if (ws.type !== "table") return frag;
 
     const isStudentLiveSheet = Boolean(LIVE && ROLE === "student" && !forceInteractive);
     const activeTeamId =
@@ -21110,7 +21814,352 @@
   let isApplyingRemotePptSync = false;
   let pptCanvasResizeObserver = null;
   let pptProjectedResizeObserver = null;
+  let pptSheetSizeObserver = null;
   let pptHudIdleTimer = null;
+  let pptVvListenersInited = false;
+
+  function isCoarseTouchDevice() {
+    try {
+      if (window.matchMedia && window.matchMedia("(pointer: coarse)").matches) return true;
+      if (window.matchMedia && window.matchMedia("(any-pointer: coarse)").matches && window.innerWidth <= 1400) return true;
+    } catch (_) {}
+    return Boolean("ontouchstart" in window && (navigator.maxTouchPoints || 0) > 0 && window.innerWidth <= 1400);
+  }
+
+  function isEditableElementFocusedInOverlay() {
+    const ae = document.activeElement;
+    if (!ae) return false;
+    const tag = ae.tagName || "";
+    const isEdit = tag === "TEXTAREA" || tag === "INPUT" || Boolean(ae.isContentEditable);
+    if (!isEdit) return false;
+    if (tag === "INPUT") {
+      const tp = String(ae.type || "text").toLowerCase();
+      if (["range", "checkbox", "radio", "button", "submit", "file", "color"].includes(tp)) return false;
+    }
+    return Boolean(ae.closest("#pptPresentationOverlay, .hsd-slide-shell"));
+  }
+
+  function getPptViewportEnv() {
+    const vv = window.visualViewport;
+    const layoutW = window.innerWidth || document.documentElement.clientWidth || 1280;
+    const layoutH = window.innerHeight || document.documentElement.clientHeight || 800;
+    const vvScale = vv && vv.scale ? vv.scale : 1;
+    const w = vv && vvScale <= 1.06 ? Math.round(vv.width) : layoutW;
+    const h = vv && vvScale <= 1.06 ? Math.round(vv.height) : layoutH;
+    const offsetTop = vv && vvScale <= 1.06 ? Math.max(0, Math.round(vv.offsetTop || 0)) : 0;
+    const isCoarse = isCoarseTouchDevice();
+    const editFocused = isEditableElementFocusedInOverlay();
+    const heightDrop = layoutH - (vv ? vv.height : layoutH);
+    const isKbdOpen = Boolean(
+      (editFocused && (isCoarse || h < 580 || heightDrop > 85)) ||
+      (isCoarse && vvScale <= 1.06 && heightDrop > 135)
+    );
+    const aspect = h > 0 ? w / h : 1.77;
+    const useCompactDock = Boolean(isKbdOpen || isCoarse || w < 1180 || h < 680);
+    const isShortLandscape = Boolean(h < 500 && w > h);
+    let useResponsiveSlide = false;
+    if (state.hsdFsCanvasMode === "responsive") {
+      useResponsiveSlide = true;
+    } else if (state.hsdFsCanvasMode === "16x9" && !isKbdOpen) {
+      useResponsiveSlide = false;
+    } else {
+      // Auto: responsive adaptive slide for vertical/horizontal/Duo phones, vertical/horizontal tablets, compact windows, or virtual keyboard!
+      useResponsiveSlide = Boolean(
+        isKbdOpen ||
+        isCoarse ||
+        w < 1180 ||
+        h < 620 ||
+        aspect < 1.50
+      );
+    }
+    return {
+      w,
+      h,
+      offsetTop,
+      aspect,
+      isCoarse,
+      isKbdOpen,
+      useCompactDock,
+      isShortLandscape,
+      useResponsiveSlide
+    };
+  }
+
+  function scrollFocusedFieldIntoSlideView(fieldEl) {
+    if (!fieldEl || !fieldEl.isConnected) return;
+    const ov = $("pptPresentationOverlay");
+    const scroller =
+      (ov && !ov.hidden && ov.querySelector(".ppt-fs-stage-wrap")) ||
+      fieldEl.closest(".hsd-slide-right, .hsd-slide-left, .ppt-canvas-stage");
+    if (!scroller) return;
+    const sRect = scroller.getBoundingClientRect();
+    const fRect = fieldEl.getBoundingClientRect();
+    if (!sRect.height) return;
+    const padTop = 52;
+    const padBot = 28;
+    if (fRect.top < sRect.top + padTop) {
+      scroller.scrollBy({ top: fRect.top - (sRect.top + padTop), behavior: "smooth" });
+    } else if (fRect.bottom > sRect.bottom - padBot) {
+      scroller.scrollBy({ top: fRect.bottom - (sRect.bottom - padBot), behavior: "smooth" });
+    }
+  }
+
+  function syncPptOverlayViewportMetrics(forceRefit) {
+    const ov = $("pptPresentationOverlay");
+    const env = getPptViewportEnv();
+    if (ov && !ov.hidden) {
+      ov.style.setProperty("--ppt-vvh", `${env.h}px`);
+      ov.style.setProperty("--ppt-vv-top", `${env.offsetTop}px`);
+      ov.classList.toggle("is-kbd-open", env.isKbdOpen);
+      ov.classList.toggle("is-compact-fs-ui", env.useCompactDock);
+      ov.classList.toggle("is-short-landscape", env.isShortLandscape);
+      ov.classList.toggle("is-fs-tools-open", Boolean(state.hsdFsToolsExpanded));
+      const stageWrap = ov.querySelector(".ppt-fs-stage-wrap");
+      const sheetEl = ov.querySelector(".ppt-slide-sheet");
+      if (stageWrap && sheetEl) {
+        fitSlideSheetToStage(stageWrap, sheetEl, false, Boolean(forceRefit));
+      }
+      ov.querySelectorAll("[data-fs-canvas-mode-btn]").forEach((btn) => {
+        const modeVal = btn.getAttribute("data-fs-canvas-mode-btn");
+        const activeNow =
+          modeVal === "responsive" ? env.useResponsiveSlide : !env.useResponsiveSlide;
+        btn.classList.toggle("is-active", activeNow);
+        btn.setAttribute("aria-pressed", activeNow ? "true" : "false");
+      });
+    }
+    if (env.isKbdOpen && isEditableElementFocusedInOverlay()) {
+      scrollFocusedFieldIntoSlideView(document.activeElement);
+    }
+  }
+
+  function initPptVisualViewportListeners() {
+    if (pptVvListenersInited) return;
+    pptVvListenersInited = true;
+
+    let vvRaf = 0;
+    const onViewportShift = () => {
+      if (vvRaf) return;
+      vvRaf = requestAnimationFrame(() => {
+        vvRaf = 0;
+        syncPptOverlayViewportMetrics(true);
+      });
+    };
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", onViewportShift, { passive: true });
+      window.visualViewport.addEventListener("scroll", onViewportShift, { passive: true });
+    }
+    window.addEventListener("resize", onViewportShift, { passive: true });
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => syncPptOverlayViewportMetrics(true), 120);
+      setTimeout(() => syncPptOverlayViewportMetrics(true), 340);
+    }, { passive: true });
+
+    document.addEventListener("focusin", (ev) => {
+      const t = ev.target;
+      if (!t || !(t instanceof HTMLElement)) return;
+      if (!t.closest("#pptPresentationOverlay, .hsd-slide-shell")) return;
+      syncPptOverlayViewportMetrics(true);
+      setTimeout(() => syncPptOverlayViewportMetrics(true), 140);
+      setTimeout(() => syncPptOverlayViewportMetrics(true), 340);
+    });
+
+    document.addEventListener("focusout", (ev) => {
+      const t = ev.target;
+      if (!t || !(t instanceof HTMLElement)) return;
+      if (!t.closest("#pptPresentationOverlay, .hsd-slide-shell")) return;
+      setTimeout(() => syncPptOverlayViewportMetrics(true), 120);
+      setTimeout(() => syncPptOverlayViewportMetrics(true), 320);
+    });
+  }
+
+  function syncFsZoomUiReadouts(rootEl, scaleVal) {
+    const scope = rootEl || $("pptPresentationOverlay") || document;
+    const pctText = `${Math.round((scaleVal || 1) * 100)}%`;
+    scope.querySelectorAll("[data-fs-zoom-pct]").forEach((el) => {
+      el.textContent = pctText;
+    });
+  }
+
+  function applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheetEl, nextScale) {
+    if (!stageWrap || !zoomSizer || !sheetEl) return 1;
+    const clamped = Math.max(0.70, Math.min(3.50, Number(nextScale) || 1));
+    const isIdentity = Math.abs(clamped - 1) < 0.015;
+    const finalScale = isIdentity ? 1 : clamped;
+    state.hsdFsZoomScale = finalScale;
+
+    if (isIdentity) {
+      stageWrap.classList.remove("is-pinch-zoomed", "is-pinch-zoomed-out");
+      zoomSizer.style.width = "";
+      zoomSizer.style.height = "";
+      sheetEl.style.transformOrigin = "";
+      sheetEl.style.transform = "";
+    } else {
+      const baseW = sheetEl.offsetWidth || stageWrap.clientWidth || 360;
+      const baseH = sheetEl.offsetHeight || stageWrap.clientHeight || 480;
+      stageWrap.classList.add("is-pinch-zoomed");
+      stageWrap.classList.toggle("is-pinch-zoomed-out", finalScale < 1);
+      zoomSizer.style.width = `${Math.max(180, Math.round(baseW * finalScale))}px`;
+      zoomSizer.style.height = `${Math.max(140, Math.round(baseH * finalScale))}px`;
+      sheetEl.style.transformOrigin = "0 0";
+      sheetEl.style.transform = `scale(${finalScale.toFixed(4)})`;
+    }
+    syncFsZoomUiReadouts(stageWrap.closest("#pptPresentationOverlay") || document, finalScale);
+    return finalScale;
+  }
+
+  function stepOverlayPinchZoom(deltaScale, resetToOne) {
+    const ov = $("pptPresentationOverlay");
+    if (!ov || ov.hidden) return;
+    const stageWrap = ov.querySelector(".ppt-fs-stage-wrap");
+    const zoomSizer = ov.querySelector(".ppt-fs-zoom-sizer");
+    const sheetEl = ov.querySelector(".ppt-slide-sheet");
+    if (!stageWrap || !zoomSizer || !sheetEl) return;
+
+    const prevScale = state.hsdFsZoomScale || 1;
+    const targetScale = resetToOne ? 1 : Math.max(0.70, Math.min(3.50, Math.round((prevScale + deltaScale) * 20) / 20));
+    const sRect = stageWrap.getBoundingClientRect();
+    const shRect = sheetEl.getBoundingClientRect();
+    const cx = sRect.left + sRect.width / 2;
+    const cy = sRect.top + sRect.height / 2;
+    const localX = (cx - shRect.left) / prevScale;
+    const localY = (cy - shRect.top) / prevScale;
+
+    const applied = applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheetEl, targetScale);
+    if (applied !== 1) {
+      stageWrap.scrollLeft = Math.max(0, zoomSizer.offsetLeft + localX * applied - sRect.width / 2);
+      stageWrap.scrollTop = Math.max(0, zoomSizer.offsetTop + localY * applied - sRect.height / 2);
+    }
+  }
+
+  function attachPptStagePinchZoom(stageWrap, zoomSizer, sheetEl) {
+    if (!stageWrap || !zoomSizer || !sheetEl) return;
+
+    let pinching = false;
+    let startDist = 0;
+    let startScale = 1;
+    let startLocalX = 0;
+    let startLocalY = 0;
+    let lastTapTs = 0;
+    let lastTapX = 0;
+    let lastTapY = 0;
+
+    const getTouchDist = (t0, t1) => Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+
+    stageWrap.addEventListener(
+      "touchstart",
+      (ev) => {
+        if (ev.touches.length === 2) {
+          const d = getTouchDist(ev.touches[0], ev.touches[1]);
+          if (d < 12) return;
+          pinching = true;
+          startDist = d;
+          startScale = state.hsdFsZoomScale || 1;
+          const shRect = sheetEl.getBoundingClientRect();
+          const mx = (ev.touches[0].clientX + ev.touches[1].clientX) / 2;
+          const my = (ev.touches[0].clientY + ev.touches[1].clientY) / 2;
+          startLocalX = (mx - shRect.left) / startScale;
+          startLocalY = (my - shRect.top) / startScale;
+        } else if (ev.touches.length === 1 && !pinching) {
+          const t = ev.touches[0];
+          const target = ev.target;
+          const isInteractive =
+            target instanceof Element &&
+            Boolean(target.closest("button, input, textarea, select, a, label, mark, .hsd-split-resizer"));
+          if (!isInteractive) {
+            const now = Date.now();
+            if (now - lastTapTs < 290 && Math.hypot(t.clientX - lastTapX, t.clientY - lastTapY) < 28) {
+              ev.preventDefault();
+              lastTapTs = 0;
+              const curS = state.hsdFsZoomScale || 1;
+              const nextS = curS > 1.08 || curS < 0.94 ? 1 : 1.85;
+              const sRect = stageWrap.getBoundingClientRect();
+              const shRect = sheetEl.getBoundingClientRect();
+              const lx = (t.clientX - shRect.left) / curS;
+              const ly = (t.clientY - shRect.top) / curS;
+              const applied = applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheetEl, nextS);
+              if (applied !== 1) {
+                stageWrap.scrollLeft = Math.max(0, zoomSizer.offsetLeft + lx * applied - (t.clientX - sRect.left));
+                stageWrap.scrollTop = Math.max(0, zoomSizer.offsetTop + ly * applied - (t.clientY - sRect.top));
+              }
+              return;
+            }
+            lastTapTs = now;
+            lastTapX = t.clientX;
+            lastTapY = t.clientY;
+          }
+        }
+      },
+      { passive: false }
+    );
+
+    stageWrap.addEventListener(
+      "touchmove",
+      (ev) => {
+        if (!pinching || ev.touches.length < 2) return;
+        ev.preventDefault();
+        const curDist = getTouchDist(ev.touches[0], ev.touches[1]);
+        if (curDist < 8 || startDist < 8) return;
+        const nx = (ev.touches[0].clientX + ev.touches[1].clientX) / 2;
+        const ny = (ev.touches[0].clientY + ev.touches[1].clientY) / 2;
+        const sRect = stageWrap.getBoundingClientRect();
+        const rawNext = startScale * (curDist / startDist);
+        const applied = applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheetEl, rawNext);
+        if (applied !== 1) {
+          stageWrap.scrollLeft = Math.max(0, zoomSizer.offsetLeft + startLocalX * applied - (nx - sRect.left));
+          stageWrap.scrollTop = Math.max(0, zoomSizer.offsetTop + startLocalY * applied - (ny - sRect.top));
+        }
+      },
+      { passive: false }
+    );
+
+    const endPinch = (ev) => {
+      if (!pinching) return;
+      if (!ev.touches || ev.touches.length < 2) {
+        pinching = false;
+        if (Math.abs((state.hsdFsZoomScale || 1) - 1) < 0.045) {
+          applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheetEl, 1);
+        }
+      }
+    };
+    stageWrap.addEventListener("touchend", endPinch, { passive: true });
+    stageWrap.addEventListener("touchcancel", endPinch, { passive: true });
+
+    // Trackpad / Ctrl+Wheel pinch-zoom support
+    stageWrap.addEventListener(
+      "wheel",
+      (ev) => {
+        if (!ev.ctrlKey && !ev.metaKey) return;
+        ev.preventDefault();
+        const curS = state.hsdFsZoomScale || 1;
+        const factor = Math.exp(-ev.deltaY * 0.0045);
+        const nextS = Math.max(0.70, Math.min(3.50, curS * factor));
+        const sRect = stageWrap.getBoundingClientRect();
+        const shRect = sheetEl.getBoundingClientRect();
+        const lx = (ev.clientX - shRect.left) / curS;
+        const ly = (ev.clientY - shRect.top) / curS;
+        const applied = applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheetEl, nextS);
+        if (applied !== 1) {
+          stageWrap.scrollLeft = Math.max(0, zoomSizer.offsetLeft + lx * applied - (ev.clientX - sRect.left));
+          stageWrap.scrollTop = Math.max(0, zoomSizer.offsetTop + ly * applied - (ev.clientY - sRect.top));
+        }
+      },
+      { passive: false }
+    );
+
+    // Keep zoomSizer height synced if content expands (e.g. unhiding Answer Key row while zoomed)
+    if (pptSheetSizeObserver) pptSheetSizeObserver.disconnect();
+    if (typeof ResizeObserver === "function") {
+      pptSheetSizeObserver = new ResizeObserver(() => {
+        const curS = state.hsdFsZoomScale || 1;
+        if (Math.abs(curS - 1) >= 0.015 && sheetEl.isConnected) {
+          zoomSizer.style.width = `${Math.max(180, Math.round(sheetEl.offsetWidth * curS))}px`;
+          zoomSizer.style.height = `${Math.max(140, Math.round(sheetEl.offsetHeight * curS))}px`;
+        }
+      });
+      pptSheetSizeObserver.observe(sheetEl);
+    }
+  }
 
   function getEffectiveHsdSlideLayout(curSlideOpt) {
     const activeCur = curSlideOpt || (() => {
@@ -21162,6 +22211,7 @@
   function setHsdSlideLayout(nextLayout, nextSplitPct, isAutoKeyOpen, nextOrientOpt) {
     if (nextOrientOpt === "horizontal" || nextOrientOpt === "vertical") {
       state.hsdSplitOrient = nextOrientOpt;
+      state.hsdUserPickedOrient = nextOrientOpt;
       try {
         localStorage.setItem("racm303_hsd_split_orient", nextOrientOpt);
       } catch (_) {}
@@ -21255,6 +22305,7 @@
   function setHsdSplitOrientation(nextOrient, nextPctOpt) {
     const orient = nextOrient === "horizontal" ? "horizontal" : "vertical";
     state.hsdSplitOrient = orient;
+    state.hsdUserPickedOrient = orient;
     state.hsdSinglePaneOverride = "";
     try {
       localStorage.setItem("racm303_hsd_split_orient", orient);
@@ -21546,6 +22597,8 @@
     state.hsdSinglePaneOverride = "";
     state.hsdFocusedConceptStep = 0;
     state.hsdKeyJustRevealedQ = "";
+    state.hsdFsZoomScale = 1;
+    state.hsdFsScenFolded = false;
     const targetSlide = slides[next];
     if (targetSlide && targetSlide.qObj) {
       state.hsdLastSelectedQId = targetSlide.qObj.id;
@@ -21650,12 +22703,18 @@
       (el) => el && !el.hidden && el.offsetParent !== null
     );
 
-    const candidates =
+    const unifiedStageScroller = [
+      root.querySelector(".ppt-fs-stage-wrap"),
+      root.querySelector(".ppt-canvas-stage")
+    ].filter((el) => el && !el.hidden && el.offsetParent !== null);
+
+    const basePanes =
       qPanes.length > 0
         ? opts && opts.questionOnly
           ? qPanes
           : [...qPanes, ...scenPanes]
         : scenPanes;
+    const candidates = [...basePanes, ...unifiedStageScroller];
 
     const dir = deltaDir >= 0 ? 1 : -1;
     const now = Date.now();
@@ -21943,17 +23002,20 @@
     }
     state.hsdPptWindowMax = nextMax;
     document.body.classList.toggle("is-ppt-window-max-open", nextMax);
+    const envNow = getPptViewportEnv();
     if (nextMax) {
       ensureStudentRoomReadyForPresentation();
       state.hsdViewMode = "slide";
-      const docEl = document.documentElement;
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (docEl.requestFullscreen) {
-          docEl.requestFullscreen().catch(() => {});
-        } else if (docEl.webkitRequestFullscreen) {
-          try {
-            docEl.webkitRequestFullscreen();
-          } catch (_) {}
+      if (!envNow.isCoarse && envNow.w >= 1140) {
+        const docEl = document.documentElement;
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (docEl.requestFullscreen) {
+            docEl.requestFullscreen().catch(() => {});
+          } else if (docEl.webkitRequestFullscreen) {
+            try {
+              docEl.webkitRequestFullscreen();
+            } catch (_) {}
+          }
         }
       }
     } else if (document.fullscreenElement && document.exitFullscreen && !state.hsdTheater) {
@@ -21972,6 +23034,8 @@
     state.hsdSlideIdx = 0;
     state.hsdSinglePaneOverride = "";
     state.hsdFocusedConceptStep = 0;
+    state.hsdFsZoomScale = 1;
+    state.hsdFsScenFolded = false;
     enterPptFullscreenShow();
   }
 
@@ -21988,19 +23052,25 @@
     if (targetCaseOrQId) jumpSlideIndexToTarget(targetCaseOrQId);
     state.hsdTheater = true;
     state.hsdFsGridOpen = false;
+    state.hsdFsZoomScale = 1;
+    state.hsdFsScenFolded = false;
+    state.hsdNativeFsEntered = false;
     markSlideBoxesAutoOptimize("both");
     syncViewModeButtonsUI();
     renderHsDiscussionView();
     broadcastPptPresentationState();
 
-    const docEl = document.documentElement;
-    if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-      if (docEl.requestFullscreen) {
-        docEl.requestFullscreen().catch(() => {});
-      } else if (docEl.webkitRequestFullscreen) {
-        try {
-          docEl.webkitRequestFullscreen();
-        } catch (_) {}
+    const envNow = getPptViewportEnv();
+    if (!envNow.isCoarse && envNow.w >= 1140) {
+      const docEl = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen().catch(() => {});
+        } else if (docEl.webkitRequestFullscreen) {
+          try {
+            docEl.webkitRequestFullscreen();
+          } catch (_) {}
+        }
       }
     }
   }
@@ -22008,6 +23078,9 @@
   function exitPptFullscreenShow() {
     state.hsdTheater = false;
     state.hsdFsGridOpen = false;
+    state.hsdFsZoomScale = 1;
+    state.hsdFsScenFolded = false;
+    state.hsdNativeFsEntered = false;
     markSlideBoxesAutoOptimize("both");
     if (document.fullscreenElement && document.exitFullscreen) {
       document.exitFullscreen().catch(() => {});
@@ -22349,6 +23422,9 @@
 
     stageEl.querySelectorAll("[data-pane-snap-drag]").forEach((handleEl) => {
       handleEl.addEventListener("pointerdown", (ev) => {
+        if (ev.pointerType === "touch" || ev.pointerType === "pen") return;
+        const parentSheetEl = stageEl.closest(".ppt-slide-sheet");
+        if (parentSheetEl && parentSheetEl.classList.contains("is-responsive-flow")) return;
         if (ev.target.closest("button, select, input, a")) return;
         const startX = ev.clientX;
         const startY = ev.clientY;
@@ -23002,6 +24078,75 @@
     return dock;
   }
 
+  function buildFsZoomAndCanvasBarDOM(isCompact) {
+    const wrap = make("div", null, `ppt-fs-zoom-mode-cluster${isCompact ? " is-compact" : ""}`);
+
+    const zoomPill = make("div", null, "ppt-fs-zoom-pill");
+    zoomPill.title = "ย่อ/ขยายสไลด์ (รองรับ 2 นิ้ว Pinch Zoom เข้า–ออก และแตะ 2 ครั้งเพื่อรีเซ็ต)";
+    const zOut = make("button", "−", "ppt-fs-zbtn");
+    zOut.type = "button";
+    zOut.setAttribute("aria-label", "Zoom Out");
+    zOut.addEventListener("click", () => stepOverlayPinchZoom(-0.2, false));
+
+    const curPct = `${Math.round((state.hsdFsZoomScale || 1) * 100)}%`;
+    const zReset = make("button", curPct, "ppt-fs-zbtn is-pct");
+    zReset.type = "button";
+    zReset.setAttribute("data-fs-zoom-pct", "1");
+    zReset.title = "แตะเพื่อรีเซ็ตขนาดซูมกลับเป็น 100%";
+    zReset.addEventListener("click", () => stepOverlayPinchZoom(0, true));
+
+    const zIn = make("button", "+", "ppt-fs-zbtn");
+    zIn.type = "button";
+    zIn.setAttribute("aria-label", "Zoom In");
+    zIn.addEventListener("click", () => stepOverlayPinchZoom(0.2, false));
+
+    zoomPill.append(zOut, zReset, zIn);
+    wrap.appendChild(zoomPill);
+
+    if (!isCompact) {
+      const env = getPptViewportEnv();
+      const modeSeg = make("div", null, "hsd-layout-seg is-canvas-mode-seg");
+      [
+        {
+          id: "responsive",
+          label: "📱 พอดีจอ·เลื่อนได้",
+          tip: "ขยายสไลด์เต็มพื้นที่หน้าจอ เลื่อนขึ้น–ลงภายในขอบเขตสไลด์ปัจจุบัน และรองรับคีย์บอร์ดมือถือ"
+        },
+        {
+          id: "16x9",
+          label: "🖥 16:9",
+          tip: "คงสัดส่วนสไลด์มาตรฐาน 16:9 เหมือนขึ้นจอโปรเจกเตอร์"
+        }
+      ].forEach((mOpt) => {
+        const isAct = mOpt.id === "responsive" ? env.useResponsiveSlide : !env.useResponsiveSlide;
+        const mb = make("button", mOpt.label, `hsd-layout-btn${isAct ? " is-active" : ""}`);
+        mb.type = "button";
+        mb.setAttribute("data-fs-canvas-mode-btn", mOpt.id);
+        mb.setAttribute("aria-pressed", isAct ? "true" : "false");
+        mb.title = mOpt.tip;
+        mb.addEventListener("click", () => {
+          state.hsdFsCanvasMode = mOpt.id;
+          try {
+            localStorage.setItem("racm303_hsd_fs_canvas_mode", mOpt.id);
+          } catch (_) {}
+          const ov = $("pptPresentationOverlay");
+          if (ov) {
+            const sw = ov.querySelector(".ppt-fs-stage-wrap");
+            const zs = ov.querySelector(".ppt-fs-zoom-sizer");
+            const sh = ov.querySelector(".ppt-slide-sheet");
+            if (sw && zs && sh) applyOverlayPinchZoomScale(sw, zs, sh, 1);
+          }
+          markSlideBoxesAutoOptimize("both");
+          syncPptOverlayViewportMetrics(true);
+        });
+        modeSeg.appendChild(mb);
+      });
+      wrap.appendChild(modeSeg);
+    }
+
+    return wrap;
+  }
+
   function buildUnifiedPptToolsBarDOM(cur, slides, isFullscreen) {
     const layout = getEffectiveHsdSlideLayout(cur);
     const isSplit =
@@ -23013,6 +24158,45 @@
     const row = make("div", null, isFullscreen ? "ppt-fs-right-tools" : "ppt-ribbon-tools");
 
     if (isFullscreen && !state.isPptSlideSharePopup) {
+      const env = getPptViewportEnv();
+      const canvasModeSeg = make("div", null, "hsd-layout-seg is-canvas-mode-seg is-in-tools");
+      [
+        {
+          id: "responsive",
+          label: "📱 เต็มจอ·เลื่อนในสไลด์",
+          tip: "เหมาะกับมือถือ/แท็บเล็ต/จอพับ: เลื่อนขึ้น–ลงภายในขอบเขตสไลด์นี้ และรองรับ Pinch Zoom"
+        },
+        {
+          id: "16x9",
+          label: "🖥 16:9",
+          tip: "มุมมองสไลด์สัดส่วน 16:9 มาตรฐานโปรเจกเตอร์"
+        }
+      ].forEach((mOpt) => {
+        const isAct = mOpt.id === "responsive" ? env.useResponsiveSlide : !env.useResponsiveSlide;
+        const mb = make("button", mOpt.label, `hsd-layout-btn${isAct ? " is-active" : ""}`);
+        mb.type = "button";
+        mb.setAttribute("data-fs-canvas-mode-btn", mOpt.id);
+        mb.setAttribute("aria-pressed", isAct ? "true" : "false");
+        mb.title = mOpt.tip;
+        mb.addEventListener("click", () => {
+          state.hsdFsCanvasMode = mOpt.id;
+          try {
+            localStorage.setItem("racm303_hsd_fs_canvas_mode", mOpt.id);
+          } catch (_) {}
+          const ov = $("pptPresentationOverlay");
+          if (ov) {
+            const sw = ov.querySelector(".ppt-fs-stage-wrap");
+            const zs = ov.querySelector(".ppt-fs-zoom-sizer");
+            const sh = ov.querySelector(".ppt-slide-sheet");
+            if (sw && zs && sh) applyOverlayPinchZoomScale(sw, zs, sh, 1);
+          }
+          markSlideBoxesAutoOptimize("both");
+          syncPptOverlayViewportMetrics(true);
+        });
+        canvasModeSeg.appendChild(mb);
+      });
+      row.appendChild(canvasModeSeg);
+
       const fsDriveBtn = make("button", null, "ppt-fs-tool-btn");
       fsDriveBtn.type = "button";
       fsDriveBtn.title = "เลือกเปิดไฟล์สไลด์คาบอื่นจากโฟลเดอร์ Google Drive (HS1–HS6)";
@@ -23233,13 +24417,31 @@
 
   function autoFitSingleSheetBoxes(sheetEl, forceBoxRefit) {
     if (!sheetEl || !sheetEl.isConnected) return;
-    const fitZ = Number(sheetEl.dataset.pptFitZoom) || 0.84;
+    const isRespFlow = sheetEl.classList.contains("is-responsive-flow");
+    const isRespSplit = sheetEl.classList.contains("is-responsive-split");
+    const fitZ = isRespFlow ? 1 : Number(sheetEl.dataset.pptFitZoom) || 0.84;
+
     sheetEl.querySelectorAll(".hsd-box-zoom-body").forEach((boxEl) => {
       const side = boxEl.getAttribute("data-box-side") || "right";
       const isLeft = side === "left";
       const isAuto = isLeft ? state.hsdLeftAutoFit !== false : state.hsdRightAutoFit !== false;
       const manualPct = (isLeft ? state.hsdLeftFontPct : state.hsdRightFontPct) || 100;
       const paneEl = boxEl.closest(".hsd-slide-left, .hsd-slide-right, .hsd-key-slide-stage");
+
+      if (isRespFlow) {
+        boxEl._lastFitSig = "";
+        if (paneEl) {
+          paneEl.style.overflowY = "";
+          paneEl.style.overflowX = "";
+        }
+        const effPct = isAuto ? 100 : manualPct;
+        boxEl.style.zoom = effPct === 100 ? "1" : (effPct / 100).toFixed(4);
+        boxEl.dataset.effectivePct = String(effPct);
+        sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
+          b.textContent = isAuto ? "Auto 100%" : `${effPct}%`;
+        });
+        return;
+      }
 
       if (!isAuto) {
         boxEl._lastFitSig = "";
@@ -23279,12 +24481,12 @@
         return;
       }
 
-      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}`;
+      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}:${isRespSplit ? "rs" : "16x9"}`;
       if (!forceBoxRefit && boxEl._lastFitSig === fitSig) {
         return;
       }
 
-      // Lock overflow hidden during & after Auto-Fit so OS scrollbars never toggle clientWidth/clientHeight!
+      // Lock overflow hidden during measurement so OS scrollbars never toggle clientWidth/clientHeight
       paneEl.style.overflowY = "hidden";
       paneEl.style.overflowX = "hidden";
       paneEl.scrollTop = 0;
@@ -23295,7 +24497,8 @@
         paneEl.scrollHeight <= paneEl.clientHeight + 1 &&
         boxEl.scrollWidth <= boxEl.clientWidth + 4;
 
-      const minAutoPct = 24;
+      const isHandout = sheetEl.classList.contains("is-handout-sheet");
+      const minAutoPct = isHandout ? 24 : isRespSplit ? 86 : 64;
       let chosenPct = 100;
 
       if (!fitsCleanly()) {
@@ -23314,9 +24517,11 @@
         }
         chosenPct = best;
         boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
-        while (chosenPct > 18 && !fitsCleanly()) {
-          chosenPct -= 1;
-          boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
+        if (isHandout) {
+          while (chosenPct > 18 && !fitsCleanly()) {
+            chosenPct -= 1;
+            boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
+          }
         }
       } else {
         const pRect = paneEl.getBoundingClientRect();
@@ -23334,9 +24539,11 @@
       }
 
       boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
-      while (chosenPct > 14 && !fitsCleanly()) {
-        chosenPct -= 1;
-        boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
+      if (isHandout) {
+        while (chosenPct > 14 && !fitsCleanly()) {
+          chosenPct -= 1;
+          boxEl.style.zoom = ((chosenPct / 100) * fitZ).toFixed(4);
+        }
       }
 
       if (!fitsCleanly()) {
@@ -24521,6 +25728,45 @@
         bindHsdSplitAndSnapInteractions(stage, leftPane, rightPane, resizer);
       }
 
+      if (isSplit && !exp && !state.isPptSlideSharePopup) {
+        const mobileJumpBar = make("div", null, "hsd-mobile-slide-jumpbar hsd-no-print");
+        const jumpScenBtn = make("button", "📖 โจทย์สถานการณ์", "hsd-msj-btn");
+        jumpScenBtn.type = "button";
+        jumpScenBtn.addEventListener("click", () => {
+          if (state.hsdFsScenFolded) {
+            state.hsdFsScenFolded = false;
+            sheet.classList.remove("is-mobile-scen-folded");
+            foldScenBtn.textContent = "▾ ย่อโจทย์";
+          }
+          leftPane.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        const rightLabelTxt =
+          ROLE === "faculty" && layout !== "split-sheet" ? "★ ไปส่วนเฉลย ↓" : "✍️ ไปช่องตอบใบงาน ↓";
+        const jumpAnsBtn = make("button", rightLabelTxt, "hsd-msj-btn is-primary");
+        jumpAnsBtn.type = "button";
+        jumpAnsBtn.addEventListener("click", () => {
+          rightPane.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        const foldScenBtn = make(
+          "button",
+          state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ย่อโจทย์",
+          "hsd-msj-btn is-fold-toggle"
+        );
+        foldScenBtn.type = "button";
+        foldScenBtn.title = "พับย่อ/กางเนื้อหาโจทย์ชั่วคราวเพื่อให้เห็นตารางคำตอบเต็มหน้าจอมือถือ";
+        foldScenBtn.addEventListener("click", () => {
+          state.hsdFsScenFolded = !state.hsdFsScenFolded;
+          sheet.classList.toggle("is-mobile-scen-folded", state.hsdFsScenFolded);
+          foldScenBtn.textContent = state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ย่อโจทย์";
+        });
+
+        sheet.classList.toggle("is-mobile-scen-folded", Boolean(state.hsdFsScenFolded));
+        mobileJumpBar.append(jumpScenBtn, jumpAnsBtn, foldScenBtn);
+        sheet.appendChild(mobileJumpBar);
+      }
+
       if (
         (layout === "split-key" || layout === "split-key-all" || layout === "split-concept") &&
         ROLE === "faculty" &&
@@ -24607,11 +25853,14 @@
         const justRow = sheet.querySelector("[data-ppt-just-revealed='1']");
         if (!justRow) return;
         const paneEl = justRow.closest(".hsd-slide-right, .hsd-key-slide-stage");
-        if (paneEl && paneEl.scrollHeight > paneEl.clientHeight + 14) {
-          const pRect = paneEl.getBoundingClientRect();
+        const stageScrollEl = sheet.closest(".ppt-fs-stage-wrap, .ppt-canvas-stage");
+        const scroller =
+          sheet.classList.contains("is-responsive-flow") && stageScrollEl ? stageScrollEl : paneEl;
+        if (scroller && scroller.scrollHeight > scroller.clientHeight + 14) {
+          const pRect = scroller.getBoundingClientRect();
           const rRect = justRow.getBoundingClientRect();
           if (rRect.bottom > pRect.bottom) {
-            paneEl.scrollBy({ top: rRect.bottom - pRect.bottom + 12, behavior: "smooth" });
+            scroller.scrollBy({ top: rRect.bottom - pRect.bottom + 18, behavior: "smooth" });
           }
         }
       });
@@ -24622,6 +25871,7 @@
 
   function fitSlideSheetToStage(stageEl, sheetEl, useZoomState, forceRefit) {
     if (!stageEl || !sheetEl || sheetEl._fittingNow) return;
+    const isHandout = sheetEl.classList.contains("is-handout-sheet");
     const isProjected = sheetEl.classList.contains("is-projected");
     const isManualZoom = Boolean(useZoomState && state.hsdPptZoomMode === "manual");
     const scaleFactor = isManualZoom ? (state.hsdPptZoomPct || 100) / 100 : 1;
@@ -24633,12 +25883,47 @@
     const stageH = stageEl.offsetHeight;
     if (stageW < 80 || stageH < 60) return;
 
+    const env = getPptViewportEnv();
+    const useRespSlide = !isHandout && (
+      isProjected
+        ? env.useResponsiveSlide
+        : Boolean(env.isKbdOpen || stageW < 880 || stageH < 460)
+    );
+
+    const isPortraitStage = stageH > stageW * 1.02;
+    const userForcedVertSplit = state.hsdUserPickedOrient === "vertical" && state.hsdSplitOrient === "vertical";
+    const useRespFlow = Boolean(
+      useRespSlide &&
+      (
+        !isProjected ||
+        env.isKbdOpen ||
+        stageW < 820 ||
+        stageH < 520 ||
+        state.hsdSplitOrient === "horizontal" ||
+        (isPortraitStage && !userForcedVertSplit && stageW < 980)
+      )
+    );
+    const curLayout = getEffectiveHsdSlideLayout();
+    const isSinglePane = curLayout === "scenario" || curLayout === "sheet" || curLayout === "key-only";
+    const isMobileStack = Boolean(
+      useRespFlow &&
+      (
+        env.isKbdOpen ||
+        isSinglePane ||
+        state.hsdSplitOrient === "horizontal" ||
+        stageW < 700 ||
+        (isPortraitStage && !userForcedVertSplit)
+      )
+    );
+    const modeSig = `${useRespSlide ? 1 : 0}:${useRespFlow ? 1 : 0}:${isMobileStack ? 1 : 0}`;
+
     if (
       !forceRefit &&
       sheetEl._lastStageW !== undefined &&
       Math.abs(stageW - sheetEl._lastStageW) <= 1 &&
       Math.abs(stageH - sheetEl._lastStageH) <= 1 &&
-      sheetEl._lastScaleFactor === scaleFactor
+      sheetEl._lastScaleFactor === scaleFactor &&
+      sheetEl._lastModeSig === modeSig
     ) {
       return;
     }
@@ -24648,6 +25933,16 @@
       sheetEl._lastStageW = stageW;
       sheetEl._lastStageH = stageH;
       sheetEl._lastScaleFactor = scaleFactor;
+      sheetEl._lastModeSig = modeSig;
+
+      stageEl.classList.toggle("is-stage-resp-flow", useRespFlow);
+      stageEl.classList.toggle("is-stage-resp-split", Boolean(useRespSlide && !useRespFlow));
+
+      sheetEl.classList.toggle("is-responsive-slide", useRespSlide);
+      sheetEl.classList.toggle("is-responsive-flow", useRespFlow);
+      sheetEl.classList.toggle("is-responsive-split", Boolean(useRespSlide && !useRespFlow));
+      sheetEl.classList.toggle("is-mobile-stack", isMobileStack);
+      sheetEl.classList.toggle("is-flow-two-col", Boolean(useRespFlow && !isMobileStack));
 
       let padX = 0;
       let padY = 0;
@@ -24658,28 +25953,62 @@
           (parseFloat(cs.paddingRight) || 0) +
           (parseFloat(cs.borderLeftWidth) || 0) +
           (parseFloat(cs.borderRightWidth) || 0) +
-          6;
+          (useRespSlide ? 0 : 6);
         padY =
           (parseFloat(cs.paddingTop) || 0) +
           (parseFloat(cs.paddingBottom) || 0) +
           (parseFloat(cs.borderTopWidth) || 0) +
           (parseFloat(cs.borderBottomWidth) || 0) +
-          6;
+          (useRespSlide ? 0 : 6);
       }
 
-      const availW = Math.max(260, stageW - padX);
-      const availH = Math.max(180, stageH - padY);
-      const fitW = Math.min(availW, availH * (16 / 9));
-      const finalW = Math.floor(fitW * scaleFactor);
-      const finalH = Math.floor(finalW * (9 / 16));
-      sheetEl.style.width = `${finalW}px`;
-      sheetEl.style.height = `${finalH}px`;
-      sheetEl.style.maxWidth = "none";
-      const fontScale = Math.max(0.72, Math.min(1.48, finalW / 1180));
-      sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
-      const fitZoom = Math.max(0.26, Math.min(1.32, finalW / 1540));
-      sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
+      const clientW = stageEl.clientWidth || stageW;
+      const clientH = stageEl.clientHeight || stageH;
+      const availW = Math.max(220, clientW - padX);
+      const availH = Math.max(150, clientH - padY);
+
+      if (!useRespSlide) {
+        const fitW = Math.min(availW, availH * (16 / 9));
+        const finalW = Math.floor(fitW * scaleFactor);
+        const finalH = Math.floor(finalW * (9 / 16));
+        sheetEl.style.width = `${finalW}px`;
+        sheetEl.style.height = `${finalH}px`;
+        sheetEl.style.minHeight = "";
+        sheetEl.style.maxWidth = "none";
+        const fontScale = Math.max(0.76, Math.min(1.48, finalW / 1180));
+        sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
+        const fitZoom = Math.max(0.45, Math.min(1.32, finalW / 1540));
+        sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
+      } else if (useRespFlow) {
+        const finalW = Math.floor(availW * scaleFactor);
+        sheetEl.style.width = `${finalW}px`;
+        sheetEl.style.minHeight = `${Math.floor(availH)}px`;
+        sheetEl.style.height = "auto";
+        sheetEl.style.maxWidth = "none";
+        sheetEl.style.setProperty("--ppt-scale", "0.94");
+        sheetEl.dataset.pptFitZoom = "1.0000";
+      } else {
+        // Full-stage Bento Split (Unfolded Duo/Foldable & Horizontal Tablet — zero black bars!)
+        const finalW = Math.floor(availW * scaleFactor);
+        const finalH = Math.floor(availH * scaleFactor);
+        sheetEl.style.width = `${finalW}px`;
+        sheetEl.style.height = `${finalH}px`;
+        sheetEl.style.minHeight = "";
+        sheetEl.style.maxWidth = "none";
+        const fontScale = Math.max(0.84, Math.min(1.18, finalW / 1140));
+        sheetEl.style.setProperty("--ppt-scale", fontScale.toFixed(3));
+        const fitZoom = Math.max(0.86, Math.min(1.06, finalW / 1260));
+        sheetEl.dataset.pptFitZoom = fitZoom.toFixed(4);
+      }
+
       autoFitSingleSheetBoxes(sheetEl, Boolean(forceRefit));
+
+      if (isProjected && Math.abs((state.hsdFsZoomScale || 1) - 1) >= 0.015) {
+        const zoomSizer = sheetEl.closest(".ppt-fs-zoom-sizer");
+        if (zoomSizer) {
+          applyOverlayPinchZoomScale(stageEl, zoomSizer, sheetEl, state.hsdFsZoomScale);
+        }
+      }
     } finally {
       sheetEl._fittingNow = false;
     }
@@ -24797,19 +26126,33 @@
           : `📊 [Slide Share 16:9] คาบ ${cur.mod.code}.pptx — กรณีที่ ${cur.caseObj.caseNumber} (${cur.shortNum}) — RACM 303`;
     }
 
+    if (pptSheetSizeObserver) {
+      pptSheetSizeObserver.disconnect();
+      pptSheetSizeObserver = null;
+    }
+
+    const envInit = getPptViewportEnv();
     ov.hidden = false;
+    ov.style.setProperty("--ppt-vvh", `${envInit.h}px`);
+    ov.style.setProperty("--ppt-vv-top", `${envInit.offsetTop}px`);
+    ov.classList.toggle("is-kbd-open", envInit.isKbdOpen);
+    ov.classList.toggle("is-compact-fs-ui", envInit.useCompactDock);
+    ov.classList.toggle("is-short-landscape", envInit.isShortLandscape);
+    ov.classList.toggle("is-fs-tools-open", Boolean(state.hsdFsToolsExpanded));
     ov.classList.toggle("is-hud-autohide", Boolean(state.isPptSlideSharePopup && !state.hsdShowFullHudInPopup));
     ov.replaceChildren();
 
     const stageWrap = make("div", null, "ppt-fs-stage-wrap");
+    const zoomSizer = make("div", null, "ppt-fs-zoom-sizer");
     const sheet = buildPptSlideSheetDOM(cur, slides, true);
-    stageWrap.appendChild(sheet);
+    zoomSizer.appendChild(sheet);
+    stageWrap.appendChild(zoomSizer);
 
     if (state.hsdFsGridOpen) {
       const gridBack = make("div", null, "ppt-fs-grid-backdrop");
       const gHead = make("div", null, "ppt-fs-grid-head");
       gHead.append(
-        make("h3", `⊞ สไลด์ทั้งหมดในคาบ ${cur.mod.code} (${slides.length} สไลด์ · 16:9)`, "ppt-sm-title"),
+        make("h3", `⊞ สไลด์ทั้งหมดในคาบ ${cur.mod.code} (${slides.length} สไลด์)`, "ppt-sm-title"),
         (() => {
           const cb = make("button", "✕ ปิดตารางสไลด์ (Esc)", "ppt-fs-tool-btn");
           cb.type = "button";
@@ -24826,6 +26169,8 @@
           state.hsdSlideIdx = pickedIdx;
           state.hsdSinglePaneOverride = "";
           state.hsdFocusedConceptStep = 0;
+          state.hsdFsZoomScale = 1;
+          state.hsdFsScenFolded = false;
           if (slides[pickedIdx] && slides[pickedIdx].qObj) {
             state.hsdLastSelectedQId = slides[pickedIdx].qObj.id;
           }
@@ -24839,6 +26184,7 @@
     }
 
     ov.appendChild(stageWrap);
+    attachPptStagePinchZoom(stageWrap, zoomSizer, sheet);
 
     if (state.isPptSlideSharePopup && !state.hsdShowFullHudInPopup) {
       const corner = make("div", null, "ppt-audience-corner-hud");
@@ -24878,25 +26224,25 @@
       pptHudIdleTimer = setTimeout(() => ov.classList.add("is-hud-idle"), 2000);
     } else if (!state.isPptSlideSharePopup && state.hsdFsHudCollapsed) {
       const collapsedBar = make("div", null, "ppt-fs-collapsed-dock");
-      const expandBarBtn = make("button", "▴ เปิดแถบ Control Panel", "ppt-fs-tool-btn");
+      const expandBarBtn = make("button", "▴ แถบควบคุม", "ppt-fs-tool-btn");
       expandBarBtn.type = "button";
-      expandBarBtn.title = "เปิดแถบควบคุมด้านล่าง (แสดงใต้สไลด์ 16:9 โดยไม่ทับเนื้อหาสไลด์)";
+      expandBarBtn.title = "เปิดแถบควบคุมด้านล่าง";
       expandBarBtn.addEventListener("click", () => {
         state.hsdFsHudCollapsed = false;
         renderPptPresentationOverlay();
       });
 
-      const cPrev = make("button", "◀ ก่อนหน้า", "ppt-fs-tool-btn");
+      const cPrev = make("button", "◀", "ppt-fs-tool-btn");
       cPrev.type = "button";
       cPrev.disabled = state.hsdSlideIdx <= 0;
       cPrev.addEventListener("click", () => stepHsQuestionSlide(-1));
 
-      const cNext = make("button", `คาบ ${cur.mod.code} · Slide ${state.hsdSlideIdx + 1}/${slides.length} ▶`, "ppt-fs-tool-btn");
+      const cNext = make("button", `${state.hsdSlideIdx + 1}/${slides.length} ▶`, "ppt-fs-tool-btn");
       cNext.type = "button";
       cNext.disabled = state.hsdSlideIdx >= slides.length - 1;
       cNext.addEventListener("click", () => stepHsQuestionSlide(1));
 
-      collapsedBar.append(expandBarBtn, cPrev, cNext);
+      collapsedBar.append(expandBarBtn, cPrev, cNext, buildFsZoomAndCanvasBarDOM(true));
 
       if (ROLE === "faculty" && cur.qObj) {
         const totalK = getHsQuestionKeyTotalSteps(cur.qObj.id);
@@ -24904,7 +26250,7 @@
           const curK = getEffectiveHsKeyStep(cur.qObj.id);
           const kBtn = make(
             "button",
-            curK < totalK ? `★ เฉลยถัดไป (${curK}/${totalK})` : `✓ เฉลยครบ (${totalK}/${totalK})`,
+            curK < totalK ? `★ เฉลย (${curK}/${totalK})` : `✓ ครบ (${totalK}/${totalK})`,
             "ppt-fs-tool-btn"
           );
           kBtn.type = "button";
@@ -24913,21 +26259,180 @@
         }
       }
 
-      const cExit = make("button", "✕ จบการฉาย (Esc)", "ppt-fs-tool-btn is-exit");
+      const cExit = make("button", "✕ ออก", "ppt-fs-tool-btn is-exit");
       cExit.type = "button";
+      cExit.title = "จบการฉาย (Esc)";
       cExit.addEventListener("click", () => exitPptFullscreenShow());
       collapsedBar.appendChild(cExit);
 
       ov.appendChild(collapsedBar);
     } else {
       const ctrlBar = make("div", null, "ppt-fs-control-bar");
+
+      // A. Slim Virtual-Keyboard Helper Bar (visible automatically when keyboard opens on mobile/tablet!)
+      const kbdBar = make("div", null, "ppt-fs-kbd-bar");
+      const kPrev = make("button", "◀", "ppt-fs-tool-btn is-kbd-mini");
+      kPrev.type = "button";
+      kPrev.disabled = state.hsdSlideIdx <= 0;
+      kPrev.addEventListener("mousedown", (e) => e.preventDefault());
+      kPrev.addEventListener("click", () => stepHsQuestionSlide(-1));
+
+      const kSlideLbl = make("span", `${state.hsdSlideIdx + 1}/${slides.length}`, "ppt-fs-kbd-badge");
+
+      const kNext = make("button", "▶", "ppt-fs-tool-btn is-kbd-mini");
+      kNext.type = "button";
+      kNext.disabled = state.hsdSlideIdx >= slides.length - 1;
+      kNext.addEventListener("mousedown", (e) => e.preventDefault());
+      kNext.addEventListener("click", () => stepHsQuestionSlide(1));
+
+      const kJumpScen = make("button", "📖 โจทย์", "ppt-fs-tool-btn is-kbd-mini");
+      kJumpScen.type = "button";
+      kJumpScen.addEventListener("mousedown", (e) => e.preventDefault());
+      kJumpScen.addEventListener("click", () => {
+        const lp = sheet.querySelector(".hsd-slide-left");
+        if (lp) {
+          sheet.classList.remove("is-mobile-scen-folded");
+          state.hsdFsScenFolded = false;
+          lp.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+
+      const kJumpAns = make("button", "✍️ ช่องตอบ", "ppt-fs-tool-btn is-kbd-mini");
+      kJumpAns.type = "button";
+      kJumpAns.addEventListener("mousedown", (e) => e.preventDefault());
+      kJumpAns.addEventListener("click", () => {
+        if (isEditableElementFocusedInOverlay()) {
+          scrollFocusedFieldIntoSlideView(document.activeElement);
+        } else {
+          const rp = sheet.querySelector(".hsd-slide-right, .hsd-key-slide-stage");
+          if (rp) rp.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+
+      const kDismissBtn = make("button", "⌨ พับแป้นพิมพ์ ✓", "ppt-fs-tool-btn is-kbd-done");
+      kDismissBtn.type = "button";
+      kDismissBtn.addEventListener("click", () => {
+        if (document.activeElement && typeof document.activeElement.blur === "function") {
+          document.activeElement.blur();
+        }
+      });
+
+      kbdBar.append(kPrev, kSlideLbl, kNext, kJumpScen, kJumpAns, kDismissBtn);
+      ctrlBar.appendChild(kbdBar);
+
+      // B. Compact Primary Row for Phone / Duo / Tablet (thumb-friendly single line)
+      const compactRow = make("div", null, "ppt-fs-compact-primary-row");
+      const mPrev = make("button", "◀", "ppt-fs-tool-btn is-compact-nav");
+      mPrev.type = "button";
+      mPrev.disabled = state.hsdSlideIdx <= 0;
+      mPrev.title = "สไลด์ก่อนหน้า";
+      mPrev.addEventListener("click", () => stepHsQuestionSlide(-1));
+
+      const mPicker = document.createElement("select");
+      mPicker.className = "ppt-q-select is-compact-fs-select";
+      mPicker.setAttribute("aria-label", "เลือกสไลด์ในคาบนี้");
+      slides.forEach((s, idx) => {
+        let lbl = "";
+        if (s.kind === "opening-kahoot") {
+          lbl = `${idx + 1}/${slides.length} · เปิดคาบ ${s.mod.code}`;
+        } else if (s.kind === "concept-summary") {
+          const csTitle = (s.conceptSummary && s.conceptSummary.title) || "Key Takeaway";
+          lbl = `${idx + 1}/${slides.length} · ${s.pedShort || "Takeaway"}: ${csTitle}`;
+        } else {
+          const doneMark = isHsQuestionAnswered(s.qObj) ? "✓ " : "";
+          const stPref = s.pedShort ? `[${s.pedShort}] ` : "";
+          lbl = `${idx + 1}/${slides.length} · ${doneMark}${stPref}ข้อ ${s.shortNum}: ${s.qObj.title}`;
+        }
+        mPicker.add(new Option(lbl, String(idx), false, idx === state.hsdSlideIdx));
+      });
+      mPicker.addEventListener("change", () => {
+        const nextIdx = Number(mPicker.value) || 0;
+        state.hsdSlideIdx = nextIdx;
+        state.hsdSinglePaneOverride = "";
+        state.hsdFocusedConceptStep = 0;
+        state.hsdFsZoomScale = 1;
+        state.hsdFsScenFolded = false;
+        const chosen = slides[nextIdx];
+        if (chosen && chosen.qObj) {
+          state.hsdLastSelectedQId = chosen.qObj.id;
+          pauseFollowTeacherIfDiverged(chosen.qObj.id);
+        }
+        markSlideBoxesAutoOptimize("both");
+        renderHsDiscussionView();
+        broadcastPptPresentationState();
+        if (ROLE === "faculty") {
+          broadcastActiveFacultySlideToStudents(false);
+        }
+      });
+
+      const mNext = make("button", "▶", "ppt-fs-tool-btn is-compact-nav");
+      mNext.type = "button";
+      mNext.disabled = state.hsdSlideIdx >= slides.length - 1;
+      mNext.title = "สไลด์ถัดไป";
+      mNext.addEventListener("click", () => stepHsQuestionSlide(1));
+
+      compactRow.append(mPrev, mPicker, mNext);
+
+      if (ROLE === "faculty" && cur.qObj && state.hsdFacultyMode !== "student") {
+        const totalK = getHsQuestionKeyTotalSteps(cur.qObj.id);
+        if (totalK > 0) {
+          const curK = getEffectiveHsKeyStep(cur.qObj.id);
+          const mKeyNext = make(
+            "button",
+            curK < totalK ? `★ เฉลย ${curK}/${totalK}` : `✓ ครบ ${totalK}/${totalK}`,
+            "ppt-fs-tool-btn is-compact-key"
+          );
+          mKeyNext.type = "button";
+          mKeyNext.title = "เปิดเฉลยขั้นถัดไป (แตะซ้ำเพื่อเปิดทีละข้อ)";
+          mKeyNext.addEventListener("click", () => stepHsAnswerKeyClicker(1));
+          compactRow.appendChild(mKeyNext);
+        }
+      }
+
+      compactRow.appendChild(buildFsZoomAndCanvasBarDOM(true));
+
+      const mToolsToggle = make(
+        "button",
+        state.hsdFsToolsExpanded ? "🛠 ซ่อนเครื่องมือ" : "🛠 เครื่องมือ",
+        "ppt-fs-tool-btn is-landscape-tools-toggle"
+      );
+      mToolsToggle.type = "button";
+      mToolsToggle.setAttribute("aria-pressed", state.hsdFsToolsExpanded ? "true" : "false");
+      mToolsToggle.addEventListener("click", () => {
+        state.hsdFsToolsExpanded = !state.hsdFsToolsExpanded;
+        ov.classList.toggle("is-fs-tools-open", state.hsdFsToolsExpanded);
+        mToolsToggle.textContent = state.hsdFsToolsExpanded ? "🛠 ซ่อนเครื่องมือ" : "🛠 เครื่องมือ";
+        mToolsToggle.setAttribute("aria-pressed", state.hsdFsToolsExpanded ? "true" : "false");
+        syncPptOverlayViewportMetrics(true);
+      });
+      compactRow.appendChild(mToolsToggle);
+
+      const mCollapseBtn = make("button", "▾", "ppt-fs-tool-btn is-compact-collapse");
+      mCollapseBtn.type = "button";
+      mCollapseBtn.title = "พับแถบควบคุมด้านล่าง";
+      mCollapseBtn.addEventListener("click", () => {
+        state.hsdFsHudCollapsed = true;
+        renderPptPresentationOverlay();
+      });
+
+      const mExitBtn = make("button", "✕ ออก", "ppt-fs-tool-btn is-exit is-compact-exit");
+      mExitBtn.type = "button";
+      mExitBtn.title = "จบการฉาย (Esc)";
+      mExitBtn.addEventListener("click", () => exitPptFullscreenShow());
+
+      compactRow.append(mCollapseBtn, mExitBtn);
+      ctrlBar.appendChild(compactRow);
+
+      // C. Desktop Presenter Clickers Row (shown on wide desktop viewports)
       const topClickersRow = make("div", null, "ppt-ribbon-clickers");
       topClickersRow.appendChild(buildBigQuestionClickerDOM(slides, cur, false));
       const keyDock = buildBigAnswerKeyClickerDOM(cur);
       if (keyDock) topClickersRow.appendChild(keyDock);
       topClickersRow.appendChild(buildControlBarTimerDockDOM(true));
+      topClickersRow.appendChild(buildFsZoomAndCanvasBarDOM(false));
       topClickersRow.appendChild(buildPptSlideThemeSwitcherDOM("is-in-fs"));
 
+      // D. Unified Tools Row (wraps on desktop; single-row horizontal scroll rail on phone/Duo/tablet)
       const bottomToolsRow = buildUnifiedPptToolsBarDOM(cur, slides, true);
       ctrlBar.append(topClickersRow, bottomToolsRow);
       ov.appendChild(ctrlBar);
@@ -24938,6 +26443,9 @@
     pptProjectedResizeObserver = new ResizeObserver(() => fitSlideSheetToStage(stageWrap, sheet, false));
     pptProjectedResizeObserver.observe(stageWrap);
     scheduleStabilizedSlideFit(stageWrap, sheet, false);
+    if (Math.abs((state.hsdFsZoomScale || 1) - 1) >= 0.015) {
+      applyOverlayPinchZoomScale(stageWrap, zoomSizer, sheet, state.hsdFsZoomScale);
+    }
   }
 
   function getGoogleDriveLogoSvgHtml(sizePx = 18, extraCls = "") {
@@ -25091,7 +26599,7 @@
       storageBox.innerHTML =
         `<div class="gdrive-storage-head">☁️ <span>คลังสไลด์สอนพร้อมใช้งาน</span></div>` +
         `<div class="gdrive-storage-track"><div class="gdrive-storage-fill" style="width:100%"></div></div>` +
-        `<div class="gdrive-storage-caption">ครบทั้ง 6 คาบ (HS1–HS6) · 10 กรณีศึกษา · 20 ข้อย่อย พร้อมเฉลย Teacher Key 4 ขั้น</div>`;
+        `<div class="gdrive-storage-caption">ครบทั้ง 6 คาบ (HS1–HS6) · 11 กรณีศึกษา · 21 ข้อย่อย พร้อมเฉลย Teacher Key รายขั้น</div>`;
     } else {
       const pct = allProg.total > 0 ? Math.min(100, Math.round((allProg.filled / allProg.total) * 100)) : 0;
       storageBox.innerHTML =
@@ -25240,7 +26748,7 @@
             icoCls: "is-docx",
             icoTxt: "W",
             name: "RACM303_ใบงานรวมทุกบท_HS1-HS6_โหมดเลื่อนอ่านยาว.web",
-            sub: "เปิดหน้าเว็บโหมดเลื่อนอ่านยาวครบทั้ง 10 กรณีศึกษา (20 ข้อย่อย) ในหน้าเดียว",
+            sub: "เปิดหน้าเว็บโหมดเลื่อนอ่านยาวครบทั้ง 11 กรณีศึกษา (21 ข้อย่อย) ในหน้าเดียว",
             badge: "Web Scroll",
             onClick: () => {
               closeHsdGoogleDrivePickerModal();
@@ -26350,7 +27858,7 @@
     const out = [];
     (caseObj && caseObj.scenarioBlocks ? caseObj.scenarioBlocks : []).forEach((b) => {
       if (!b) return;
-      if (b.type === "paragraph" && b.text) out.push(String(b.text).trim());
+      if ((b.type === "paragraph" || b.type === "p") && b.text) out.push(String(b.text).trim());
       else if (b.type === "dialogue" && b.text) {
         out.push(`${b.speaker ? `${b.speaker}: ` : ""}${String(b.text).trim()}`);
       } else if (b.type === "callout") {
@@ -26375,9 +27883,10 @@
     const rows = (ws.rows || []).map((rObj) => {
       const cells = (rObj.cells || []).map((c, cIdx) => {
         if (c.static) {
-          return { text: String(c.text || ""), bold: cIdx === 0, color: "0F172A" };
+          return { text: String(c.static || c.text || ""), bold: cIdx === 0, color: "0F172A" };
         }
-        const draftVal = includeDrafts && c.id ? String(state.hsdDrafts[c.id] || "").trim() : "";
+        const cid = c.inputId || c.id || "";
+        const draftVal = includeDrafts && cid ? String(state.hsdDrafts[cid] || "").trim() : "";
         return {
           text: draftVal || (c.placeholder ? `[${c.placeholder}]` : " "),
           bold: false,
@@ -26390,6 +27899,53 @@
       headers,
       rows,
       colFractions: headers.length === 3 ? [0.22, 0.39, 0.39] : headers.length === 2 ? [0.28, 0.72] : undefined
+    };
+  }
+
+  function buildStudentDohPptxDiagramSpec(qObj, includeDrafts) {
+    const ws = qObj && qObj.worksheet;
+    if (!ws || ws.type !== "doh-diagram") return null;
+    const meta = ws.diagramMeta || {};
+    const nodesMeta = meta.nodes || {};
+    const linksCid = meta.linksInputId || "c1b_q1_links";
+    const linkSt = includeDrafts ? parseDohLinksString(state.hsdDrafts[linksCid] || "") : parseDohLinksString("");
+    const readNodeDraft = (nodeKey) => {
+      const nMeta = nodesMeta[nodeKey] || {};
+      const cid = nMeta.inputId || `c1b_q1_${nodeKey}`;
+      return includeDrafts ? String(state.hsdDrafts[cid] || "").trim() : "";
+    };
+    const outcomeVal = readNodeDraft("outcome");
+    return {
+      mode: includeDrafts ? "student-draft" : "blank-sheet",
+      outerRing: includeDrafts ? Boolean(linkSt.outerRing) : false,
+      innerRing: includeDrafts ? Boolean(linkSt.innerRing) : false,
+      edges: includeDrafts ? linkSt.edges : {},
+      outcome: {
+        title: outcomeVal || "ปัญหาสุขภาพตรงกลาง",
+        sub: outcomeVal ? "" : "(ระบุภาวะสุขภาพหลักของ ด.ช.โมโน)"
+      },
+      nodes: {
+        structural: {
+          title: (nodesMeta.structural && nodesMeta.structural.title) || "ปัจจัยด้านโครงสร้าง",
+          text: readNodeDraft("structural"),
+          placeholder: "ระบุปัจจัยโครงสร้าง/นโยบาย/ค่านิยม/โฆษณา และวาดวงล้อมชั้นนอก…"
+        },
+        individual: {
+          title: (nodesMeta.individual && nodesMeta.individual.title) || "ปัจจัยด้านปัจเจก",
+          text: readNodeDraft("individual"),
+          placeholder: "ระบุพันธุกรรม พฤติกรรม และการรับรู้ระดับบุคคล…"
+        },
+        soc_env: {
+          title: (nodesMeta.soc_env && nodesMeta.soc_env.title) || "ปัจจัยด้านสังคมและสิ่งแวดล้อม",
+          text: readNodeDraft("soc_env"),
+          placeholder: "ระบุครอบครัว ที่พัก ชุมชน และสิ่งแวดล้อมในโรงเรียน…"
+        },
+        health_sys: {
+          title: (nodesMeta.health_sys && nodesMeta.health_sys.title) || "ระบบบริการสุขภาพ",
+          text: readNodeDraft("health_sys"),
+          placeholder: "ระบุบทบาท/ช่องว่างของระบบบริการสุขภาพในโรงเรียน…"
+        }
+      }
     };
   }
 
@@ -26546,6 +28102,7 @@
         };
       }
       let tableSpec = null;
+      let diagramSpec = null;
       let clues = [];
       let questionClues = [];
       let drawConnectors = false;
@@ -26557,11 +28114,14 @@
       ) {
         const facPayload = buildFacultyPptxSlidePayload(it.qObj, it.mod, it.forceLayout);
         tableSpec = facPayload.table;
+        diagramSpec = facPayload.diagram || null;
         clues = facPayload.clues || [];
         questionClues = facPayload.questionClues || [];
         drawConnectors = it.forceLayout === "split-concept";
       } else {
-        tableSpec = buildStudentWorksheetPptxTableSpec(it.qObj, !it.blankWorksheet && ROLE === "student");
+        const includeDrafts = !it.blankWorksheet && ROLE === "student";
+        tableSpec = buildStudentWorksheetPptxTableSpec(it.qObj, includeDrafts);
+        diagramSpec = buildStudentDohPptxDiagramSpec(it.qObj, includeDrafts);
       }
 
       return {
@@ -26578,7 +28138,8 @@
         clues,
         questionClues,
         drawConnectors,
-        table: tableSpec
+        table: tableSpec,
+        diagram: diagramSpec
       };
     });
 
@@ -27284,7 +28845,10 @@
       }
     } else {
       mountedSheet = buildPptSlideSheetDOM(cur, slides, false);
-      canvasStage.appendChild(mountedSheet);
+      const canvasZoomSizer = make("div", null, "ppt-fs-zoom-sizer is-canvas-sizer");
+      canvasZoomSizer.appendChild(mountedSheet);
+      canvasStage.appendChild(canvasZoomSizer);
+      attachPptStagePinchZoom(canvasStage, canvasZoomSizer, mountedSheet);
     }
     centerCol.appendChild(canvasStage);
 
