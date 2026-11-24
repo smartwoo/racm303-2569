@@ -14944,13 +14944,24 @@
       const pdfHead = make("div", null, "hs-inline-pdf-head");
       pdfHead.appendChild(make("strong", `📄 ตัวอย่างสไลด์ / ไฟล์ประกอบคาบ ${sess.code}: ${slideRec.fileName}`));
       const pdfActs = make("div", null, "header-actions");
-      const newTabBtn = make("button", "↗ เปิดเต็มจอในแท็บใหม่", "btn sm");
+      const fsPdfBtn = make("button", "📺 ฉายสไลด์เต็มจอ", "btn sm ppt-launch-fs-btn");
+      fsPdfBtn.type = "button";
+      fsPdfBtn.title = "ฉายสไลด์เต็มหน้าจอโดยตัดแถบหัวข้อและปุ่มเปิดหน้าต่างใหม่ออก (กด Esc เพื่อออก)";
+      fsPdfBtn.addEventListener("click", () => {
+        if (pdfCard.requestFullscreen) pdfCard.requestFullscreen().catch(() => {});
+        else if (pdfCard.webkitRequestFullscreen) {
+          try {
+            pdfCard.webkitRequestFullscreen();
+          } catch (_) {}
+        }
+      });
+      const newTabBtn = make("button", "📖 Reading Mode · เปิดแท็บใหม่ ↗", "btn sm");
       newTabBtn.type = "button";
       newTabBtn.addEventListener("click", () => openSessionSlide(sess.id, false));
       const dlPdfBtn = make("button", "⬇ ดาวน์โหลด PDF", "btn sm teal");
       dlPdfBtn.type = "button";
       dlPdfBtn.addEventListener("click", () => openSessionSlide(sess.id, true));
-      pdfActs.append(newTabBtn, dlPdfBtn);
+      pdfActs.append(fsPdfBtn, newTabBtn, dlPdfBtn);
       pdfHead.appendChild(pdfActs);
 
       const iframe = document.createElement("iframe");
@@ -16797,13 +16808,24 @@
       const pdfHead = make("div", null, "hs-inline-pdf-head");
       pdfHead.appendChild(make("strong", `📄 ตัวอย่างสไลด์บรรยาย ${curMod.code}: ${rec.fileName}`));
       const pdfActs = make("div", null, "header-actions");
-      const newTabBtn = make("button", "↗ เปิดเต็มจอในแท็บใหม่", "btn sm");
+      const fsPdfBtn = make("button", "📺 ฉายสไลด์เต็มจอ", "btn sm ppt-launch-fs-btn");
+      fsPdfBtn.type = "button";
+      fsPdfBtn.title = "ฉายสไลด์อาจารย์เต็มหน้าจอโดยตัดแถบหัวข้อและปุ่มเปิดหน้าต่างใหม่ออก (กด Esc เพื่อออก)";
+      fsPdfBtn.addEventListener("click", () => {
+        if (pdfCard.requestFullscreen) pdfCard.requestFullscreen().catch(() => {});
+        else if (pdfCard.webkitRequestFullscreen) {
+          try {
+            pdfCard.webkitRequestFullscreen();
+          } catch (_) {}
+        }
+      });
+      const newTabBtn = make("button", "📖 Reading Mode · เปิดแท็บใหม่ ↗", "btn sm");
       newTabBtn.type = "button";
       newTabBtn.addEventListener("click", () => openSessionSlide(sInfo.sessionId, false));
       const dlPdfBtn = make("button", "⬇ ดาวน์โหลด PDF", "btn sm teal");
       dlPdfBtn.type = "button";
       dlPdfBtn.addEventListener("click", () => openSessionSlide(sInfo.sessionId, true));
-      pdfActs.append(newTabBtn, dlPdfBtn);
+      pdfActs.append(fsPdfBtn, newTabBtn, dlPdfBtn);
       pdfHead.appendChild(pdfActs);
 
       const iframe = document.createElement("iframe");
@@ -17030,61 +17052,76 @@
     hero.append(heroTop, heroBody, heroActions);
     stage.appendChild(hero);
 
-    // 16:9 VDO Player or Clean Pending Standby Frame
-    const playerShell = make(
-      "section",
-      null,
-      `hs-vdo-stage-card ${vInfo.uploaded ? "is-vdo-ready" : "is-vdo-pending"}`
-    );
-    if (vInfo.uploaded && (rec.videoUrl || rec.externalUrl)) {
-      const srcUrl = String(rec.videoUrl || rec.externalUrl || "").trim();
-      const headBar = make("div", null, "hs-vdo-stage-head");
-      headBar.append(
-        make("strong", `🎬 VDO Lecture ประจำคาบ ${curMod.code}: ${curMod.title}`),
-        make("span", rec.lecturer || lecturer, "hs-flow-timing-pill")
-      );
-      playerShell.appendChild(headBar);
-
-      if (/\.mp4(\?|$)/i.test(srcUrl) || srcUrl.startsWith("assets/videos/")) {
-        const vidWrap = make("div", null, "he-vdo-iframe-wrap");
-        const vid = document.createElement("video");
-        vid.className = "he-native-video";
-        vid.controls = true;
-        vid.playsInline = true;
-        vid.preload = "metadata";
-        vid.src = srcUrl;
-        vidWrap.appendChild(vid);
-        playerShell.appendChild(vidWrap);
-      } else {
-        const extBox = make("div", null, "hs-vdo-standby-inner");
-        extBox.append(
-          make("div", "🎬", "hs-vdo-standby-ico"),
-          make("h4", `ลิงก์ VDO Lecture ประจำคาบ ${curMod.code} พร้อมเปิดรับชม`),
-          make("p", srcUrl)
-        );
-        const extLink = document.createElement("a");
-        extLink.className = "btn primary";
-        extLink.href = srcUrl;
-        extLink.target = "_blank";
-        extLink.rel = "noopener";
-        extLink.textContent = "▶ เปิดรับชม VDO Lecture ในแท็บใหม่ ↗";
-        extBox.appendChild(extLink);
-        playerShell.appendChild(extBox);
-      }
+    // Interactive VDO Lecture Studio (when studioGlobalKey data is loaded) OR 16:9 VDO Player / Pending Standby Frame
+    const studioDataObj = rec.studioGlobalKey && window[rec.studioGlobalKey] ? window[rec.studioGlobalKey] : null;
+    if (
+      vInfo.uploaded &&
+      studioDataObj &&
+      window.RACM303_EP_STUDIO &&
+      typeof window.RACM303_EP_STUDIO.render === "function"
+    ) {
+      const studioMount = make("div", null, "hs-vdo-interactive-studio-mount");
+      stage.appendChild(studioMount);
+      window.RACM303_EP_STUDIO.render(studioMount, {
+        standaloneData: studioDataObj,
+        moduleCode: curMod.code
+      });
     } else {
-      const standby = make("div", null, "hs-vdo-standby-inner");
-      standby.append(
-        make("div", "🎞️", "hs-vdo-standby-ico"),
-        make("span", `STEP 06 · VDO LECTURE STUDIO (${curMod.code})`, "hs-vdo-standby-kicker"),
-        make("h4", `⏳ รอแขวน VDO บรรยายประจำคาบ ${curMod.code}`),
-        make(
-          "p",
-          `พื้นที่สำหรับแขวนวิดีโอบรรยายประจำคาบ ${curMod.code} (${rec.lecturer || lecturer}) — รองรับไฟล์ MP4 ความคมชัดสูงและการซิงค์สไลด์แบบ Interactive VDO Lecture Studio ทันทีที่นำไฟล์มาแขวน`
-        )
+      const playerShell = make(
+        "section",
+        null,
+        `hs-vdo-stage-card ${vInfo.uploaded ? "is-vdo-ready" : "is-vdo-pending"}`
       );
-      playerShell.appendChild(standby);
+      if (vInfo.uploaded && (rec.videoUrl || rec.externalUrl)) {
+        const srcUrl = String(rec.videoUrl || rec.externalUrl || "").trim();
+        const headBar = make("div", null, "hs-vdo-stage-head");
+        headBar.append(
+          make("strong", `🎬 VDO Lecture ประจำคาบ ${curMod.code}: ${curMod.title}`),
+          make("span", rec.lecturer || lecturer, "hs-flow-timing-pill")
+        );
+        playerShell.appendChild(headBar);
+
+        if (/\.mp4(\?|$)/i.test(srcUrl) || srcUrl.startsWith("assets/videos/")) {
+          const vidWrap = make("div", null, "he-vdo-iframe-wrap");
+          const vid = document.createElement("video");
+          vid.className = "he-native-video";
+          vid.controls = true;
+          vid.playsInline = true;
+          vid.preload = "metadata";
+          vid.src = srcUrl;
+          vidWrap.appendChild(vid);
+          playerShell.appendChild(vidWrap);
+        } else {
+          const extBox = make("div", null, "hs-vdo-standby-inner");
+          extBox.append(
+            make("div", "🎬", "hs-vdo-standby-ico"),
+            make("h4", `ลิงก์ VDO Lecture ประจำคาบ ${curMod.code} พร้อมเปิดรับชม`),
+            make("p", srcUrl)
+          );
+          const extLink = document.createElement("a");
+          extLink.className = "btn primary";
+          extLink.href = srcUrl;
+          extLink.target = "_blank";
+          extLink.rel = "noopener";
+          extLink.textContent = "▶ เปิดรับชม VDO Lecture ในแท็บใหม่ ↗";
+          extBox.appendChild(extLink);
+          playerShell.appendChild(extBox);
+        }
+      } else {
+        const standby = make("div", null, "hs-vdo-standby-inner");
+        standby.append(
+          make("div", "🎞️", "hs-vdo-standby-ico"),
+          make("span", `STEP 06 · VDO LECTURE STUDIO (${curMod.code})`, "hs-vdo-standby-kicker"),
+          make("h4", `⏳ รอแขวน VDO บรรยายประจำคาบ ${curMod.code}`),
+          make(
+            "p",
+            `พื้นที่สำหรับแขวนวิดีโอบรรยายประจำคาบ ${curMod.code} (${rec.lecturer || lecturer}) — รองรับไฟล์ MP4 ความคมชัดสูงและการซิงค์สไลด์แบบ Interactive VDO Lecture Studio ทันทีที่นำไฟล์มาแขวน`
+          )
+        );
+        playerShell.appendChild(standby);
+      }
+      stage.appendChild(playerShell);
     }
-    stage.appendChild(playerShell);
 
     // Faculty Quick-Attach VDO URL Corner (Faculty Portal Only)
     if (ROLE === "faculty" && window.RACM_VDO_LECTURE_HELPER) {
@@ -17145,7 +17182,13 @@
       const compBox = make("section", null, "hs-vdo-companion-card");
       const compHead = make("div", null, "hs-vdo-companion-head");
       compHead.append(
-        make("span", "🎥 คลิปบรรยายเสริมที่รับชมได้ทันทีระหว่างรอแขวน VDO หลัก", "hs-flow-step-pill is-step-6 is-slide-uploaded"),
+        make(
+          "span",
+          vInfo.uploaded
+            ? `🎥 คลิปบรรยายเสริมชุด Health Economics ที่เชื่อมโยงกับบท ${curMod.code}`
+            : "🎥 คลิปบรรยายเสริมที่รับชมได้ทันทีระหว่างรอแขวน VDO หลัก",
+          "hs-flow-step-pill is-step-6 is-slide-uploaded"
+        ),
         make(
           "h4",
           `ชุดวิดีโอบรรยายเศรษฐศาสตร์สาธารณสุข (Health Economics Series) ที่เชื่อมตรงกับเนื้อหาบท ${curMod.code}`
@@ -17474,6 +17517,15 @@
           onSelectModule: (m) => switchTextbookModulePreservingFormat(m)
         })
       );
+    }
+
+    if (
+      driveMount &&
+      (subMode !== "vdo-lecture" || state.vdoDriveScope === "folders") &&
+      window.RACM303_EP_STUDIO &&
+      typeof window.RACM303_EP_STUDIO.destroyIfInside === "function"
+    ) {
+      window.RACM303_EP_STUDIO.destroyIfInside(driveMount);
     }
 
     if (subMode === "docs-drive") {
@@ -20305,15 +20357,17 @@
       thBtn.textContent = state.hsdTheater
         ? tr("✕ จบการฉาย (Esc)", "✕ Exit Slide Show (Esc)")
         : ROLE === "faculty"
-        ? tr("▶ ฉายสไลด์ Full Screen 16:9", "▶ Slide Show 16:9")
-        : tr("▶ ฉาย Full Screen 16:9", "▶ Full Screen 16:9");
+        ? tr("📺 ฉายสไลด์ Full Screen (F5)", "📺 Slide Show (F5)")
+        : tr("📺 ฉายสไลด์ Full Screen (F5)", "📺 Full Screen (F5)");
     }
     const winBtn = $("hsdPopoutShareBtn");
     if (winBtn) {
       winBtn.classList.toggle("is-sharing-live", Boolean(state.pptPopupConnected));
       winBtn.textContent = state.pptPopupConnected
-        ? tr("🟢 หน้าต่าง Slide Share เปิดอยู่ ↗", "🟢 Slide Share Active ↗")
-        : tr("🪟 แยกหน้าต่าง Slide Share 16:9", "🪟 Pop-out Slide Share 16:9");
+        ? tr("🟢 แท็บ Reading Mode เปิดอยู่ ↗", "🟢 Reading Mode Tab Active ↗")
+        : ROLE === "faculty"
+        ? tr("📖 Share Slide · Reading Mode (เปิดแท็บใหม่ ↗)", "📖 Share Slide · Reading Mode (New Tab ↗)")
+        : tr("📖 Reading Mode · เปิดแท็บใหม่ ↗", "📖 Reading Mode (New Tab ↗)");
     }
     const panel = $("panel-hs-discussion");
     if (panel) {
@@ -20622,7 +20676,11 @@
 
       if (e.key === "F5") {
         e.preventDefault();
-        enterPptFullscreenShow();
+        if (state.isPptSlideSharePopup) {
+          toggleReadingTabNativeFullscreen();
+        } else {
+          enterPptFullscreenShow();
+        }
         return;
       }
       if ((e.key === "g" || e.key === "G") && isPresenting) {
@@ -23383,6 +23441,40 @@
     requestAnimationFrame(() => applySlideBoxesZoom(document));
   }
 
+  function toggleReadingTabNativeFullscreen() {
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl) {
+      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if (document.webkitExitFullscreen) {
+        try {
+          document.webkitExitFullscreen();
+        } catch (_) {}
+      }
+    } else {
+      const docEl = document.documentElement;
+      if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
+      else if (docEl.webkitRequestFullscreen) {
+        try {
+          docEl.webkitRequestFullscreen();
+        } catch (_) {}
+      }
+    }
+  }
+
+  function exitReadingModeTabOrClose() {
+    broadcastPptSyncMessage({ type: "ppt_popup_closed" });
+    try {
+      if (window.opener && !window.opener.closed) {
+        window.close();
+        return;
+      }
+    } catch (_) {}
+    const u = new URL(window.location.href);
+    u.searchParams.delete("ppt_slideshare");
+    u.searchParams.delete("mode");
+    window.location.href = u.toString();
+  }
+
   function openPptSlideShareWindow(targetCaseOrQId) {
     ensureStudentRoomReadyForPresentation();
     if (targetCaseOrQId) jumpSlideIndexToTarget(targetCaseOrQId);
@@ -23397,7 +23489,9 @@
     }
 
     if (pptSharePopupRef && !pptSharePopupRef.closed) {
-      pptSharePopupRef.focus();
+      try {
+        pptSharePopupRef.focus();
+      } catch (_) {}
       state.pptPopupConnected = true;
       syncViewModeButtonsUI();
       renderHsDiscussionView();
@@ -23407,6 +23501,7 @@
 
     const u = new URL(window.location.href);
     u.searchParams.set("ppt_slideshare", "1");
+    u.searchParams.set("mode", "reading");
     u.searchParams.set("page", "hs-discussion");
     if (state.hsdModule && state.hsdModule !== "ALL") {
       u.searchParams.set("module", state.hsdModule);
@@ -23418,18 +23513,8 @@
     }
     u.hash = "hs-discussion";
 
-    const availW = window.screen && window.screen.availWidth ? window.screen.availWidth : 1440;
-    const availH = window.screen && window.screen.availHeight ? window.screen.availHeight : 900;
-    const w = Math.min(1440, Math.max(960, Math.round(availW * 0.82)));
-    const h = Math.round((w * 9) / 16);
-    const left = Math.max(0, Math.round((availW - w) / 2));
-    const top = Math.max(0, Math.round((availH - h) / 2));
-
-    const pop = window.open(
-      u.toString(),
-      `RACM303_PPT_SlideShare_${ROLE}`,
-      `popup=yes,width=${w},height=${h},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=yes`
-    );
+    // Open in a standard New Browser Tab (PowerPoint Reading View · ideal for Share Chrome Tab & Slide Show!)
+    const pop = window.open(u.toString(), "_blank");
 
     if (pop) {
       pptSharePopupRef = pop;
@@ -24493,13 +24578,6 @@
         canvasModeSeg.appendChild(mb);
       });
       row.appendChild(canvasModeSeg);
-
-      const fsDriveBtn = make("button", null, "ppt-fs-tool-btn");
-      fsDriveBtn.type = "button";
-      fsDriveBtn.title = "เลือกเปิดไฟล์สไลด์คาบอื่นจากโฟลเดอร์ Google Drive (HS1–HS6)";
-      fsDriveBtn.innerHTML = `${getGoogleDriveLogoSvgHtml(14)} <span>เปลี่ยนไฟล์ (${escapeHtml(cur.mod.code)}.pptx) ▾</span>`;
-      fsDriveBtn.addEventListener("click", () => openHsdGoogleDrivePickerModal());
-      row.appendChild(fsDriveBtn);
     }
 
     // 1. Pedagogical Stage & Layout Segmented Pill Bar
@@ -24596,14 +24674,11 @@
     });
     row.appendChild(laserToggleBtn);
 
-    // 4. Textbook Quick Jump Button (Works both in Normal PPT and Full-Screen!)
-    if (cur.mod && cur.mod.conciseDocId) {
+    // 4. Textbook Quick Jump Button (Normal Studio only — omitted in Full-Screen Slide Show)
+    if (!isFullscreen && cur.mod && cur.mod.conciseDocId) {
       const docBtn = make("button", `${tr("บทเรียน", "Study")} ${cur.mod.code}`, "btn sm teal");
       docBtn.type = "button";
       docBtn.addEventListener("click", () => {
-        if (state.hsdTheater && !state.isPptSlideSharePopup) {
-          exitPptFullscreenShow();
-        }
         openTextbookDoc(cur.mod.conciseDocId);
       });
       row.appendChild(docBtn);
@@ -24672,28 +24747,24 @@
 
       if (state.isPptSlideSharePopup) {
         const isNativeFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
-        const fsPopBtn = make("button", isNativeFs ? "ย่อเต็มจอ" : "⛶ เต็มจอ", "ppt-fs-tool-btn");
+        const fsPopBtn = make(
+          "button",
+          isNativeFs ? "❐ ย่อกลับ Reading Mode (Esc)" : "📺 ฉายสไลด์เต็มจอ (F5)",
+          isNativeFs ? "ppt-fs-tool-btn is-exit" : "ppt-fs-tool-btn"
+        );
         fsPopBtn.type = "button";
-        fsPopBtn.addEventListener("click", () => {
-          if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-          else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
-        });
-        const hideHudBtn = make("button", "🙈 ซ่อนแถบล่าง (ผู้ชม)", "ppt-fs-tool-btn");
-        hideHudBtn.type = "button";
-        hideHudBtn.addEventListener("click", () => {
+        fsPopBtn.addEventListener("click", () => toggleReadingTabNativeFullscreen());
+        const backReadBtn = make("button", "📖 แถบ Reading Mode", "ppt-fs-tool-btn");
+        backReadBtn.type = "button";
+        backReadBtn.addEventListener("click", () => {
           state.hsdShowFullHudInPopup = false;
           renderPptPresentationOverlay();
         });
-        row.append(fsPopBtn, hideHudBtn);
+        row.append(fsPopBtn, backReadBtn);
       } else {
-        const popWinBtn = make("button", "🪟 แยกหน้าต่าง Slide Share", "ppt-fs-tool-btn");
-        popWinBtn.type = "button";
-        popWinBtn.title = "แยกออกเป็นอีกหน้าต่างสำหรับแชร์จอ Zoom หรือลากขึ้นโปรเจกเตอร์";
-        popWinBtn.addEventListener("click", () => openPptSlideShareWindow());
-
         const collapseDockBtn = make("button", "▾ ซ่อนแถบล่าง", "ppt-fs-tool-btn");
         collapseDockBtn.type = "button";
-        collapseDockBtn.title = "พับเก็บแถบควบคุมด้านล่าง เพื่อให้สไลด์ 16:9 ด้านบนขยายเต็มสัดส่วนโดยไม่บังเนื้อหาสไลด์";
+        collapseDockBtn.title = "พับเก็บแถบควบคุมด้านล่าง เพื่อให้สไลด์ขยายเต็มจอแบบไร้สิ่งรบกวน";
         collapseDockBtn.addEventListener("click", () => {
           state.hsdFsHudCollapsed = true;
           renderPptPresentationOverlay();
@@ -24703,7 +24774,7 @@
         exitBtn.type = "button";
         exitBtn.addEventListener("click", () => exitPptFullscreenShow());
 
-        row.append(popWinBtn, collapseDockBtn, exitBtn);
+        row.append(collapseDockBtn, exitBtn);
       }
     }
 
@@ -25655,13 +25726,13 @@
       );
 
       const mRight = make("div", null, "ppt-sm-right");
-      if (!exp && !state.isPptSlideSharePopup && slides.length > 1) {
+      if (!exp && slides.length > 1) {
         const nextFirstBtn = make("button", "เริ่มโจทย์ข้อแรก →", "ppt-sm-qpill is-current");
         nextFirstBtn.type = "button";
         nextFirstBtn.addEventListener("click", () => stepHsQuestionSlide(1));
         mRight.appendChild(nextFirstBtn);
       }
-      if (!exp && !state.isPptSlideSharePopup) {
+      if (!exp && !isProjected && !state.isPptSlideSharePopup) {
         mRight.appendChild(buildPptSlideThemeSwitcherDOM("is-on-slide"));
       }
       if (!exp) {
@@ -25767,7 +25838,7 @@
         mRight.appendChild(subWrap);
       }
 
-      if (!exp && !state.isPptSlideSharePopup) {
+      if (!exp && !isProjected && !state.isPptSlideSharePopup) {
         mRight.appendChild(buildPptSlideThemeSwitcherDOM("is-on-slide"));
       }
       if (!exp) {
@@ -25887,7 +25958,7 @@
       mRight.appendChild(subWrap);
     }
 
-    if (!exp && !state.isPptSlideSharePopup) {
+    if (!exp && !isProjected && !state.isPptSlideSharePopup) {
       mRight.appendChild(buildPptSlideThemeSwitcherDOM("is-on-slide"));
     }
     if (!exp) {
