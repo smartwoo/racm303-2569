@@ -18,7 +18,7 @@
 - **คู่มือรายวิชา RACM 303 ปีการศึกษา 2569 (ครบ 17 บท + ภาคผนวก 1A–4A):** [คู่มือรายวิชา_RACM303_2569.md](คู่มือรายวิชา_RACM303_2569.md)
 - **ไฟล์ปฏิทินมาตรฐาน Apple Calendar / iCal / Outlook (`.ics` พร้อมลิงก์ Zoom & แจ้งเตือนล่วงหน้า 15 นาที):** [downloads/RACM303_2569_Calendar.ics](downloads/RACM303_2569_Calendar.ics)
 - **ไฟล์ปฏิทินสำหรับนำเข้า Google Calendar (`.csv` พร้อมลิงก์ Zoom):** [downloads/RACM303_2569_GoogleCalendar.csv](downloads/RACM303_2569_GoogleCalendar.csv)
-- **ตารางสอนฉบับสมบูรณ์ (Excel `.xlsx` / Markdown `.md`):** [downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx](downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx) · [downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.md](downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.md)
+- **ตารางสอนฉบับสมบูรณ์ (PDF 24 หน้า / Excel `.xlsx` / Markdown `.md`):** [exports/pdf/RACM303_2569_Schedule.pdf](exports/pdf/RACM303_2569_Schedule.pdf) · [downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx](downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.xlsx) · [downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.md](downloads/ตารางเรียนปี_3-2569_ฉบับปรับปรุง.md)
   - *คำแนะนำ:* หากเปิดผ่านเว็บพอร์ทัล https://smartwoo.github.io/racm303-2569-student/ และกรอกรหัสนักศึกษา 7 หลักก่อนกดดาวน์โหลด `.ics` หรือ `.csv` ระบบจะผูกห้อง `Discussion 1–6` ห้องกลุ่มพื้นที่ และวันเดินทางภาคสนามเฉพาะกลุ่มของนักศึกษาเข้าในปฏิทินส่วนตัวให้อัตโนมัติ
 
 ### 2. บทเรียนวิทยาศาสตร์ระบบสุขภาพฉบับสรุปกระชับ (Concise Summary `.md` + อินโฟกราฟิก)
@@ -33,10 +33,10 @@
 ### 3. ห้องเรียนออนไลน์ Zoom ประจำรายวิชา
 | วัน-เวลา | คาบเรียน | ลิงก์ Zoom | Meeting ID | Passcode |
 |---|---|---|---|---|
-| ศุกร์ที่ 27 พ.ย. 2569 (`08.30 – 11.00 น.`) | `EP1–EP3` *(Hybrid ณ Auditorium · หลัง 11.00 น. ทำ `EXERCISE 1–2` & `EX-SDL` ใน E-learning)* | https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1 | `910 2256 1292` | `346256` |
-| พุธที่ 2 ธ.ค. 2569 (`08.30 – 16.30 น.`) | `EP4–EP5`, `EXERCISE 3–4` | https://zoom.us/j/94317626613?pwd=0M6tElkd5gdbRjjdMQ1wYUmThR7Bla.1 | `943 1762 6613` | `547989` |
-| พฤหัสบดีที่ 3 ธ.ค. 2569 (`08.30 – 16.30 น.`) | `EP6–EP8`, `EP9 + EXERCISE 5–6` | https://zoom.us/j/92940953542?pwd=95C9xFpBvOFg8gtuaXkDBkc4ivtFGU.1 | `929 4095 3542` | `165796` |
-| อังคารที่ 8 ธ.ค. 2569 (`13.30 – 14.30 น.`) | `SPSS` โปรแกรมวิเคราะห์ข้อมูลทางสถิติ *(Hybrid ณ ห้อง `2C2-03`)* | https://zoom.us/j/95270544175?pwd=B7iFJGrjOcvFM4uzwtBfgic83Hse2q.1 | `952 7054 4175` | `756928` |
+| ศุกร์ที่ 27 พ.ย. 2569 (`09.00 – 11.00 น.`) | `EP1–EP3` *(Hybrid ณ Auditorium · หลัง 11.00 น. ทำ `EXERCISE 1–2` & `EX-SDL` ใน E-learning)* | https://zoom.us/j/91022561292?pwd=et9CaKS1UfrmfbU3euz5UKpDqKHrrV.1 | `910 2256 1292` | `346256` |
+| พุธที่ 2 ธ.ค. 2569 (`09.00 – 16.30 น.`) | `EP4–EP5`, `EXERCISE 3–4` | https://zoom.us/j/94317626613?pwd=0M6tElkd5gdbRjjdMQ1wYUmThR7Bla.1 | `943 1762 6613` | `547989` |
+| พฤหัสบดีที่ 3 ธ.ค. 2569 (`09.00 – 16.30 น.`) | `EP6–EP8`, `EP9 + EXERCISE 5–6` | https://zoom.us/j/92940953542?pwd=95C9xFpBvOFg8gtuaXkDBkc4ivtFGU.1 | `929 4095 3542` | `165796` |
+| อังคารที่ 8 ธ.ค. 2569 (`13.00 – 14.30 น.`) | `SPSS` โปรแกรมวิเคราะห์ข้อมูลทางสถิติ *(Hybrid ณ ห้อง `2C2-03`)* | https://zoom.us/j/95270544175?pwd=B7iFJGrjOcvFM4uzwtBfgic83Hse2q.1 | `952 7054 4175` | `756928` |
 
 ### ลิงก์สมัครรับปฏิทินรายกลุ่มภาคสนาม (.ics Subscribe URL สำหรับ Google Calendar “จาก URL” & Apple Calendar)
 
