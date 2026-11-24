@@ -26562,13 +26562,17 @@
     }
     state.hsdCurrentSlideRef = captureSlideRef(cur);
 
+    const isNativeFsInReading = Boolean(
+      state.isPptSlideSharePopup && (document.fullscreenElement || document.webkitFullscreenElement)
+    );
+
     if (state.isPptSlideSharePopup) {
       document.title =
         cur.kind === "opening-kahoot"
-          ? `[Slide Share 16:9] คาบ ${cur.mod.code}.pptx — สไลด์เปิดคาบ & เช็คชื่อกลุ่มย่อย — RACM 303`
+          ? `📖 [Reading Mode] ${cur.mod.code}.pptx — สไลด์เปิดคาบ & เช็คชื่อกลุ่มย่อย — RACM 303`
           : cur.kind === "concept-summary"
-          ? `[Slide Share 16:9] คาบ ${cur.mod.code}.pptx — ${(cur.conceptSummary && cur.conceptSummary.kicker) || "Key Takeaway #1"}: ${(cur.conceptSummary && cur.conceptSummary.title) || "Key Takeaway"} — RACM 303`
-          : `📊 [Slide Share 16:9] คาบ ${cur.mod.code}.pptx — กรณีที่ ${cur.caseObj.caseNumber} (${cur.shortNum}) — RACM 303`;
+          ? `📖 [Reading Mode] ${cur.mod.code}.pptx — ${cur.isHiddenSlide ? "Hide Slide" : (cur.conceptSummary && cur.conceptSummary.kicker) || "Key Takeaway #1"} — RACM 303`
+          : `📖 [Reading Mode] ${cur.mod.code}.pptx — กรณีที่ ${cur.caseObj.caseNumber} (${cur.shortNum}) — RACM 303`;
     }
 
     if (pptSheetSizeObserver) {
@@ -26584,8 +26588,42 @@
     ov.classList.toggle("is-compact-fs-ui", envInit.useCompactDock);
     ov.classList.toggle("is-short-landscape", envInit.isShortLandscape);
     ov.classList.toggle("is-fs-tools-open", Boolean(state.hsdFsToolsExpanded));
-    ov.classList.toggle("is-hud-autohide", Boolean(state.isPptSlideSharePopup && !state.hsdShowFullHudInPopup));
+    ov.classList.toggle("is-reading-view-tab", Boolean(state.isPptSlideSharePopup && !isNativeFsInReading));
+    ov.classList.toggle("is-reading-native-fs", isNativeFsInReading);
+    ov.classList.toggle("is-hud-autohide", false);
     ov.replaceChildren();
+
+    // Top PowerPoint Reading View Header Bar (Shown ONLY in New-Tab Reading Mode; cut out completely in Full Screen!)
+    if (state.isPptSlideSharePopup && !isNativeFsInReading) {
+      const readTop = make("div", null, "ppt-reading-topbar hsd-no-print");
+      const rtLeft = make("div", null, "ppt-reading-top-left");
+      rtLeft.append(
+        make("span", "P", "ppt-app-badge"),
+        make(
+          "span",
+          `${cur.mod.code}.pptx — มุมมองการอ่าน (Reading Mode)`,
+          "ppt-reading-doc-title"
+        ),
+        make("span", "🟢 ซิงค์สดอัตโนมัติ", "ppt-reading-sync-pill")
+      );
+
+      const rtRight = make("div", null, "ppt-reading-top-right");
+      rtRight.appendChild(buildPptSlideThemeSwitcherDOM("is-in-reading"));
+
+      const topFsBtn = make("button", "📺 ฉายสไลด์เต็มจอ (F5)", "ppt-reading-top-btn is-slideshow-cta");
+      topFsBtn.type = "button";
+      topFsBtn.title = "ฉายสไลด์เต็มหน้าจอแบบไร้หัวแท็บเหมือนกด Slide Show (F5) ใน Microsoft PowerPoint";
+      topFsBtn.addEventListener("click", () => toggleReadingTabNativeFullscreen());
+
+      const closeReadBtn = make("button", "✕ ปิดโหมดการอ่าน", "ppt-reading-top-btn");
+      closeReadBtn.type = "button";
+      closeReadBtn.title = "ปิดแท็บ Reading Mode หรือกลับสู่มุมมองแก้ไขปกติ";
+      closeReadBtn.addEventListener("click", () => exitReadingModeTabOrClose());
+
+      rtRight.append(topFsBtn, closeReadBtn);
+      readTop.append(rtLeft, rtRight);
+      ov.appendChild(readTop);
+    }
 
     const stageWrap = make("div", null, "ppt-fs-stage-wrap");
     const zoomSizer = make("div", null, "ppt-fs-zoom-sizer");
@@ -26631,43 +26669,104 @@
     ov.appendChild(stageWrap);
     attachPptStagePinchZoom(stageWrap, zoomSizer, sheet);
 
-    if (state.isPptSlideSharePopup && !state.hsdShowFullHudInPopup) {
-      const corner = make("div", null, "ppt-audience-corner-hud");
-      const isNativeFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
-      const fsBtn = make("button", isNativeFs ? "✕ ย่อจากเต็มจอ" : "⛶ ขยายเต็มจอโปรเจกเตอร์ 16:9", "ppt-fs-tool-btn");
-      fsBtn.type = "button";
-      fsBtn.addEventListener("click", () => {
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
-          if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-        } else if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(() => {});
+    if (state.isPptSlideSharePopup && !isNativeFsInReading && !state.hsdShowFullHudInPopup) {
+      // Authentic Microsoft PowerPoint Reading View Bottom Status Bar (with built-in Slide Show function!)
+      const readBar = make("div", null, "ppt-reading-statusbar hsd-no-print");
+      const rbLeft = make("div", null, "ppt-reading-status-left");
+      rbLeft.append(
+        make("strong", `สไลด์ ${state.hsdSlideIdx + 1} จาก ${slides.length}`, "ppt-status-slide-num"),
+        make("span", "|", "ppt-status-sep"),
+        make(
+          "span",
+          cur.kind === "opening-kahoot"
+            ? `คาบ ${cur.mod.code} · สไลด์เปิดคาบ`
+            : cur.kind === "concept-summary"
+            ? cur.isHiddenSlide
+              ? `คาบ ${cur.mod.code} · 🔒 Hide Slide`
+              : `คาบ ${cur.mod.code} · ${(cur.conceptSummary && cur.conceptSummary.kicker) || "Key Takeaway"}`
+            : `คาบ ${cur.mod.code} · กรณีที่ ${cur.caseObj.caseNumber} (ข้อ ${cur.shortNum})`
+        )
+      );
+
+      const rbRight = make("div", null, "ppt-reading-status-right");
+      const rPrev = make("button", "◀ ก่อนหน้า", "ppt-reading-nav-btn");
+      rPrev.type = "button";
+      rPrev.disabled = state.hsdSlideIdx <= 0;
+      rPrev.addEventListener("click", () => stepHsQuestionSlide(-1));
+
+      const rSel = document.createElement("select");
+      rSel.className = "ppt-reading-select";
+      rSel.setAttribute("aria-label", "เลือกสไลด์ในโหมดการอ่าน");
+      slides.forEach((s, idx) => {
+        const lbl =
+          s.kind === "opening-kahoot"
+            ? `${idx + 1}/${slides.length} · เปิดคาบ ${s.mod.code}`
+            : s.kind === "concept-summary"
+            ? s.isHiddenSlide
+              ? `${idx + 1}/${slides.length} · [🔒 Hide Slide] ข้อ ${s.shortNum}`
+              : `${idx + 1}/${slides.length} · ${s.pedShort || "Takeaway"}: ${(s.conceptSummary && s.conceptSummary.title) || "Key Takeaway"}`
+            : `${idx + 1}/${slides.length} · ข้อ ${s.shortNum}: ${s.qObj.title}`;
+        rSel.add(new Option(lbl, String(idx), false, idx === state.hsdSlideIdx));
+      });
+      rSel.addEventListener("change", () => {
+        const nextIdx = Number(rSel.value) || 0;
+        state.hsdSlideIdx = nextIdx;
+        state.hsdSinglePaneOverride = "";
+        state.hsdFocusedConceptStep = 0;
+        state.hsdFsZoomScale = 1;
+        state.hsdFsScenFolded = false;
+        if (slides[nextIdx] && slides[nextIdx].qObj) {
+          state.hsdLastSelectedQId = slides[nextIdx].qObj.id;
         }
+        markSlideBoxesAutoOptimize("both");
+        renderHsDiscussionView();
+        broadcastPptPresentationState();
       });
 
-      const pPrev = make("button", "◀", "ppt-fs-tool-btn");
-      pPrev.type = "button";
-      pPrev.disabled = state.hsdSlideIdx <= 0;
-      pPrev.addEventListener("click", () => stepHsQuestionSlide(-1));
+      const rNext = make("button", "ถัดไป ▶", "ppt-reading-nav-btn");
+      rNext.type = "button";
+      rNext.disabled = state.hsdSlideIdx >= slides.length - 1;
+      rNext.addEventListener("click", () => stepHsQuestionSlide(1));
 
-      const pNext = make("button", `${state.hsdSlideIdx + 1}/${slides.length} ▶`, "ppt-fs-tool-btn");
-      pNext.type = "button";
-      pNext.disabled = state.hsdSlideIdx >= slides.length - 1;
-      pNext.addEventListener("click", () => stepHsQuestionSlide(1));
+      const rLaser = make(
+        "button",
+        state.hsdLaserActive ? "🔴 ปิดเลเซอร์" : "🔴 เลเซอร์",
+        `ppt-reading-nav-btn${state.hsdLaserActive ? " is-active" : ""}`
+      );
+      rLaser.type = "button";
+      rLaser.addEventListener("click", () => {
+        state.hsdLaserActive = !state.hsdLaserActive;
+        renderHsDiscussionView();
+      });
 
-      const showBarBtn = make("button", "🎛 แสดง Control Panel", "ppt-fs-tool-btn");
-      showBarBtn.type = "button";
-      showBarBtn.title = "แสดงแถบ Control Panel ด้านล่างแบบไม่บังสไลด์";
-      showBarBtn.addEventListener("click", () => {
+      const rGrid = make(
+        "button",
+        "⊞ เรียงสไลด์",
+        `ppt-reading-nav-btn${state.hsdFsGridOpen ? " is-active" : ""}`
+      );
+      rGrid.type = "button";
+      rGrid.addEventListener("click", () => {
+        state.hsdFsGridOpen = !state.hsdFsGridOpen;
+        renderPptPresentationOverlay();
+      });
+
+      const rTools = make("button", "🎛 เครื่องมือเต็ม", "ppt-reading-nav-btn");
+      rTools.type = "button";
+      rTools.title = "เปิดแถบเครื่องมือและนาฬิกา Countdown แบบเต็ม";
+      rTools.addEventListener("click", () => {
         state.hsdShowFullHudInPopup = true;
         renderPptPresentationOverlay();
       });
 
-      corner.append(fsBtn, pPrev, pNext, showBarBtn);
-      ov.appendChild(corner);
+      const rSlideShow = make("button", "📺 ฉายสไลด์ (F5)", "ppt-reading-nav-btn is-slideshow-launch");
+      rSlideShow.type = "button";
+      rSlideShow.title = "ฉายสไลด์เต็มจอ (Slide Show · F5) ภายในแท็บนี้โดยตัดแถบหัวข้อออกทั้งหมด";
+      rSlideShow.addEventListener("click", () => toggleReadingTabNativeFullscreen());
 
-      if (pptHudIdleTimer) clearTimeout(pptHudIdleTimer);
-      pptHudIdleTimer = setTimeout(() => ov.classList.add("is-hud-idle"), 2000);
-    } else if (!state.isPptSlideSharePopup && state.hsdFsHudCollapsed) {
+      rbRight.append(rPrev, rSel, rNext, rLaser, rGrid, buildFsZoomAndCanvasBarDOM(true), rTools, rSlideShow);
+      readBar.append(rbLeft, rbRight);
+      ov.appendChild(readBar);
+    } else if (state.hsdFsHudCollapsed) {
       const collapsedBar = make("div", null, "ppt-fs-collapsed-dock");
       const expandBarBtn = make("button", "▴ แถบควบคุม", "ppt-fs-tool-btn");
       expandBarBtn.type = "button";
@@ -26689,25 +26788,17 @@
 
       collapsedBar.append(expandBarBtn, cPrev, cNext, buildFsZoomAndCanvasBarDOM(true));
 
-      if (ROLE === "faculty" && cur.qObj) {
-        const totalK = getHsQuestionKeyTotalSteps(cur.qObj.id);
-        if (totalK > 0) {
-          const curK = getEffectiveHsKeyStep(cur.qObj.id);
-          const kBtn = make(
-            "button",
-            curK < totalK ? `★ เฉลย (${curK}/${totalK})` : `✓ ครบ (${totalK}/${totalK})`,
-            "ppt-fs-tool-btn"
-          );
-          kBtn.type = "button";
-          kBtn.addEventListener("click", () => stepHsAnswerKeyClicker(1));
-          collapsedBar.appendChild(kBtn);
-        }
-      }
-
-      const cExit = make("button", "✕ ออก", "ppt-fs-tool-btn is-exit");
+      const cExit = make(
+        "button",
+        state.isPptSlideSharePopup ? "❐ ย่อกลับ Reading Mode" : "✕ ออก",
+        "ppt-fs-tool-btn is-exit"
+      );
       cExit.type = "button";
-      cExit.title = "จบการฉาย (Esc)";
-      cExit.addEventListener("click", () => exitPptFullscreenShow());
+      cExit.title = state.isPptSlideSharePopup ? "ย่อกลับสู่โหมดการอ่าน (Esc)" : "จบการฉาย (Esc)";
+      cExit.addEventListener("click", () => {
+        if (state.isPptSlideSharePopup) toggleReadingTabNativeFullscreen();
+        else exitPptFullscreenShow();
+      });
       collapsedBar.appendChild(cExit);
 
       ov.appendChild(collapsedBar);
@@ -26870,10 +26961,24 @@
         renderPptPresentationOverlay();
       });
 
-      const mExitBtn = make("button", "✕ ออก", "ppt-fs-tool-btn is-exit is-compact-exit");
+      const mExitBtn = make(
+        "button",
+        state.isPptSlideSharePopup ? "❐ ย่อกลับ" : "✕ ออก",
+        "ppt-fs-tool-btn is-exit is-compact-exit"
+      );
       mExitBtn.type = "button";
-      mExitBtn.title = "จบการฉาย (Esc)";
-      mExitBtn.addEventListener("click", () => exitPptFullscreenShow());
+      mExitBtn.title = state.isPptSlideSharePopup ? "ย่อกลับสู่ Reading Mode (Esc)" : "จบการฉาย (Esc)";
+      mExitBtn.addEventListener("click", () => {
+        if (state.isPptSlideSharePopup) {
+          if (document.fullscreenElement || document.webkitFullscreenElement) toggleReadingTabNativeFullscreen();
+          else {
+            state.hsdShowFullHudInPopup = false;
+            renderPptPresentationOverlay();
+          }
+        } else {
+          exitPptFullscreenShow();
+        }
+      });
 
       compactRow.append(mCollapseBtn, mExitBtn);
       ctrlBar.appendChild(compactRow);
@@ -27684,8 +27789,8 @@
     const menuDefs = [
       { id: "file", label: "ไฟล์", isFile: true },
       { id: "home", label: "หน้าแรก" },
-      { id: "ref", label: "คำสอน & เส้นเชื่อม" },
       { id: "slideshow", label: "การนำเสนอสไลด์" },
+      { id: "ref", label: "คำสอน & เส้นเชื่อม" },
       { id: "view", label: "มุมมอง" }
     ];
 
@@ -27712,6 +27817,22 @@
     });
 
     const menuRight = make("div", null, "ppt-menu-right");
+
+    const mbReadingBtn = make(
+      "button",
+      state.pptPopupConnected ? "🟢 Reading Mode ↗" : "📖 Reading Mode (แท็บใหม่ ↗)",
+      `ppt-menubar-reading-btn${state.pptPopupConnected ? " is-sharing-live" : ""}`
+    );
+    mbReadingBtn.type = "button";
+    mbReadingBtn.title = "เปิดโหมดการอ่าน (PowerPoint Reading Mode) ในแท็บใหม่ พร้อมปุ่มฉายสไลด์เต็มจอในแท็บนั้น";
+    mbReadingBtn.addEventListener("click", () => openPptSlideShareWindow());
+    menuRight.appendChild(mbReadingBtn);
+
+    const mbPresentBtn = make("button", "▶ นำเสนอ (F5)", "ppt-menubar-present-btn");
+    mbPresentBtn.type = "button";
+    mbPresentBtn.title = "ฉายสไลด์เต็มหน้าจอแบบไร้แถบหัวข้อ (Slide Show · F5)";
+    mbPresentBtn.addEventListener("click", () => enterPptFullscreenShow());
+    menuRight.appendChild(mbPresentBtn);
 
     const gdriveSwitchBtn = make("button", null, "ppt-gdrive-switch-btn");
     gdriveSwitchBtn.type = "button";
@@ -27907,10 +28028,13 @@
 
       const bShareWin = make(
         "button",
-        state.pptPopupConnected ? "🟢 กำลัง Share Slide แยกหน้าต่าง ↗" : "🪟 Share Slide แยกหน้าต่าง (Zoom / จอฉาย)",
+        state.pptPopupConnected
+          ? "🟢 แท็บ Reading Mode เปิดอยู่ ↗"
+          : "📖 Reading Mode (เปิดแท็บใหม่ ↗)",
         `ppt-rb-cmd${state.pptPopupConnected ? " is-active-green" : ""}`
       );
       bShareWin.type = "button";
+      bShareWin.title = "เปิดโหมดการอ่าน (PowerPoint Reading View) ในแท็บใหม่ พร้อมฟังก์ชันฉายสไลด์เต็มจอในแท็บนั้น";
       bShareWin.addEventListener("click", () => openPptSlideShareWindow());
 
       gStart.body.append(bFromBegin, bFromCur, bShareWin);
@@ -27974,6 +28098,15 @@
         renderHsDiscussionView();
       });
 
+      const bReadingView = make(
+        "button",
+        state.pptPopupConnected ? "🟢 มุมมองการอ่านเปิดอยู่ ↗" : "📖 มุมมองการอ่าน · เปิดแท็บใหม่ (Reading View)",
+        `ppt-rb-cmd${state.pptPopupConnected ? " is-active-green" : ""}`
+      );
+      bReadingView.type = "button";
+      bReadingView.title = "เปิดสไลด์ในโหมดการอ่าน (PowerPoint Reading Mode) ในแท็บใหม่ พร้อมปุ่มฉายสไลด์เต็มจอ";
+      bReadingView.addEventListener("click", () => openPptSlideShareWindow());
+
       const bNotes = make(
         "button",
         ROLE === "faculty" ? "📝 โพยเฉลยส่วนตัว (Notes)" : "📝 หน้าบันทึกย่อ (Notes)",
@@ -28002,7 +28135,7 @@
         } catch (_) {}
         renderHsDiscussionView();
       });
-      gViews.body.append(bNormal, bSorter, bNotes, bThumbs);
+      gViews.body.append(bNormal, bSorter, bReadingView, bNotes, bThumbs);
 
       const gWin = makeGroup("ขนาดและการแสดงผลหน้าต่าง");
       const bFit = make("button", "⛶ พอดีหน้าต่าง (Fit to Window)", `ppt-rb-cmd${state.hsdPptZoomMode === "fit" ? " is-active" : ""}`);
