@@ -275,6 +275,41 @@
     return el;
   }
 
+  function notifySubviewChange() {
+    window.dispatchEvent(new CustomEvent("racm:subviewchange"));
+  }
+
+  function buildUnavPairDOM(opts) {
+    const o = opts || {};
+    if (window.RACM_UNIVERSAL_NAV && typeof window.RACM_UNIVERSAL_NAV.createPairDOM === "function") {
+      return window.RACM_UNIVERSAL_NAV.createPairDOM(o);
+    }
+    const cls = [
+      "racm-unav-pair",
+      o.compact ? "is-compact" : "",
+      o.darkHud ? "is-dark-hud" : "",
+      o.mobileTight ? "is-mobile-tight" : "",
+      o.extraClass || ""
+    ]
+      .filter(Boolean)
+      .join(" ");
+    const wrap = make("div", null, cls);
+    wrap.setAttribute("role", "navigation");
+    wrap.setAttribute("aria-label", "ปุ่มย้อนกลับและหน้าหลักใหญ่");
+    const backLbl = escapeHtml(tr("ย้อนกลับ", "Back"));
+    const homeLbl = escapeHtml(tr("หน้าหลักใหญ่", "Main Home"));
+    const backTitle = escapeHtml(tr("ย้อนกลับ 1 หน้าก่อนหน้านี้", "Go back 1 previous screen"));
+    const homeTitle = escapeHtml(tr("กลับหน้าหลักใหญ่พอร์ทัล RACM 303", "Return to Main RACM 303 Home Page"));
+    wrap.innerHTML =
+      `<button type="button" class="racm-unav-btn is-back" data-racm-nav="back" title="${backTitle}">` +
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>` +
+      `<span class="racm-unav-lbl">${backLbl}</span></button>` +
+      `<button type="button" class="racm-unav-btn is-home" data-racm-nav="home" title="${homeTitle}">` +
+      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>` +
+      `<span class="racm-unav-lbl">${homeLbl}</span></button>`;
+    return wrap;
+  }
+
   function getSiteIdByAreaName(areaName) {
     const found = (SCHED.fieldworkSites || []).find((x) => x.shortName === areaName);
     return found ? found.id : 1;
@@ -4171,7 +4206,9 @@
     closeBtn.type = "button";
     closeBtn.setAttribute("aria-label", "ปิดหน้าต่างรายละเอียด");
     closeBtn.addEventListener("click", closeEventModal);
-    top.append(badges, closeBtn);
+    const topRight = make("div", null, "tv-modal-head-right");
+    topRight.append(buildUnavPairDOM({ compact: true }), closeBtn);
+    top.append(badges, topRight);
     card.appendChild(top);
 
     const h3 = make("h3", eff.title);
@@ -5053,7 +5090,9 @@
     closeBtn.addEventListener("click", () => {
       backdrop.hidden = true;
     });
-    top.append(profileHead, closeBtn);
+    const topRight = make("div", null, "tv-modal-head-right");
+    topRight.append(buildUnavPairDOM({ compact: true }), closeBtn);
+    top.append(profileHead, topRight);
     card.appendChild(top);
 
     const detailGrid = make("div", null, "stu-quick-grid");
@@ -10724,6 +10763,7 @@
         <button type="button" class="btn sm" id="lbZoomResetBtn" title="คลิกเพื่อรีเซ็ตขนาด 100%">100%</button>
       </div>
     `;
+    hud.prepend(buildUnavPairDOM({ compact: true, darkHud: true }));
     inner.insertBefore(hud, stage);
 
     $("lbPrevImgBtn")?.addEventListener("click", () => showLightboxAt(lbState.index - 1));
@@ -11407,7 +11447,7 @@
           renderDeckSlide(activeSlideIdx, 0);
         });
 
-        midGroup.append(jumpSel, toSorterBtn, theaterBtn);
+        midGroup.append(buildUnavPairDOM({ compact: true }), jumpSel, toSorterBtn, theaterBtn);
 
         const nextBtn = make("button", "สไลด์ถัดไป ›", "btn sm primary");
         nextBtn.type = "button";
@@ -11733,6 +11773,7 @@
     picker.querySelectorAll(".doc-picker-btn").forEach((b) => {
       b.setAttribute("aria-current", b.dataset.chId === state.manualChapterId ? "true" : "false");
     });
+    notifySubviewChange();
 
     const q = (($("manualSearchInput") && $("manualSearchInput").value) || "").trim().toLocaleLowerCase("th");
     const selected = state.manualChapterId === "ALL" ? chapters : chapters.filter((c) => c.id === state.manualChapterId);
@@ -15648,6 +15689,7 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
     heroTop.append(
+      buildUnavPairDOM({ compact: true, darkHud: true }),
       backBtn,
       make("span", `${sess.code} · ${tr(sess.kindLabel, sess.kindLabelEn)}`, "tv-hero-kicker"),
       make("span", `${sess.weekLabel} · ${sess.hours} · เช็คชื่อ Onsite`, "tv-hero-kicker")
@@ -16104,7 +16146,7 @@
       const dlPdfBtn = make("button", "⬇ ดาวน์โหลด PDF", "btn sm teal");
       dlPdfBtn.type = "button";
       dlPdfBtn.addEventListener("click", () => openSessionSlide(sess.id, true));
-      pdfActs.append(fsPdfBtn, newTabBtn, dlPdfBtn);
+      pdfActs.append(buildUnavPairDOM({ compact: true }), fsPdfBtn, newTabBtn, dlPdfBtn);
       pdfHead.appendChild(pdfActs);
 
       const iframe = document.createElement("iframe");
@@ -16962,16 +17004,19 @@
       mount.replaceChildren(
         isDriveUi ? buildLectureSlidesDriveExplorerDOM("ST1") : buildLectureSlidesAppleTvDOM("ST1")
       );
+      notifySubviewChange();
       return;
     }
     if (sel && sel.code === "ST1" && state.sfSubMode === "vdo-lecture") {
       mount.replaceChildren(
         isDriveUi ? buildVdoLectureDriveExplorerDOM("ST1") : buildVdoLectureAppleTvDOM("ST1")
       );
+      notifySubviewChange();
       return;
     }
 
     mount.replaceChildren(isDriveUi ? buildSystemsForumDriveExplorerDOM() : buildSystemsForumAppleTvDOM());
+    notifySubviewChange();
   }
 
   function buildTextbookAppleTvDOM(baseMod) {
@@ -17162,6 +17207,7 @@
       window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId: state.activeTab, role: ROLE } }));
     });
     heroTop.append(
+      buildUnavPairDOM({ compact: true, darkHud: true }),
       backAllBtn,
       make("span", `🧭 เส้นทางการเรียนรู้ 6 ขั้นตอน · ${curMod.code} · สอบ ${curMod.examWeight || ""}`, "tv-hero-kicker")
     );
@@ -17714,6 +17760,7 @@
       window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId: state.activeTab, role: ROLE } }));
     });
     heroTop.append(
+      buildUnavPairDOM({ compact: true, darkHud: true }),
       backAllBtn,
       make("span", `🖥️ STEP 04 · SLIDE อาจารย์ (${curMod.code})`, "tv-hero-kicker"),
       sInfo.uploaded
@@ -18074,7 +18121,7 @@
       const dlPdfBtn = make("button", "⬇ ดาวน์โหลด PDF", "btn sm teal");
       dlPdfBtn.type = "button";
       dlPdfBtn.addEventListener("click", () => openSessionSlide(sInfo.sessionId, true));
-      pdfActs.append(fsPdfBtn, newTabBtn, dlPdfBtn);
+      pdfActs.append(buildUnavPairDOM({ compact: true }), fsPdfBtn, newTabBtn, dlPdfBtn);
       if (rec.driveUrl) {
         const gDriveBtn = make("a", "🔗 Google Drive ↗", "btn sm");
         gDriveBtn.href = rec.driveUrl;
@@ -18264,6 +18311,7 @@
       window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId: state.activeTab, role: ROLE } }));
     });
     heroTop.append(
+      buildUnavPairDOM({ compact: true, darkHud: true }),
       backAllBtn,
       make("span", `🎬 STEP 06 · VDO LECTURE (${curMod.code})`, "tv-hero-kicker"),
       vInfo.uploaded
@@ -18534,6 +18582,7 @@
     backFlowBtn.type = "button";
     backFlowBtn.addEventListener("click", () => openTextbookDriveFolder(curMod.code));
     heroTop.append(
+      buildUnavPairDOM({ compact: true, darkHud: true }),
       backFlowBtn,
       make(
         "span",
@@ -18850,6 +18899,7 @@
         );
       }
       if (readerWrap) readerWrap.hidden = true;
+      notifySubviewChange();
       return;
     }
 
@@ -18861,6 +18911,7 @@
         );
       }
       if (readerWrap) readerWrap.hidden = true;
+      notifySubviewChange();
       return;
     }
 
@@ -18872,6 +18923,7 @@
         );
       }
       if (readerWrap) readerWrap.hidden = true;
+      notifySubviewChange();
       return;
     }
 
@@ -18882,6 +18934,7 @@
       readerDoc = docs.find((d) => d.id === resolvedId) || current;
       state.activeDocId = readerDoc.id;
     }
+    notifySubviewChange();
     const readerParsed = parseHsDocInfo(readerDoc.id);
     const modMeta = getHsModuleMeta(baseMod);
     const flow = getHsLogicalFlowModel(baseMod);
@@ -18916,7 +18969,7 @@
       );
       backDriveBtn.type = "button";
       backDriveBtn.addEventListener("click", () => openTextbookDriveFolder(baseMod));
-      backGroup.append(backAllBtn, backDriveBtn);
+      backGroup.append(buildUnavPairDOM({ compact: true }), backAllBtn, backDriveBtn);
       readerBar.appendChild(backGroup);
 
       const fileSwitchGroup = make("div", null, "tb-drive-file-pills");
@@ -19430,6 +19483,7 @@
     if (state.practiceSub === "rapid") renderRapidReview();
     if (state.practiceSub === "flashcards") renderFlashcards();
     if (state.practiceSub === "qa") renderSelfCheckQa();
+    notifySubviewChange();
   }
 
   function renderRapidReview() {
@@ -20623,6 +20677,7 @@
     const closeBtn = make("button", "✕ ปิดหน้าต่าง", "btn sm");
     closeBtn.type = "button";
     closeBtn.addEventListener("click", () => closeHsdKahootLobbyModal());
+    hRight.prepend(buildUnavPairDOM({ compact: true }));
     hRight.appendChild(closeBtn);
     head.append(hLeft, hRight);
     dialog.appendChild(head);
@@ -28533,6 +28588,7 @@
       const readTop = make("div", null, "ppt-reading-topbar hsd-no-print");
       const rtLeft = make("div", null, "ppt-reading-top-left");
       rtLeft.append(
+        buildUnavPairDOM({ compact: true, darkHud: true }),
         make("span", "P", "ppt-app-badge"),
         make(
           "span",
@@ -28558,6 +28614,10 @@
       rtRight.append(topFsBtn, closeReadBtn);
       readTop.append(rtLeft, rtRight);
       ov.appendChild(readTop);
+    } else {
+      const fsTopUnav = make("div", null, "ppt-fs-top-unav-hud hsd-no-print");
+      fsTopUnav.appendChild(buildUnavPairDOM({ compact: true, darkHud: true }));
+      ov.appendChild(fsTopUnav);
     }
 
     const stageWrap = make("div", null, "ppt-fs-stage-wrap");
@@ -28572,13 +28632,15 @@
       gHead.append(
         make("h3", `⊞ สไลด์ทั้งหมดในคาบ ${cur.mod.code} (${slides.length} สไลด์)`, "ppt-sm-title"),
         (() => {
+          const rWrap = make("div", null, "tv-modal-head-right");
           const cb = make("button", "✕ ปิดตารางสไลด์ (Esc)", "ppt-fs-tool-btn");
           cb.type = "button";
           cb.addEventListener("click", () => {
             state.hsdFsGridOpen = false;
             renderPptPresentationOverlay();
           });
-          return cb;
+          rWrap.append(buildUnavPairDOM({ compact: true, darkHud: true }), cb);
+          return rWrap;
         })()
       );
       gridBack.appendChild(gHead);
@@ -29103,7 +29165,7 @@
       closeModalBtn.title = "ปิดหน้าต่างเลือกไฟล์ (Esc)";
       closeModalBtn.addEventListener("click", () => closeHsdGoogleDrivePickerModal());
 
-      topActions.append(fullFolderBtn, closeModalBtn);
+      topActions.append(buildUnavPairDOM({ compact: true }), fullFolderBtn, closeModalBtn);
     }
 
     topBar.append(brand, searchPill, topActions);
@@ -29835,6 +29897,7 @@
     // 1. Clean Microsoft PowerPoint Menu Tab Strip (NO stuffed .pptx tabs — uses Google Drive File Picker!)
     const menuBar = make("div", null, "ppt-menubar hsd-no-print");
     const tabsLeft = make("div", null, "ppt-menu-tabs");
+    tabsLeft.appendChild(buildUnavPairDOM({ compact: true }));
     const menuDefs = [
       { id: "file", label: "ไฟล์", isFile: true },
       { id: "home", label: "หน้าแรก" },
@@ -31015,7 +31078,9 @@
     closeBtn.addEventListener("click", () => {
       backdrop.hidden = true;
     });
-    head.append(hLeft, closeBtn);
+    const headRight = make("div", null, "tv-modal-head-right");
+    headRight.append(buildUnavPairDOM({ compact: true }), closeBtn);
+    head.append(hLeft, headRight);
     card.appendChild(head);
 
     const bodyGrid = make("div", null, "ppt-export-studio-body");
@@ -32107,6 +32172,7 @@
 
         const leftWrap = make("div", null, "hsd-drr-left");
         leftWrap.append(
+          buildUnavPairDOM({ compact: true }),
           make("span", `📍 ${rMeta.pinCode} · ห้อง ${rMeta.roomCode}`, "hsd-drr-pill"),
           make(
             "span",
@@ -33880,7 +33946,7 @@
       escBtn.addEventListener("click", () => {
         modal.hidden = true;
       });
-      top.append(ico, inp, escBtn);
+      top.append(ico, inp, buildUnavPairDOM({ compact: true, mobileTight: true }), escBtn);
 
       const catsRow = make("div", null, "spotlight-cats-row");
       const cats = [
