@@ -39803,7 +39803,8 @@ html[data-theme="dark"] .doh-toolbar-hint {
 .doh-diagram-shell.is-clean-key-step:not(.is-outer-oval-on) > .doh-oval-bg-svg.is-outer-svg path,
 .doh-diagram-shell.is-clean-key-step:not(.is-outer-oval-on) > .doh-oval-bg-svg.is-outer-svg ellipse {
   fill: #fdf8f2;
-  stroke: transparent;
+  stroke: rgba(197, 90, 17, 0.36);
+  stroke-dasharray: 7 5;
 }
 
 html[data-theme="dark"] .doh-oval-bg-svg.is-outer-svg path,
@@ -39822,7 +39823,8 @@ html[data-theme="dark"] .doh-diagram-shell.is-outer-oval-on > .doh-oval-bg-svg.i
 html[data-theme="dark"] .doh-diagram-shell.is-clean-key-step:not(.is-outer-oval-on) > .doh-oval-bg-svg.is-outer-svg path,
 html[data-theme="dark"] .doh-diagram-shell.is-clean-key-step:not(.is-outer-oval-on) > .doh-oval-bg-svg.is-outer-svg ellipse {
   fill: rgba(15, 23, 42, 0.45);
-  stroke: transparent;
+  stroke: rgba(251, 146, 60, 0.34);
+  stroke-dasharray: 7 5;
 }
 
 .doh-structural-zone {
@@ -39863,8 +39865,9 @@ html[data-theme="dark"] .doh-diagram-shell.is-clean-key-step:not(.is-outer-oval-
 
 .doh-diagram-shell.is-clean-key-step .doh-inner-oval:not(.is-inner-oval-on) > .doh-oval-bg-svg.is-inner-svg path,
 .doh-diagram-shell.is-clean-key-step .doh-inner-oval:not(.is-inner-oval-on) > .doh-oval-bg-svg.is-inner-svg ellipse {
-  fill: transparent;
-  stroke: transparent;
+  fill: rgba(255, 255, 255, 0.56);
+  stroke: rgba(43, 84, 126, 0.32);
+  stroke-dasharray: 6 5;
 }
 
 html[data-theme="dark"] .doh-oval-bg-svg.is-inner-svg path,
@@ -39878,6 +39881,13 @@ html[data-theme="dark"] .doh-inner-oval.is-inner-oval-on > .doh-oval-bg-svg.is-i
   fill: rgba(21, 128, 61, 0.20);
   stroke: #38bdf8;
   stroke-dasharray: none;
+}
+
+html[data-theme="dark"] .doh-diagram-shell.is-clean-key-step .doh-inner-oval:not(.is-inner-oval-on) > .doh-oval-bg-svg.is-inner-svg path,
+html[data-theme="dark"] .doh-diagram-shell.is-clean-key-step .doh-inner-oval:not(.is-inner-oval-on) > .doh-oval-bg-svg.is-inner-svg ellipse {
+  fill: rgba(15, 23, 42, 0.45);
+  stroke: rgba(56, 189, 248, 0.30);
+  stroke-dasharray: 6 5;
 }
 
 .doh-inner-arena {
@@ -39930,7 +39940,12 @@ html[data-theme="dark"] .doh-inner-oval.is-inner-oval-on > .doh-oval-bg-svg.is-i
   transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
 }
 
-.doh-arrow-mid-btn:hover {
+.doh-arrow-mid-btn.is-readonly-badge {
+  pointer-events: none;
+  cursor: default;
+}
+
+.doh-arrow-mid-btn:not(.is-readonly-badge):hover {
   transform: translate(-50%, -50%) scale(1.1);
   border-color: #2563eb;
   background: #eff6ff;

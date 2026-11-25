@@ -22995,7 +22995,7 @@
     return svg;
   }
 
-  function mountDohArenaArrows(arenaEl, svgEl, badgeLayerEl, getEdgesFn, onCycleEdgeFn) {
+  function mountDohArenaArrows(arenaEl, svgEl, badgeLayerEl, getEdgesFn, onCycleEdgeFn, arrowOpts) {
     if (!arenaEl || !svgEl) return () => {};
     dohInstanceSeq += 1;
     const uid = dohInstanceSeq;
@@ -23035,7 +23035,7 @@
       const H = Math.max(150, arenaEl.offsetHeight || 230);
       const isDark = document.documentElement.getAttribute("data-theme") === "dark";
       const strokeHex = isDark ? "#60a5fa" : "#2e6eb5";
-      const offHex = isDark ? "#475569" : "#94a3b8";
+      const offHex = isDark ? "#64748b" : "#94a3b8";
 
       const aRect = arenaEl.getBoundingClientRect();
       const sx = aRect.width > 2 ? W / aRect.width : 1;
@@ -23069,12 +23069,13 @@
 
       const edgesMap = (typeof getEdgesFn === "function" ? getEdgesFn() : null) || {};
       const interactive = typeof onCycleEdgeFn === "function";
+      const showOffDashed = !arrowOpts || arrowOpts.showOffDashed !== false;
 
       const edgesSig = DOH_EDGE_DEFS.map((ed) => `${ed.id}:${edgesMap[ed.id] || "off"}`).join(",");
       const boxSig = [ind, soc, out, hsys]
         .map((b) => `${Math.round(b.left)},${Math.round(b.top)},${Math.round(b.width)},${Math.round(b.height)}`)
         .join("|");
-      const drawSig = `${W}x${H}|${isDark ? 1 : 0}|${edgesSig}|${boxSig}`;
+      const drawSig = `${W}x${H}|${isDark ? 1 : 0}|${showOffDashed ? 1 : 0}|${edgesSig}|${boxSig}`;
       if (!mustForce && drawSig === lastDrawSig) return;
       lastDrawSig = drawSig;
 
@@ -23114,48 +23115,50 @@
 
       const topBridgeY = Math.max(12, Math.min(out.top - 12, Math.min(ind.top, soc.top) + 14));
       const midOutY = Math.max(topBridgeY + 22, out.cy);
+      const indDiagX1 = ind.left + ind.width * 0.62;
+      const socDiagX1 = soc.left + soc.width * 0.38;
       const coords = {
         ind_bi_soc: {
           x1: ind.right + 7,
           y1: topBridgeY,
-          x2: soc.left - 7,
+          x2: Math.max(ind.right + 28, soc.left - 7),
           y2: topBridgeY
         },
         ind_to_out: {
           x1: ind.right + 5,
           y1: midOutY,
-          x2: Math.max(ind.right + 28, out.left - 5),
+          x2: Math.max(ind.right + 24, out.left - 5),
           y2: midOutY
         },
         soc_to_out: {
           x1: soc.left - 5,
           y1: midOutY,
-          x2: Math.min(soc.left - 28, out.right + 5),
+          x2: Math.min(soc.left - 24, out.right + 5),
           y2: midOutY
         },
         hsys_to_out: {
           x1: out.cx,
-          y1: hsys.top - 5,
+          y1: Math.max(out.bottom + 22, hsys.top - 5),
           x2: out.cx,
           y2: out.bottom + 6
         },
         ind_bi_hsys: {
-          x1: ind.left + ind.width * 0.64,
+          x1: indDiagX1,
           y1: ind.bottom + 5,
-          x2: hsys.left - 6,
-          y2: hsys.cy
+          x2: Math.max(indDiagX1 + 18, hsys.left - 6),
+          y2: Math.max(ind.bottom + 18, hsys.cy)
         },
         soc_bi_hsys: {
-          x1: soc.left + soc.width * 0.36,
+          x1: socDiagX1,
           y1: soc.bottom + 5,
-          x2: hsys.right + 6,
-          y2: hsys.cy
+          x2: Math.min(socDiagX1 - 18, hsys.right + 6),
+          y2: Math.max(soc.bottom + 18, hsys.cy)
         }
       };
 
       DOH_EDGE_DEFS.forEach((ed) => {
         const dir = edgesMap[ed.id] || "off";
-        if (dir === "off" && !interactive) return;
+        if (dir === "off" && !interactive && !showOffDashed) return;
         const c = coords[ed.id];
         if (!c) return;
 
@@ -23165,11 +23168,11 @@
         ln.setAttribute("x2", c.x2.toFixed(1));
         ln.setAttribute("y2", c.y2.toFixed(1));
         ln.setAttribute("stroke", dir === "off" ? offHex : strokeHex);
-        ln.setAttribute("stroke-width", dir === "off" ? "1.6" : "2.4");
+        ln.setAttribute("stroke-width", dir === "off" ? "1.75" : "2.4");
         ln.setAttribute("stroke-linecap", "round");
         if (dir === "off") {
-          ln.setAttribute("stroke-dasharray", "4 4");
-          ln.setAttribute("opacity", "0.65");
+          ln.setAttribute("stroke-dasharray", "5 4");
+          ln.setAttribute("opacity", "0.75");
         } else {
           if (dir === "fwd" || dir === "bi") {
             ln.setAttribute("marker-end", `url(#dohArrEnd_${uid})`);
@@ -23220,6 +23223,14 @@
             });
             badgeLayerEl.appendChild(btn);
           }
+        } else if (badgeLayerEl && dir !== "off" && Math.hypot(c.x2 - c.x1, c.y2 - c.y1) >= 68) {
+          const midX = ((c.x1 + c.x2) / 2 / W) * 100;
+          const midY = ((c.y1 + c.y2) / 2 / H) * 100;
+          const sym = (ed.syms && ed.syms[dir]) || (dir === "bi" ? "↔" : dir === "fwd" ? "→" : "←");
+          const badge = make("span", sym, "doh-arrow-mid-btn is-readonly-badge");
+          badge.style.left = `${midX.toFixed(2)}%`;
+          badge.style.top = `${midY.toFixed(2)}%`;
+          badgeLayerEl.appendChild(badge);
         }
       });
     };
@@ -27130,7 +27141,9 @@
       const isAuto = isLeft ? state.hsdLeftAutoFit !== false : state.hsdRightAutoFit !== false;
       const manualPct = (isLeft ? state.hsdLeftFontPct : state.hsdRightFontPct) || 100;
       const paneEl = boxEl.closest(".hsd-slide-left, .hsd-slide-right");
-      const dohShells = Array.from(boxEl.querySelectorAll(".doh-diagram-shell"));
+      const dohShells = Array.from(boxEl.querySelectorAll(".doh-diagram-shell")).filter(
+        (sh) => !sh.hidden && !sh.closest("[hidden]")
+      );
       const hasDohShell = dohShells.length > 0;
       const autoTextareas = Array.from(boxEl.querySelectorAll("textarea"));
       const syncAllBoxTextareas = () => {
