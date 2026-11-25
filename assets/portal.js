@@ -8185,6 +8185,13 @@
         icsLink.href = `calendars/group_${site.id}_${site.slug}.ics`;
         icsLink.setAttribute("download", `RACM303_2569_group_${site.id}_${site.slug}.ics`);
         actRow.append(filterBtn, icsLink);
+        if (site.id === 1) {
+          const kuchiBtn = make("a", tr("🚂 Presentation กลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Live Presentation ↗"), "btn sm primary");
+          kuchiBtn.href = "kuchinarai/";
+          kuchiBtn.target = "_blank";
+          kuchiBtn.rel = "noopener";
+          actRow.appendChild(kuchiBtn);
+        }
         c.appendChild(actRow);
         classicGrid.appendChild(c);
       });
@@ -8468,6 +8475,13 @@
       icsLink.innerHTML = `<svg class="btn-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${escapeHtml(tr("บันทึกเข้า Google Cal / iCal (.ics)", "Save to Google Cal / iCal (.ics)"))}`;
 
       actRow.append(lockBtn, pdfSiteLink, printSiteBtn, icsLink);
+      if (curSite.id === 1) {
+        const kuchiMapBtn = make("a", tr("🚂 Presentation กลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Live Presentation ↗"), "btn sm primary");
+        kuchiMapBtn.href = "kuchinarai/";
+        kuchiMapBtn.target = "_blank";
+        kuchiMapBtn.rel = "noopener";
+        actRow.appendChild(kuchiMapBtn);
+      }
 
       const friNote = curSite.hasFri11Dec ? "ศ. 11 ธ.ค. มีกลุ่มย่อย 5–6" : "เดินทาง พฤ. 10 / พ. 9 ธ.ค.";
 
