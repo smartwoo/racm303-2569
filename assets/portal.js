@@ -33532,8 +33532,8 @@
     const PANEL_BUILT_IN_MAP = {
       "w1-d1-global": {
         panelDeckId: "w1-d1-global",
-        slideCountBadge: "16 SLIDES",
-        fileName: "Slide เวทีเสวนา GLOBAL: จากการดูแลผู้ป่วยรายบุคคลสู่เวชปฏิบัติฐานระบบ (16 สไลด์ · 16:9)",
+        slideCountBadge: "21 SLIDES",
+        fileName: "Slide เวทีเสวนา GLOBAL: จากการดูแลผู้ป่วยรายบุคคลสู่เวชปฏิบัติฐานระบบ (21 สไลด์ · 16:9)",
         pptxHref: "",
         uploadedBy: "อ. นพ.ณัฐวุฒิ เอี่ยงธนรัตน์"
       }
