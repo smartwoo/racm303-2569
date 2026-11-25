@@ -8357,11 +8357,16 @@
         icsLink.setAttribute("download", `RACM303_2569_group_${site.id}_${site.slug}.ics`);
         actRow.append(filterBtn, icsLink);
         if (site.id === 1) {
-          const kuchiBtn = make("a", tr("🚂 Presentation กลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Live Presentation ↗"), "btn sm primary");
-          kuchiBtn.href = "https://smartwoo.github.io/racm303-2569-kuchinarai/";
+          const kuchiBtn = make("a", tr("🚂 ภาพรวมกลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Overview ↗"), "btn sm primary");
+          kuchiBtn.href = "kuchinarai/";
           kuchiBtn.target = "_blank";
           kuchiBtn.rel = "noopener";
           actRow.appendChild(kuchiBtn);
+          const kuchiJoinBtn = make("a", tr("📱 ส่งคำตอบสด (มือถือ) ↗", "📱 Live Answer Pad ↗"), "btn sm");
+          kuchiJoinBtn.href = "kuchinarai/join.html";
+          kuchiJoinBtn.target = "_blank";
+          kuchiJoinBtn.rel = "noopener";
+          actRow.appendChild(kuchiJoinBtn);
         }
         c.appendChild(actRow);
         classicGrid.appendChild(c);
@@ -8647,11 +8652,16 @@
 
       actRow.append(lockBtn, pdfSiteLink, printSiteBtn, icsLink);
       if (curSite.id === 1) {
-        const kuchiMapBtn = make("a", tr("🚂 Presentation กลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Live Presentation ↗"), "btn sm primary");
-        kuchiMapBtn.href = "https://smartwoo.github.io/racm303-2569-kuchinarai/";
+        const kuchiMapBtn = make("a", tr("🚂 ภาพรวมกลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Overview ↗"), "btn sm primary");
+        kuchiMapBtn.href = "kuchinarai/";
         kuchiMapBtn.target = "_blank";
         kuchiMapBtn.rel = "noopener";
         actRow.appendChild(kuchiMapBtn);
+        const kuchiJoinMapBtn = make("a", tr("📱 ส่งคำตอบสด (มือถือ) ↗", "📱 Live Answer Pad ↗"), "btn sm");
+        kuchiJoinMapBtn.href = "kuchinarai/join.html";
+        kuchiJoinMapBtn.target = "_blank";
+        kuchiJoinMapBtn.rel = "noopener";
+        actRow.appendChild(kuchiJoinMapBtn);
       }
 
       const friNote = curSite.hasFri11Dec ? "ศ. 11 ธ.ค. มีกลุ่มย่อย 5–6" : "เดินทาง พฤ. 10 / พ. 9 ธ.ค.";
