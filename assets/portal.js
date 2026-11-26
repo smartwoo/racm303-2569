@@ -20203,11 +20203,31 @@
     isTypingDraft: false
   };
 
+  function resolveActiveHsdModuleCode() {
+    const deckM = String(state.hsdSlideDeckMod || "").trim().toUpperCase();
+    if (/^HS[1-6]$/.test(deckM)) return deckM;
+    const filtM = String(state.hsdModule || "").trim().toUpperCase();
+    if (/^HS[1-6]$/.test(filtM)) return filtM;
+    return "HS1";
+  }
+
   function getEffectiveSlideTimerSnapshot(snapOpt) {
-    if (snapOpt) return snapOpt;
+    const activeMod = resolveActiveHsdModuleCode();
+    if (LIVE && typeof LIVE.setActiveModule === "function" && LIVE.getActiveModule() !== activeMod) {
+      LIVE.setActiveModule(activeMod);
+    }
+    if (
+      snapOpt &&
+      (!snapOpt.moduleId || snapOpt.moduleId === activeMod) &&
+      (!snapOpt.roomId || !LIVE || snapOpt.roomId === LIVE.getRoomId())
+    ) {
+      return snapOpt;
+    }
     return LIVE
-      ? LIVE.getTimerSnapshot()
+      ? LIVE.getTimerSnapshot(activeMod)
       : {
+          roomId: 1,
+          moduleId: activeMod,
           running: false,
           hasStarted: false,
           hasConfigured: false,
@@ -20224,7 +20244,7 @@
     clearTimeUp() {
       if (ROLE !== "faculty") return;
       if (LIVE && typeof LIVE.clearTimeUpAlert === "function") {
-        LIVE.clearTimeUpAlert();
+        LIVE.clearTimeUpAlert(resolveActiveHsdModuleCode());
       }
       syncTimerWidgetDOM();
     },
@@ -20232,7 +20252,7 @@
       if (ROLE !== "faculty") return;
       const sec = Math.max(1, Math.min(10800, Math.round(Number(durationSec) || 300)));
       if (LIVE) {
-        LIVE.startTimer(sec, state.hsdLastSelectedQId || "", "จับเวลาอภิปรายกลุ่มย่อย");
+        LIVE.startTimer(sec, state.hsdLastSelectedQId || "", "จับเวลาอภิปรายกลุ่มย่อย", resolveActiveHsdModuleCode());
       }
       syncTimerWidgetDOM();
     },
@@ -20240,14 +20260,14 @@
       if (ROLE !== "faculty") return;
       const sec = Math.max(1, Math.min(10800, Math.round(Number(durationSec) || 300)));
       if (LIVE) {
-        LIVE.resetTimer(sec, true);
+        LIVE.resetTimer(sec, true, resolveActiveHsdModuleCode());
       }
       syncTimerWidgetDOM();
     },
     togglePause() {
       if (ROLE !== "faculty") return;
       if (LIVE) {
-        LIVE.togglePauseTimer();
+        LIVE.togglePauseTimer(resolveActiveHsdModuleCode());
       }
       syncTimerWidgetDOM();
     },
@@ -20255,7 +20275,7 @@
       if (ROLE !== "faculty") return;
       const delta = Number.isFinite(Number(deltaSec)) ? Number(deltaSec) : 60;
       if (LIVE) {
-        LIVE.addTimerSeconds(delta);
+        LIVE.addTimerSeconds(delta, resolveActiveHsdModuleCode());
       }
       syncTimerWidgetDOM();
     },
@@ -20263,7 +20283,7 @@
       if (ROLE !== "faculty") return;
       const dur = Math.max(1, Math.min(10800, Math.round(Number(defaultSecOpt) || 300)));
       if (LIVE) {
-        LIVE.resetTimer(dur, false);
+        LIVE.resetTimer(dur, false, resolveActiveHsdModuleCode());
       }
       syncTimerWidgetDOM();
     },
@@ -20637,50 +20657,53 @@
       const isOvOpen = Boolean(ov && !ov.hidden);
       const panelEl = $("panel-hs-discussion");
       const isPanelOpen = Boolean(panelEl && !panelEl.hidden);
-      const inHsdActiveView = Boolean(state.isPptSlideSharePopup || isOvOpen || isPanelOpen);
+      const isGateOpen = Boolean(panelEl && panelEl.classList.contains("is-join-gate-open"));
+      const isDriveOpen = Boolean(panelEl && panelEl.classList.contains("is-drive-folder-mode"));
+      const isWinMaxOpen = Boolean(state.hsdPptWindowMax && isPanelOpen && !isGateOpen && !isDriveOpen);
+      const isNativeFsInHsd = Boolean(
+        (document.fullscreenElement || document.webkitFullscreenElement) &&
+          (isOvOpen || (isPanelOpen && !isGateOpen && !isDriveOpen))
+      );
+      // Strictly show PiP Timer ONLY inside Fullscreen Discussion mode; hide immediately upon exiting Fullscreen!
+      const isInDiscussionFullscreen = Boolean(
+        state.isPptSlideSharePopup || isOvOpen || isWinMaxOpen || isNativeFsInHsd
+      );
 
-      const { vLeft, vTop, vRight, vBottom } = getStuPipViewportMetrics();
-      let effectiveTopBound = vTop;
-      if (isOvOpen) {
-        const fsTopBar = ov.querySelector(".ppt-fs-topbar");
-        if (fsTopBar) {
-          const tbR = fsTopBar.getBoundingClientRect();
-          if (tbR.height > 0) effectiveTopBound = Math.max(vTop, tbR.bottom);
+      let shouldShowPip = false;
+      if (isInDiscussionFullscreen) {
+        const { vLeft, vTop, vRight, vBottom } = getStuPipViewportMetrics();
+        let effectiveTopBound = vTop;
+        const fsRoot = isOvOpen ? ov : panelEl || document;
+        if (isOvOpen) {
+          const fsTopBar = ov.querySelector(".ppt-fs-topbar, .ppt-reading-topbar");
+          if (fsTopBar && fsTopBar.offsetParent !== null) {
+            const tbR = fsTopBar.getBoundingClientRect();
+            if (tbR.height > 0) effectiveTopBound = Math.max(vTop, tbR.bottom);
+          }
         }
-      }
 
-      let hasAnyRenderedInlineTimer = false;
-      let isAnyInlineTimerVisible = false;
-      let isScrolledPastInlineTimer = false;
-      const checkInlineEl = (el) => {
-        if (!el || el.hidden || el.offsetParent === null) return;
-        const r = el.getBoundingClientRect();
-        if (r.width <= 4 || r.height <= 4) return;
-        hasAnyRenderedInlineTimer = true;
-        if (r.bottom > effectiveTopBound + 6 && r.top < vBottom - 6 && r.right > vLeft + 4 && r.left < vRight - 4) {
-          isAnyInlineTimerVisible = true;
-        } else if (r.bottom <= effectiveTopBound + 6) {
-          isScrolledPastInlineTimer = true;
-        }
-      };
-
-      if (isOvOpen) {
-        ov.querySelectorAll("[data-ppt-student-timer-pill]").forEach(checkInlineEl);
-      } else if (isPanelOpen) {
-        checkInlineEl($("hsdTimerWidget"));
-        document.querySelectorAll("[data-ppt-student-timer-pill]").forEach((el) => {
-          if (ov && ov.contains(el)) return;
-          checkInlineEl(el);
+        const pillNodes = fsRoot.querySelectorAll("[data-ppt-student-timer-pill]");
+        const hasSlideTimerPillInDom = pillNodes.length > 0;
+        let isAnyInlineTimerVisible = false;
+        pillNodes.forEach((el) => {
+          if (!el || el.hidden || el.offsetParent === null) return;
+          const r = el.getBoundingClientRect();
+          if (r.width <= 4 || r.height <= 4) return;
+          let minX = vLeft + 2;
+          let maxX = vRight - 2;
+          const smRight = el.closest(".ppt-sm-right");
+          if (smRight) {
+            const sr = smRight.getBoundingClientRect();
+            minX = Math.max(minX, sr.left - 2);
+            maxX = Math.min(maxX, sr.right + 2);
+          }
+          if (r.bottom > effectiveTopBound + 6 && r.top < vBottom - 6 && r.left >= minX && r.right <= maxX) {
+            isAnyInlineTimerVisible = true;
+          }
         });
-      }
-      if (!hasAnyRenderedInlineTimer && (window.scrollY || document.documentElement.scrollTop || 0) > 120) {
-        isScrolledPastInlineTimer = true;
-      }
 
-      const shouldShowPip =
-        inHsdActiveView &&
-        !isAnyInlineTimerVisible &&
-        (isScrolledPastInlineTimer || isTeacherTimerActive);
+        shouldShowPip = !isAnyInlineTimerVisible && (hasSlideTimerPillInDom || isTeacherTimerActive);
+      }
 
       if (s.isTimeUp && !stuPipState.lastWasTimeUp && stuPipState.minimized) {
         stuPipState.minimized = false;
@@ -20699,33 +20722,36 @@
         hud.classList.toggle("is-urgent", Boolean(s.isUrgent));
         hud.classList.toggle("is-timeup", Boolean(s.isTimeUp));
 
+        const curRoom = s.roomId || (LIVE ? LIVE.getRoomId() : 1);
+        const curMod = s.moduleId || resolveActiveHsdModuleCode();
+        const statusWord = s.isTimeUp ? "TIME UP" : s.running ? "LIVE" : s.hasStarted ? "PAUSED" : "TIMER";
         const badgeEl = hud.querySelector("[data-stu-pip-badge]");
         if (badgeEl) {
-          badgeEl.textContent = s.isTimeUp ? "TIME UP" : s.running ? "LIVE" : s.hasStarted ? "PAUSED" : "TIMER";
+          badgeEl.textContent = `${curMod}·R${curRoom} ${statusWord}`;
         }
         const txtEl = hud.querySelector("[data-stu-hud-text]");
         if (txtEl) txtEl.textContent = s.isTimeUp ? "00:00" : s.formatted;
         const subEl = hud.querySelector("[data-stu-hud-sub]");
         if (subEl) {
           subEl.textContent = s.isTimeUp
-            ? "⏰ หมดเวลาอภิปราย!"
+            ? `⏰ ห้อง ${curRoom} · หมดเวลาอภิปราย!`
             : s.running
-            ? "กำลังนับถอยหลังสด"
+            ? `ห้อง ${curRoom} · กำลังนับถอยหลังสด`
             : s.hasStarted
-            ? "พักเวลาชั่วคราว"
+            ? `ห้อง ${curRoom} · พักเวลาชั่วคราว`
             : s.hasConfigured
-            ? "อาจารย์ตั้งเวลาไว้"
-            : "เวลากลุ่ม · ลากย้ายได้";
+            ? `ห้อง ${curRoom} · อาจารย์ตั้งเวลาไว้`
+            : `ห้อง ${curRoom} (${curMod}) · ลากย้ายได้`;
         }
         const progEl = hud.querySelector("[data-stu-hud-prog]");
         if (progEl) progEl.style.width = `${s.pct}%`;
         const miniTxtEl = hud.querySelector("[data-stu-pip-mini-txt]");
         if (miniTxtEl) {
           miniTxtEl.textContent = s.isTimeUp
-            ? "⏰ หมดเวลา! · แสดง"
+            ? `⏰ R${curRoom} หมดเวลา! · แสดง`
             : s.running
-            ? `⏱ ${s.formatted} · แสดง`
-            : "⏱ แสดงเวลา";
+            ? `⏱ R${curRoom} ${s.formatted} · แสดง`
+            : `⏱ R${curRoom} แสดงเวลา`;
         }
         if (wasHidden) {
           clampAndApplyStuPipPosition(hud);
@@ -22877,15 +22903,21 @@
           return;
         }
         if (state.hsdFsGridOpen) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           state.hsdFsGridOpen = false;
           renderPptPresentationOverlay();
           return;
         }
         if (state.hsdTheater && !state.isPptSlideSharePopup) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           exitPptFullscreenShow();
           return;
         }
         if (state.hsdPptWindowMax) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           togglePptStudioWindowMax(false);
           return;
         }
@@ -26510,6 +26542,7 @@
     markSlideBoxesAutoOptimize("both");
     syncViewModeButtonsUI();
     renderHsDiscussionView();
+    syncTimerWidgetDOM();
   }
 
   function enterPptFullscreenFromBeginning() {
@@ -26542,6 +26575,7 @@
     markSlideBoxesAutoOptimize("both");
     syncViewModeButtonsUI();
     renderHsDiscussionView();
+    syncTimerWidgetDOM();
     broadcastPptPresentationState();
   }
 
@@ -26562,6 +26596,7 @@
     }
     syncViewModeButtonsUI();
     renderPptPresentationOverlay();
+    syncTimerWidgetDOM();
     requestAnimationFrame(() => applySlideBoxesZoom(document));
   }
 
