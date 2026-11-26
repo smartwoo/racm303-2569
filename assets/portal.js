@@ -23916,6 +23916,14 @@
   let pptHudIdleTimer = null;
   let pptVvListenersInited = false;
 
+  const pptKbdState = {
+    focusTs: 0,
+    sawShrink: false,
+    dismissedByBack: false,
+    cleanPortraitH: 0,
+    cleanLandscapeH: 0
+  };
+
   function isCoarseTouchDevice() {
     try {
       if (window.matchMedia) {
@@ -23927,6 +23935,9 @@
           return true;
         }
       }
+      const ua = (navigator && navigator.userAgent) || "";
+      if (/Android|webOS|iPhone|iPad|iPod|Mobile|Tablet/i.test(ua)) return true;
+      if (navigator && navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) return true;
     } catch (_) {}
     return false;
   }
@@ -23949,22 +23960,76 @@
     const layoutW = window.innerWidth || document.documentElement.clientWidth || 1280;
     const layoutH = window.innerHeight || document.documentElement.clientHeight || 800;
     const vvScale = vv && vv.scale ? vv.scale : 1;
-    const rawVvH = vv && vvScale <= 1.06 ? Math.round(vv.height) : layoutH;
-    const rawOffsetTop = vv && vvScale <= 1.06 ? Math.max(0, Math.round(vv.offsetTop || 0)) : 0;
     const isCoarse = isCoarseTouchDevice();
     const inTimerPop = Boolean(document.activeElement && document.activeElement.closest(".ppt-slide-timer-popover"));
     const editFocused = isEditableElementFocusedInOverlay() && !inTimerPop;
+    const useVvMetrics = Boolean(vv && (vvScale <= 1.12 || editFocused));
+    let rawVvW = useVvMetrics ? Math.round(vv.width) : layoutW;
+    let rawVvH = useVvMetrics ? Math.round(vv.height) : layoutH;
+    const rawOffsetTop = useVvMetrics ? Math.max(0, Math.round(vv.offsetTop || 0)) : 0;
+    const rawOffsetLeft = useVvMetrics ? Math.max(0, Math.round(vv.offsetLeft || 0)) : 0;
+
+    // Fallback for Chromium VirtualKeyboard geometry when overlaysContent/fullscreen is active
+    const vkRect =
+      navigator &&
+      navigator.virtualKeyboard &&
+      navigator.virtualKeyboard.boundingRect
+        ? navigator.virtualKeyboard.boundingRect
+        : null;
+    const vkH = vkRect ? Math.round(vkRect.height || 0) : 0;
+    if (vkH > 40 && rawVvH >= layoutH - 24) {
+      rawVvH = Math.max(180, layoutH - vkH);
+    }
+
+    const isPortraitNow = layoutH >= layoutW;
+    if (!editFocused && layoutH - rawVvH < 48) {
+      if (isPortraitNow) {
+        pptKbdState.cleanPortraitH = Math.max(pptKbdState.cleanPortraitH || 0, rawVvH, layoutH);
+      } else {
+        pptKbdState.cleanLandscapeH = Math.max(pptKbdState.cleanLandscapeH || 0, rawVvH, layoutH);
+      }
+    }
+    const refCleanH = (isPortraitNow ? pptKbdState.cleanPortraitH : pptKbdState.cleanLandscapeH) || layoutH;
     const screenH = (window.screen && window.screen.height) || layoutH;
-    const heightDrop = layoutH - (vv ? vv.height : layoutH);
-    const isOverlayKbd = Boolean(vv && vvScale <= 1.06 && layoutH - (rawVvH + rawOffsetTop) > 68);
-    const w = vv && vvScale <= 1.06 ? Math.round(vv.width) : layoutW;
-    const h = isOverlayKbd ? rawVvH : layoutH;
-    const offsetTop = isOverlayKbd ? rawOffsetTop : 0;
+    const rawDrop = Math.max(0, layoutH - rawVvH);
+    const cleanDrop = Math.max(0, refCleanH - rawVvH);
+    const effKbdDrop = Math.max(rawDrop, cleanDrop);
+
+    if (editFocused) {
+      if (effKbdDrop > 85 || screenH - layoutH > 220) {
+        pptKbdState.sawShrink = true;
+        pptKbdState.dismissedByBack = false;
+      } else if (
+        pptKbdState.sawShrink &&
+        Date.now() - pptKbdState.focusTs > 650 &&
+        effKbdDrop < 35
+      ) {
+        pptKbdState.dismissedByBack = true;
+      }
+    } else {
+      pptKbdState.sawShrink = false;
+      pptKbdState.dismissedByBack = false;
+    }
+
     const isKbdOpen = Boolean(
       !inTimerPop &&
-        ((editFocused && (isCoarse || h < 580 || heightDrop > 85 || screenH - layoutH > 220)) ||
-          (isCoarse && vvScale <= 1.06 && heightDrop > 135))
+        ((editFocused &&
+          !pptKbdState.dismissedByBack &&
+          (isCoarse || rawVvH < 580 || effKbdDrop > 75 || screenH - layoutH > 220)) ||
+          (isCoarse && vvScale <= 1.12 && rawDrop > 135))
     );
+    const isOverlayKbd = Boolean(
+      useVvMetrics &&
+        (isKbdOpen ||
+          (editFocused && !pptKbdState.dismissedByBack) ||
+          rawDrop > 48 ||
+          rawOffsetTop > 1 ||
+          rawOffsetLeft > 1)
+    );
+    const w = isOverlayKbd ? rawVvW : useVvMetrics ? rawVvW : layoutW;
+    const h = isOverlayKbd ? rawVvH : layoutH;
+    const offsetTop = isOverlayKbd ? rawOffsetTop : 0;
+    const offsetLeft = isOverlayKbd ? rawOffsetLeft : 0;
     const aspect = h > 0 ? w / h : 1.77;
     const useCompactDock = Boolean(isKbdOpen || isCoarse || w < 1180 || h < 680);
     const isShortLandscape = Boolean(h < 500 && w > h);
@@ -23988,6 +24053,7 @@
       w,
       h,
       offsetTop,
+      offsetLeft,
       isOverlayKbd,
       aspect,
       isCoarse,
@@ -23998,21 +24064,60 @@
     };
   }
 
+  function getTrueViewportRect(el, stopAncestor) {
+    const r = el.getBoundingClientRect();
+    let totalZ = 1;
+    let cur = el;
+    while (cur && cur !== stopAncestor && cur !== document.body && cur !== document.documentElement) {
+      if (cur instanceof HTMLElement && cur.style && cur.style.zoom) {
+        const z = parseFloat(cur.style.zoom);
+        if (z > 0 && Number.isFinite(z)) totalZ *= z;
+      }
+      cur = cur.parentElement;
+    }
+    if (Math.abs(totalZ - 1) > 0.03 && el.offsetWidth > 0) {
+      const ratio = r.width / el.offsetWidth;
+      if (Math.abs(ratio - 1) < Math.abs(ratio - totalZ)) {
+        return {
+          top: r.top * totalZ,
+          bottom: r.bottom * totalZ,
+          left: r.left * totalZ,
+          right: r.right * totalZ,
+          width: r.width * totalZ,
+          height: r.height * totalZ
+        };
+      }
+    }
+    return r;
+  }
+
   function scrollFocusedFieldIntoSlideView(fieldEl) {
     if (!fieldEl || !fieldEl.isConnected) return;
     const paneScroller = fieldEl.closest(
       ".hsd-slide-right, .hsd-slide-left, .hsd-key-slide-stage, .ppt-opening-kahoot-stage, .ppt-concept-summary-stage"
     );
     if (paneScroller) {
+      paneScroller.style.overflowY = "auto";
       const sRect = paneScroller.getBoundingClientRect();
-      const fRect = fieldEl.getBoundingClientRect();
+      const fRect = getTrueViewportRect(fieldEl, paneScroller);
       if (sRect.height > 0) {
-        const padTop = 36;
-        const padBot = 20;
-        if (fRect.top < sRect.top + padTop) {
-          paneScroller.scrollBy({ top: fRect.top - (sRect.top + padTop), behavior: "smooth" });
+        const snapBar = paneScroller.querySelector(":scope > .hsd-pane-snap-bar");
+        const snapSticky =
+          snapBar && window.getComputedStyle(snapBar).position === "sticky"
+            ? snapBar.offsetHeight
+            : 0;
+        const padTop = Math.max(12, snapSticky + 8);
+        const padBot = 12;
+        const availH = Math.max(40, sRect.height - padTop - padBot);
+        if (fRect.height > availH) {
+          const topDelta = fRect.top - (sRect.top + padTop);
+          if (Math.abs(topDelta) > 2) {
+            paneScroller.scrollTop += topDelta;
+          }
         } else if (fRect.bottom > sRect.bottom - padBot) {
-          paneScroller.scrollBy({ top: fRect.bottom - (sRect.bottom - padBot), behavior: "smooth" });
+          paneScroller.scrollTop += fRect.bottom - (sRect.bottom - padBot);
+        } else if (fRect.top < sRect.top + padTop) {
+          paneScroller.scrollTop += fRect.top - (sRect.top + padTop);
         }
       }
     }
@@ -24020,12 +24125,12 @@
     const stageScroller = ov && !ov.hidden ? ov.querySelector(".ppt-fs-stage-wrap.is-pinch-zoomed") : null;
     if (stageScroller) {
       const stRect = stageScroller.getBoundingClientRect();
-      const fRect = fieldEl.getBoundingClientRect();
+      const fRect = getTrueViewportRect(fieldEl, stageScroller);
       if (stRect.height > 0) {
-        if (fRect.top < stRect.top + 28) {
-          stageScroller.scrollBy({ top: fRect.top - (stRect.top + 28), behavior: "smooth" });
-        } else if (fRect.bottom > stRect.bottom - 24) {
-          stageScroller.scrollBy({ top: fRect.bottom - (stRect.bottom - 24), behavior: "smooth" });
+        if (fRect.bottom > stRect.bottom - 14) {
+          stageScroller.scrollTop += fRect.bottom - (stRect.bottom - 14);
+        } else if (fRect.top < stRect.top + 18) {
+          stageScroller.scrollTop += fRect.top - (stRect.top + 18);
         }
       }
     }
@@ -24035,8 +24140,10 @@
     const ov = $("pptPresentationOverlay");
     const env = getPptViewportEnv();
     if (ov && !ov.hidden) {
+      ov.style.setProperty("--ppt-vvw", `${env.w}px`);
       ov.style.setProperty("--ppt-vvh", `${env.h}px`);
       ov.style.setProperty("--ppt-vv-top", `${env.offsetTop}px`);
+      ov.style.setProperty("--ppt-vv-left", `${env.offsetLeft || 0}px`);
       ov.classList.toggle("is-vv-overlay-kbd", Boolean(env.isOverlayKbd));
       ov.classList.toggle("is-kbd-open", env.isKbdOpen);
       ov.classList.toggle("is-compact-fs-ui", env.useCompactDock);
@@ -24055,7 +24162,7 @@
         btn.setAttribute("aria-pressed", activeNow ? "true" : "false");
       });
     }
-    if (env.isKbdOpen && isEditableElementFocusedInOverlay()) {
+    if (isEditableElementFocusedInOverlay() && (env.isKbdOpen || env.isCoarse)) {
       scrollFocusedFieldIntoSlideView(document.activeElement);
     }
   }
@@ -24077,15 +24184,20 @@
       window.visualViewport.addEventListener("resize", onViewportShift, { passive: true });
       window.visualViewport.addEventListener("scroll", onViewportShift, { passive: true });
     }
+    if (navigator && navigator.virtualKeyboard && typeof navigator.virtualKeyboard.addEventListener === "function") {
+      navigator.virtualKeyboard.addEventListener("geometrychange", onViewportShift);
+    }
     window.addEventListener("resize", onViewportShift, { passive: true });
     window.addEventListener("orientationchange", () => {
+      pptKbdState.cleanPortraitH = 0;
+      pptKbdState.cleanLandscapeH = 0;
       setTimeout(() => syncPptOverlayViewportMetrics(true), 120);
       setTimeout(() => syncPptOverlayViewportMetrics(true), 340);
     }, { passive: true });
 
     const scheduleAnimatedKbdSyncs = () => {
       syncPptOverlayViewportMetrics(true);
-      [80, 200, 360, 560].forEach((ms) => {
+      [50, 120, 220, 360, 540, 760].forEach((ms) => {
         setTimeout(() => syncPptOverlayViewportMetrics(true), ms);
       });
     };
@@ -24094,8 +24206,38 @@
       const t = ev.target;
       if (!t || !(t instanceof HTMLElement)) return;
       if (!t.closest("#pptPresentationOverlay, .hsd-slide-shell")) return;
+      pptKbdState.focusTs = Date.now();
+      pptKbdState.sawShrink = false;
+      pptKbdState.dismissedByBack = false;
       scheduleAnimatedKbdSyncs();
     });
+
+    document.addEventListener("pointerup", (ev) => {
+      const t = ev.target;
+      if (!t || !(t instanceof HTMLElement)) return;
+      if (!t.matches("textarea, input, [contenteditable='true']")) return;
+      if (!t.closest("#pptPresentationOverlay, .hsd-slide-shell")) return;
+      if (pptKbdState.dismissedByBack) {
+        pptKbdState.dismissedByBack = false;
+        pptKbdState.sawShrink = false;
+        pptKbdState.focusTs = Date.now();
+        scheduleAnimatedKbdSyncs();
+      } else {
+        setTimeout(() => {
+          if (document.activeElement === t) scrollFocusedFieldIntoSlideView(t);
+        }, 90);
+      }
+    }, { passive: true });
+
+    document.addEventListener("input", (ev) => {
+      const t = ev.target;
+      if (!t || !(t instanceof HTMLElement)) return;
+      if (!t.closest("#pptPresentationOverlay, .hsd-slide-shell")) return;
+      pptKbdState.dismissedByBack = false;
+      requestAnimationFrame(() => {
+        if (document.activeElement === t) scrollFocusedFieldIntoSlideView(t);
+      });
+    }, { passive: true });
 
     document.addEventListener("focusout", (ev) => {
       const t = ev.target;
@@ -24222,6 +24364,9 @@
     const isZoomedOrBlocked = (targetNode) => {
       if (isOverlayRoot && containerEl.hidden) return true;
       if (state.hsdFsGridOpen) return true;
+      if (isEditableElementFocusedInOverlay() || (isOverlayRoot && containerEl.classList.contains("is-kbd-open"))) {
+        return true;
+      }
       const stageEl = isOverlayRoot ? containerEl.querySelector(".ppt-fs-stage-wrap") : containerEl;
       if (
         (stageEl && (stageEl.classList.contains("is-pinch-zoomed") || stageEl.classList.contains("is-manual-zoom"))) ||
@@ -25439,6 +25584,12 @@
   }
 
   function requestNativeBrowserFullscreen() {
+    if (isCoarseTouchDevice()) {
+      // On Android (Samsung One UI / Chrome / Samsung Internet), W3C Immersive Fullscreen (FLAG_FULLSCREEN)
+      // suppresses OS soft-keyboard resize & visualViewport insets. Keep mobile Full Screen inside our
+      // fixed edge-to-edge #pptPresentationOverlay (matching iOS Safari) so keyboard & kbdBar track cleanly.
+      return;
+    }
     const docEl = document.documentElement;
     if (document.fullscreenElement || document.webkitFullscreenElement) {
       state.hsdNativeFsEntered = true;
@@ -25534,6 +25685,7 @@
     state.hsdFsZoomScale = 1;
     state.hsdFsScenFolded = false;
     state.hsdNativeFsEntered = false;
+    state.hsdReadingMobileFs = false;
     markSlideBoxesAutoOptimize("both");
     if (document.fullscreenElement && document.exitFullscreen) {
       document.exitFullscreen().catch(() => {});
@@ -25556,6 +25708,9 @@
           document.webkitExitFullscreen();
         } catch (_) {}
       }
+    } else if (isCoarseTouchDevice()) {
+      state.hsdReadingMobileFs = !state.hsdReadingMobileFs;
+      renderPptPresentationOverlay();
     } else {
       requestNativeBrowserFullscreen();
     }
@@ -27528,6 +27683,15 @@
       // Never reset scrollTop, overflow, or binary-search zoom while user is actively typing in a field inside this box!
       if (!isHandout && document.activeElement && boxEl.contains(document.activeElement) && isEditableElementFocusedInOverlay()) {
         paneEl.style.overflowY = "auto";
+        if (hasDohShell) {
+          dohShells.forEach((sh) => {
+            if (typeof sh._syncDohScale === "function") sh._syncDohScale(true, false);
+            else syncDohShellScale(sh, true);
+          });
+        }
+        if (autoTextareas.length) {
+          syncAllBoxTextareas();
+        }
         return;
       }
 
@@ -29725,7 +29889,8 @@
     state.hsdCurrentSlideRef = captureSlideRef(cur);
 
     const isNativeFsInReading = Boolean(
-      state.isPptSlideSharePopup && (document.fullscreenElement || document.webkitFullscreenElement)
+      state.isPptSlideSharePopup &&
+        (document.fullscreenElement || document.webkitFullscreenElement || state.hsdReadingMobileFs)
     );
 
     if (state.isPptSlideSharePopup) {
@@ -29746,8 +29911,10 @@
 
     const envInit = getPptViewportEnv();
     ov.hidden = false;
+    ov.style.setProperty("--ppt-vvw", `${envInit.w}px`);
     ov.style.setProperty("--ppt-vvh", `${envInit.h}px`);
     ov.style.setProperty("--ppt-vv-top", `${envInit.offsetTop}px`);
+    ov.style.setProperty("--ppt-vv-left", `${envInit.offsetLeft || 0}px`);
     ov.classList.toggle("is-vv-overlay-kbd", Boolean(envInit.isOverlayKbd));
     ov.classList.toggle("is-kbd-open", envInit.isKbdOpen);
     ov.classList.toggle("is-compact-fs-ui", envInit.useCompactDock);
@@ -29835,6 +30002,69 @@
 
     ov.appendChild(stageWrap);
     attachPptStagePinchZoom(stageWrap, zoomSizer, sheet);
+
+    // Clean 2-Button Virtual-Keyboard Helper Bar (ONLY "ซ่อนโจทย์" & "พับแป้นพิมพ์", flush right above keyboard & right below focused textbox)
+    const buildMobileKbdHelperBarDOM = () => {
+      const kbdBar = make("div", null, "ppt-fs-kbd-bar hsd-no-print");
+      const leftPaneEl = sheet.querySelector(".hsd-slide-left");
+      const rightPaneEl = sheet.querySelector(".hsd-slide-right");
+      const hasScenSplitPane = Boolean(leftPaneEl && rightPaneEl);
+      if (hasScenSplitPane) {
+        const isScenHiddenInit = Boolean(state.hsdFsScenFolded || leftPaneEl.hidden);
+        const kJumpScen = make(
+          "button",
+          isScenHiddenInit ? "📖 แสดงโจทย์" : "📖 ซ่อนโจทย์",
+          "ppt-fs-tool-btn is-kbd-mini"
+        );
+        kJumpScen.type = "button";
+        kJumpScen.addEventListener("pointerdown", (e) => e.preventDefault());
+        kJumpScen.addEventListener("mousedown", (e) => e.preventDefault());
+        kJumpScen.addEventListener("click", () => {
+          const currentlyHidden = Boolean(state.hsdFsScenFolded || leftPaneEl.hidden);
+          if (currentlyHidden) {
+            state.hsdFsScenFolded = false;
+            sheet.classList.remove("is-mobile-scen-folded");
+            if (leftPaneEl.hidden) {
+              state.hsdSinglePaneOverride = "";
+              leftPaneEl.hidden = false;
+              const resizerEl = sheet.querySelector(".hsd-split-resizer");
+              if (resizerEl) resizerEl.hidden = false;
+              sheet.classList.remove("is-layout-sheet", "is-layout-live-sheet", "is-layout-key-full");
+            }
+          } else {
+            state.hsdFsScenFolded = true;
+            sheet.classList.add("is-mobile-scen-folded");
+          }
+          const nextHidden = Boolean(state.hsdFsScenFolded || leftPaneEl.hidden);
+          kJumpScen.textContent = nextHidden ? "📖 แสดงโจทย์" : "📖 ซ่อนโจทย์";
+          const fb = sheet.querySelector(".hsd-msj-btn.is-fold-toggle");
+          if (fb) fb.textContent = nextHidden ? "▸ แสดงโจทย์" : "▾ ซ่อนโจทย์";
+          markSlideBoxesAutoOptimize("both");
+          autoFitSingleSheetBoxes(sheet, true);
+          requestAnimationFrame(() => {
+            if (isEditableElementFocusedInOverlay()) {
+              scrollFocusedFieldIntoSlideView(document.activeElement);
+            }
+          });
+        });
+        kbdBar.appendChild(kJumpScen);
+      }
+
+      const kDismissBtn = make("button", "⌨ พับแป้นพิมพ์ ✓", "ppt-fs-tool-btn is-kbd-done");
+      kDismissBtn.type = "button";
+      kDismissBtn.addEventListener("pointerdown", (e) => e.preventDefault());
+      kDismissBtn.addEventListener("mousedown", (e) => e.preventDefault());
+      kDismissBtn.addEventListener("click", () => {
+        pptKbdState.sawShrink = false;
+        pptKbdState.dismissedByBack = false;
+        if (document.activeElement && typeof document.activeElement.blur === "function") {
+          document.activeElement.blur();
+        }
+        syncPptOverlayViewportMetrics(true);
+      });
+      kbdBar.appendChild(kDismissBtn);
+      return kbdBar;
+    };
 
     if (state.isPptSlideSharePopup && !isNativeFsInReading && !state.hsdShowFullHudInPopup) {
       const readBar = make("div", null, "ppt-reading-statusbar hsd-no-print");
@@ -29931,40 +30161,9 @@
       rbRight.append(rPrev, rSel, rNext, rLaser, rGrid, buildFsZoomAndCanvasBarDOM(true), rSlideShow);
       readBar.append(rbLeft, rbRight);
       ov.appendChild(readBar);
+      ov.appendChild(buildMobileKbdHelperBarDOM());
     } else {
-      // 1. Clean 2-Button Virtual-Keyboard Helper Bar (ONLY "ซ่อนโจทย์" & "พับแป้นพิมพ์", flush right above keyboard)
-      const kbdBar = make("div", null, "ppt-fs-kbd-bar hsd-no-print");
-      const hasScenSplitPane = Boolean(sheet.querySelector(".hsd-slide-left") && sheet.querySelector(".hsd-slide-right"));
-      if (hasScenSplitPane) {
-        const kJumpScen = make(
-          "button",
-          state.hsdFsScenFolded ? "📖 แสดงโจทย์" : "📖 ซ่อนโจทย์",
-          "ppt-fs-tool-btn is-kbd-mini"
-        );
-        kJumpScen.type = "button";
-        kJumpScen.addEventListener("pointerdown", (e) => e.preventDefault());
-        kJumpScen.addEventListener("mousedown", (e) => e.preventDefault());
-        kJumpScen.addEventListener("click", () => {
-          state.hsdFsScenFolded = !state.hsdFsScenFolded;
-          sheet.classList.toggle("is-mobile-scen-folded", state.hsdFsScenFolded);
-          kJumpScen.textContent = state.hsdFsScenFolded ? "📖 แสดงโจทย์" : "📖 ซ่อนโจทย์";
-          const fb = sheet.querySelector(".hsd-msj-btn.is-fold-toggle");
-          if (fb) fb.textContent = state.hsdFsScenFolded ? "▸ แสดงโจทย์" : "▾ ซ่อนโจทย์";
-          markSlideBoxesAutoOptimize("both");
-          autoFitSingleSheetBoxes(sheet, true);
-        });
-        kbdBar.appendChild(kJumpScen);
-      }
-
-      const kDismissBtn = make("button", "⌨ พับแป้นพิมพ์ ✓", "ppt-fs-tool-btn is-kbd-done");
-      kDismissBtn.type = "button";
-      kDismissBtn.addEventListener("click", () => {
-        if (document.activeElement && typeof document.activeElement.blur === "function") {
-          document.activeElement.blur();
-        }
-      });
-      kbdBar.appendChild(kDismissBtn);
-      ov.appendChild(kbdBar);
+      ov.appendChild(buildMobileKbdHelperBarDOM());
 
       // 2. Authentic Microsoft PowerPoint Bottom-Left Minimal 6 Circular Outline Buttons HUD (No Subtitle, No Record VDO)
       const fabHud = make("div", null, "ppt-slideshow-fab-hud hsd-no-print");
