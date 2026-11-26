@@ -8741,12 +8741,12 @@
         actRow.append(filterBtn, icsLink);
         if (site.id === 1) {
           const kuchiBtn = make("a", tr("🚂 ภาพรวมกลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Overview ↗"), "btn sm primary");
-          kuchiBtn.href = "kuchinarai/?v=14";
+          kuchiBtn.href = "kuchinarai/?v=15";
           kuchiBtn.target = "_blank";
           kuchiBtn.rel = "noopener";
           actRow.appendChild(kuchiBtn);
           const kuchiJoinBtn = make("a", tr("📱 ส่งคำตอบสด (มือถือ) ↗", "📱 Live Answer Pad ↗"), "btn sm");
-          kuchiJoinBtn.href = "kuchinarai/join.html?v=14";
+          kuchiJoinBtn.href = "kuchinarai/join.html?v=15";
           kuchiJoinBtn.target = "_blank";
           kuchiJoinBtn.rel = "noopener";
           actRow.appendChild(kuchiJoinBtn);
@@ -9036,12 +9036,12 @@
       actRow.append(lockBtn, pdfSiteLink, printSiteBtn, icsLink);
       if (curSite.id === 1) {
         const kuchiMapBtn = make("a", tr("🚂 ภาพรวมกลุ่มกุฉินารายณ์ ↗", "🚂 Kuchinarai Overview ↗"), "btn sm primary");
-        kuchiMapBtn.href = "kuchinarai/?v=14";
+        kuchiMapBtn.href = "kuchinarai/?v=15";
         kuchiMapBtn.target = "_blank";
         kuchiMapBtn.rel = "noopener";
         actRow.appendChild(kuchiMapBtn);
         const kuchiJoinMapBtn = make("a", tr("📱 ส่งคำตอบสด (มือถือ) ↗", "📱 Live Answer Pad ↗"), "btn sm");
-        kuchiJoinMapBtn.href = "kuchinarai/join.html?v=14";
+        kuchiJoinMapBtn.href = "kuchinarai/join.html?v=15";
         kuchiJoinMapBtn.target = "_blank";
         kuchiJoinMapBtn.rel = "noopener";
         actRow.appendChild(kuchiJoinMapBtn);
