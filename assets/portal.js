@@ -1862,11 +1862,31 @@
   }
 
   function resolveKnownStudentForHsd() {
-    if (state.myStudent && state.myStudent.id) return state.myStudent;
-    if (window.RACM_HSD_ROOM_QR && typeof window.RACM_HSD_ROOM_QR.getInitialStepPinStudent === "function") {
-      return window.RACM_HSD_ROOM_QR.getInitialStepPinStudent() || null;
+    const cand =
+      (state.myStudent && state.myStudent.id ? state.myStudent : null) ||
+      (window.RACM_HSD_ROOM_QR && typeof window.RACM_HSD_ROOM_QR.getInitialStepPinStudent === "function"
+        ? window.RACM_HSD_ROOM_QR.getInitialStepPinStudent() || null
+        : null);
+    if (!cand || !cand.id) return null;
+    if (ROLE === "student" && LIVE && typeof LIVE.getRoomCheckinResetId === "function") {
+      const targetRoom =
+        Number(state.hsdLockedRoomId) ||
+        (window.RACM_HSD_ROOM_PAGE && Number(window.RACM_HSD_ROOM_PAGE.roomId)) ||
+        Number(cand.disc) ||
+        LIVE.getRoomId() ||
+        1;
+      const reqResetId = LIVE.getRoomCheckinResetId(targetRoom);
+      const effMod = state.hsdModule && state.hsdModule !== "ALL" ? state.hsdModule : "HS1";
+      if (
+        reqResetId &&
+        window.RACM_HSD_ROOM_QR &&
+        typeof window.RACM_HSD_ROOM_QR.isStudentCheckedIn === "function" &&
+        !window.RACM_HSD_ROOM_QR.isStudentCheckedIn(effMod, targetRoom)
+      ) {
+        return null;
+      }
     }
-    return null;
+    return cand;
   }
 
   /* ---------- Primary Tab Routing ---------- */
@@ -21186,7 +21206,7 @@
   }
 
   let slideSyncToastTimer = null;
-  function showStudentSlideSyncToast(text) {
+  function showStudentSlideSyncToast(text, durationMs) {
     let toast = $("hsdLiveSlideSyncToast");
     if (!toast) {
       toast = make("div", "", "hsd-live-sync-toast hsd-no-print");
@@ -21202,7 +21222,7 @@
       setTimeout(() => {
         if (!toast.classList.contains("is-visible")) toast.hidden = true;
       }, 220);
-    }, 2200);
+    }, Math.max(1500, Number(durationMs) || 2200));
   }
 
   function leaveHsDiscussionRoomOnly(stayOnDeck) {
@@ -21645,6 +21665,59 @@
     liveSubscriptionsBound = true;
     LIVE.on("timer", (snap) => syncTimerWidgetDOM(snap));
     LIVE.on("presence", () => syncLiveConnectionAndPresenceDOM());
+    LIVE.on("checkin_reset", (ev) => {
+      if (ROLE !== "student" || !ev) {
+        syncLiveConnectionAndPresenceDOM();
+        return;
+      }
+      const rstRoom = Number(ev.roomId) || 0;
+      const lockedPageRoom =
+        (window.RACM_HSD_ROOM_PAGE && Number(window.RACM_HSD_ROOM_PAGE.roomId)) || 0;
+      const myRoom =
+        lockedPageRoom ||
+        Number(state.hsdLockedRoomId) ||
+        (state.myStudent && Number(state.myStudent.disc)) ||
+        0;
+      const effMod = state.hsdModule && state.hsdModule !== "ALL" ? state.hsdModule : "HS1";
+      const alreadyCheckedInFresh =
+        Boolean(window.RACM_HSD_ROOM_QR) &&
+        typeof window.RACM_HSD_ROOM_QR.isStudentCheckedIn === "function" &&
+        window.RACM_HSD_ROOM_QR.isStudentCheckedIn(effMod, rstRoom);
+
+      if ((ev.evicted || (rstRoom && myRoom === rstRoom)) && !alreadyCheckedInFresh) {
+        if (document.fullscreenElement && typeof document.exitFullscreen === "function") {
+          document.exitFullscreen().catch(() => {});
+        }
+        if (state.hsdLobbyOpen && typeof closeHsdKahootLobbyModal === "function") {
+          closeHsdKahootLobbyModal();
+        }
+        if (state.hsdTheater && !state.isPptSlideSharePopup && typeof exitPptFullscreenShow === "function") {
+          exitPptFullscreenShow();
+        }
+        clearAllPersonalization({ keepCurrentTab: true, skipRenderHsd: true, fromRemoteSync: true });
+        if (rstRoom >= 1 && rstRoom <= 6) {
+          state.hsdLockedRoomId = rstRoom;
+          if (LIVE) LIVE.setRoom(rstRoom, true);
+        }
+        state.hsdRequireQrCheckin = true;
+        state.hsdSkipGatePreview = false;
+        state.hsdDriveFolderOpen = false;
+        if (state.activeTab === "hs-discussion" || window.RACM_HSD_ROOM_PAGE) {
+          renderHsLiveClassroomBar();
+          renderHsDiscussionContextBar();
+          renderHsDiscussionView();
+        }
+        syncLiveConnectionAndPresenceDOM();
+        if (typeof showStudentSlideSyncToast === "function") {
+          showStudentSlideSyncToast(
+            "🔄 อาจารย์ประจำห้องล้าง Cache การเช็คชื่อใหม่ — กรุณาสแกน QR / กรอกรหัส 3 ตัวท้ายเพื่อ Check-in เข้าห้องอีกครั้ง",
+            4800
+          );
+        }
+        return;
+      }
+      syncLiveConnectionAndPresenceDOM();
+    });
     LIVE.on("connection", () => syncLiveConnectionAndPresenceDOM());
     LIVE.on("responses", (ev) => {
       if (ROLE === "faculty" && typeof refreshLiveWallByQuestionId === "function") {
