@@ -22879,26 +22879,27 @@
 
   let dohInstanceSeq = 0;
   const DOH_EDGE_DEFS = [
-    { id: "ind_to_out", label: "ปัจเจก→ปัญหา", revLabel: "ปัญหา→ปัจเจก", biLabel: "ปัจเจก↔ปัญหา", std: "fwd", syms: { fwd: "↘", rev: "↖", bi: "↖↘" } },
-    { id: "soc_to_out", label: "สังคม→ปัญหา", revLabel: "ปัญหา→สังคม", biLabel: "สังคม↔ปัญหา", std: "fwd", syms: { fwd: "↙", rev: "↗", bi: "↙↗" } },
-    { id: "hsys_to_out", label: "บริการ→ปัญหา", revLabel: "ปัญหา→บริการ", biLabel: "บริการ↔ปัญหา", std: "fwd", syms: { fwd: "↑", rev: "↓", bi: "↕" } },
+    { id: "ind_to_out", label: "ปัจเจก→ปัญหา", revLabel: "ปัญหา→ปัจเจก", biLabel: "ปัจเจก↔ปัญหา", std: "bi", syms: { fwd: "↘", rev: "↖", bi: "↖↘" } },
+    { id: "soc_to_out", label: "สังคม→ปัญหา", revLabel: "ปัญหา→สังคม", biLabel: "สังคม↔ปัญหา", std: "bi", syms: { fwd: "↙", rev: "↗", bi: "↙↗" } },
+    { id: "hsys_to_out", label: "บริการ→ปัญหา", revLabel: "ปัญหา→บริการ", biLabel: "บริการ↔ปัญหา", std: "bi", syms: { fwd: "↑", rev: "↓", bi: "↕" } },
     { id: "ind_bi_soc", label: "ปัจเจก→สังคม", revLabel: "สังคม→ปัจเจก", biLabel: "ปัจเจก↔สังคม", std: "bi", syms: { fwd: "→", rev: "←", bi: "↔" } },
     { id: "ind_bi_hsys", label: "ปัจเจก→บริการ", revLabel: "บริการ→ปัจเจก", biLabel: "ปัจเจก↔บริการ", std: "bi", syms: { fwd: "↘", rev: "↖", bi: "↖↘" } },
     { id: "soc_bi_hsys", label: "สังคม→บริการ", revLabel: "บริการ→สังคม", biLabel: "สังคม↔บริการ", std: "bi", syms: { fwd: "↙", rev: "↗", bi: "↙↗" } }
   ];
+  const STATIC_DOH_BI_EDGES = Object.freeze({
+    ind_to_out: "bi",
+    soc_to_out: "bi",
+    hsys_to_out: "bi",
+    ind_bi_soc: "bi",
+    ind_bi_hsys: "bi",
+    soc_bi_hsys: "bi"
+  });
 
   function parseDohLinksString(raw) {
     const st = {
-      edges: {
-        ind_to_out: "off",
-        soc_to_out: "off",
-        hsys_to_out: "off",
-        ind_bi_soc: "off",
-        ind_bi_hsys: "off",
-        soc_bi_hsys: "off"
-      },
-      innerRing: false,
-      outerRing: false
+      edges: { ...STATIC_DOH_BI_EDGES },
+      innerRing: true,
+      outerRing: true
     };
     const str = String(raw || "").trim();
     if (!str) return st;
@@ -23355,7 +23356,6 @@
 
     const meta = ws.diagramMeta || {};
     const nodesMeta = meta.nodes || {};
-    const linksInputId = meta.linksInputId || "c1b_q1_links";
 
     const cellSpecById = {};
     (ws.rows || []).forEach((r) => {
@@ -23374,63 +23374,18 @@
       }
     });
 
-    let linkState = parseDohLinksString(state.hsdDrafts[linksInputId] || "");
     const cellSyncCallbacks = [];
     let redrawDiagramArrows = () => {};
 
     const container = make("div", null, "doh-ws-container");
 
-    const hiddenLinksInput = document.createElement("input");
-    hiddenLinksInput.type = "hidden";
-    hiddenLinksInput.id = `${idPrefix}${linksInputId}`;
-    hiddenLinksInput.dataset.inputId = linksInputId;
-    hiddenLinksInput.value = state.hsdDrafts[linksInputId] || "";
-    container.appendChild(hiddenLinksInput);
-
-    const toolbar = make("div", null, "doh-ws-toolbar hsd-no-print");
-    const leftTools = make("div", null, "doh-toolbar-group");
-    const rightTools = make("div", null, "doh-toolbar-group");
-
-    const viewDiagBtn = make("button", "🗺️ สร้างผัง Diagram", "doh-tool-pill is-active");
-    viewDiagBtn.type = "button";
-    const viewTblBtn = make("button", "▦ มุมมองตาราง", "doh-tool-pill");
-    viewTblBtn.type = "button";
-
-    const innerOvalBtn = make("button", "⭕ วงล้อมชั้นใน", "doh-tool-pill");
-    innerOvalBtn.type = "button";
-    innerOvalBtn.title = "เปิด/ปิดวงล้อมชั้นในเชื่อมโยงปัจจัยด้านปัจเจก–สังคมสิ่งแวดล้อม–ระบบบริการสุขภาพ";
-
-    const outerOvalBtn = make("button", "🟠 วงล้อมโครงสร้าง", "doh-tool-pill");
-    outerOvalBtn.type = "button";
-    outerOvalBtn.title = "เปิด/ปิดวงล้อมชั้นนอกของปัจจัยเชิงโครงสร้างที่มีอิทธิพลต่อความเหลื่อมล้ำด้านสุขภาพ";
-
-    const autoArrowsBtn = make("button", "⚡ เชื่อมลูกศรครบวงจร", "doh-tool-pill");
-    autoArrowsBtn.type = "button";
-    autoArrowsBtn.title = "ลากลูกศรเชื่อมโยงทั้ง 6 เส้นพร้อมเปิดวงล้อมทั้ง 2 ชั้นอัตโนมัติ (คลิกแก้รายเส้นต่อได้)";
-
-    const clearArrowsBtn = make("button", "↺ ล้างเส้น", "doh-tool-pill");
-    clearArrowsBtn.type = "button";
-    clearArrowsBtn.title = "ล้างลูกศรและวงล้อมทั้งหมดเพื่อฝึกวาดใหม่";
-
-    leftTools.append(viewDiagBtn, viewTblBtn, innerOvalBtn, outerOvalBtn);
-    rightTools.append(
-      make("span", "คลิกปุ่ม + บนเส้นประเพื่อเชื่อม/เปลี่ยนทิศทางลูกศร", "doh-toolbar-hint"),
-      autoArrowsBtn,
-      clearArrowsBtn
-    );
-    toolbar.append(leftTools, rightTools);
-    if (!state.isPptSlideSharePopup) {
-      container.appendChild(toolbar);
-    }
-
-    const shell = make("div", null, "doh-diagram-shell");
+    const shell = make("div", null, "doh-diagram-shell is-outer-oval-on");
     const structZone = make("div", null, "doh-structural-zone");
-    const innerOval = make("div", null, "doh-inner-oval");
+    const innerOval = make("div", null, "doh-inner-oval is-inner-oval-on");
     const arena = make("div", null, "doh-inner-arena");
     const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgEl.setAttribute("class", "doh-arrows-svg");
     svgEl.setAttribute("aria-hidden", "true");
-    const badgeLayer = make("div", null, "doh-arrow-badges-layer");
 
     const buildEditableNodeCard = (nodeKey, extraCardCls) => {
       const nMeta = nodesMeta[nodeKey] || {};
@@ -23493,9 +23448,6 @@
         }
         mirror.textContent = ta.value.trim() || `(พื้นที่เขียน ${nMeta.title || ""})`;
         persistHsdDraft(cid, ta.value);
-        container.querySelectorAll(`textarea[data-table-mirror-id="${cid}"]`).forEach((mTa) => {
-          if (mTa.value !== ta.value) mTa.value = ta.value;
-        });
         if (!forceInteractive) {
           document.querySelectorAll(`textarea[data-input-id="${cid}"]`).forEach((other) => {
             if (other !== ta && other !== document.activeElement && !(other.id && other.id.startsWith("demo_"))) {
@@ -23545,136 +23497,19 @@
     const posHsys = make("div", null, "doh-pos-hsys");
     posHsys.appendChild(buildEditableNodeCard("health_sys", ""));
 
-    arena.append(svgEl, posInd, posOut, posSoc, posHsys, badgeLayer);
+    arena.append(svgEl, posInd, posOut, posSoc, posHsys);
     innerOval.append(createDohOvalBgSvg(false), arena);
     shell.append(createDohOvalBgSvg(true), structZone, innerOval);
     container.appendChild(shell);
 
-    const tblViewWrap = make("div", null, "hsd-ws-wrap");
-    tblViewWrap.hidden = true;
-    const cmpTbl = make("table", null, "hsd-ws-table");
-    const thead = document.createElement("thead");
-    const hr = document.createElement("tr");
-    (ws.headers || []).forEach((h) => hr.appendChild(make("th", h)));
-    thead.appendChild(hr);
-    const tbody = document.createElement("tbody");
-    (ws.rows || []).forEach((r) => {
-      if (r.isDiagramLinksRow) return;
-      const trEl = document.createElement("tr");
-      (r.cells || []).forEach((cell) => {
-        const td = document.createElement("td");
-        if (cell.static) {
-          td.className = "hsd-ws-static";
-          td.innerHTML = escapeHtml(cell.static).replace(/\n/g, "<br>");
-        } else if (cell.inputId) {
-          const mTa = document.createElement("textarea");
-          mTa.className = `hsd-input${cell.compact ? " is-compact" : ""}`;
-          mTa.dataset.tableMirrorId = cell.inputId;
-          mTa.maxLength = cell.maxChars || 280;
-          mTa.rows = cell.compact ? 1 : 2;
-          mTa.placeholder = cell.placeholder || "";
-          mTa.value = state.hsdDrafts[cell.inputId] || "";
-          mTa.addEventListener("input", () => {
-            const diagTa = shell.querySelector(`textarea[data-input-id="${cell.inputId}"]`);
-            if (diagTa) {
-              diagTa.value = mTa.value;
-              diagTa.dispatchEvent(new Event("input", { bubbles: true }));
-            }
-          });
-          td.appendChild(mTa);
-        }
-        trEl.appendChild(td);
-      });
-      tbody.appendChild(trEl);
-    });
-    cmpTbl.append(thead, tbody);
-    tblViewWrap.appendChild(cmpTbl);
-    container.appendChild(tblViewWrap);
-
-    const syncVisualLinkState = (broadcastLive) => {
-      shell.classList.toggle("is-outer-oval-on", Boolean(linkState.outerRing));
-      innerOval.classList.toggle("is-inner-oval-on", Boolean(linkState.innerRing));
-      innerOvalBtn.classList.toggle("is-active", Boolean(linkState.innerRing));
-      outerOvalBtn.classList.toggle("is-outer-active", Boolean(linkState.outerRing));
-      const serialized = serializeDohLinksState(linkState);
-      hiddenLinksInput.value = serialized;
-      persistHsdDraft(linksInputId, serialized);
-      redrawDiagramArrows(true);
-      if (broadcastLive && LIVE && ROLE === "student" && state.hsdSessionJoined && state.myStudent) {
-        ensureLiveStudentProfileBound();
-        LIVE.queueLiveTyping(qObj.id, collectQuestionCellsMap(qObj), linksInputId);
-      }
-    };
-
-    hiddenLinksInput._refreshFromTeamSync = () => {
-      linkState = parseDohLinksString(hiddenLinksInput.value || "");
-      shell.classList.toggle("is-outer-oval-on", Boolean(linkState.outerRing));
-      innerOval.classList.toggle("is-inner-oval-on", Boolean(linkState.innerRing));
-      innerOvalBtn.classList.toggle("is-active", Boolean(linkState.innerRing));
-      outerOvalBtn.classList.toggle("is-outer-active", Boolean(linkState.outerRing));
-      redrawDiagramArrows(true);
-    };
-
-    const cycleOrder = ["off", "fwd", "bi", "rev"];
     redrawDiagramArrows = mountDohArenaArrows(
       arena,
       svgEl,
-      state.isPptSlideSharePopup ? null : badgeLayer,
-      () => linkState.edges,
-      state.isPptSlideSharePopup
-        ? null
-        : (edgeId) => {
-            const curDir = linkState.edges[edgeId] || "off";
-            const nextDir = cycleOrder[(cycleOrder.indexOf(curDir) + 1) % cycleOrder.length];
-            linkState.edges[edgeId] = nextDir;
-            syncVisualLinkState(true);
-          }
+      null,
+      () => STATIC_DOH_BI_EDGES,
+      null
     );
-
-    innerOvalBtn.addEventListener("click", () => {
-      linkState.innerRing = !linkState.innerRing;
-      syncVisualLinkState(true);
-    });
-    outerOvalBtn.addEventListener("click", () => {
-      linkState.outerRing = !linkState.outerRing;
-      syncVisualLinkState(true);
-    });
-    autoArrowsBtn.addEventListener("click", () => {
-      DOH_EDGE_DEFS.forEach((ed) => {
-        linkState.edges[ed.id] = ed.std;
-      });
-      linkState.innerRing = true;
-      linkState.outerRing = true;
-      syncVisualLinkState(true);
-    });
-    clearArrowsBtn.addEventListener("click", () => {
-      DOH_EDGE_DEFS.forEach((ed) => {
-        linkState.edges[ed.id] = "off";
-      });
-      linkState.innerRing = false;
-      linkState.outerRing = false;
-      syncVisualLinkState(true);
-    });
-
-    viewDiagBtn.addEventListener("click", () => {
-      shell.hidden = false;
-      tblViewWrap.hidden = true;
-      viewDiagBtn.classList.add("is-active");
-      viewTblBtn.classList.remove("is-active");
-      redrawDiagramArrows();
-      const parentSheet = container.closest(".ppt-slide-sheet");
-      if (parentSheet) autoFitSingleSheetBoxes(parentSheet, true);
-    });
-    viewTblBtn.addEventListener("click", () => {
-      shell.hidden = true;
-      tblViewWrap.hidden = false;
-      viewTblBtn.classList.add("is-active");
-      viewDiagBtn.classList.remove("is-active");
-      const parentSheet = container.closest(".ppt-slide-sheet");
-      if (parentSheet) autoFitSingleSheetBoxes(parentSheet, true);
-    });
-
-    syncVisualLinkState(false);
+    redrawDiagramArrows(true);
     frag.appendChild(container);
 
     if (LIVE && ROLE === "student" && !forceInteractive) {
@@ -23684,7 +23519,7 @@
       const hint = make(
         "span",
         state.hsdSessionJoined && sidLbl
-          ? `● แผนภาพ Diagram ส่วนตัว (${sidLbl} · ห้อง ${rNum}) — พิมพ์และลากลูกศรแล้วกดส่งขึ้นจออาจารย์ได้ทันที`
+          ? `● แผนภาพ Diagram ส่วนตัว (${sidLbl} · ห้อง ${rNum}) — พิมพ์คำตอบในแผนภาพแล้วกดส่งขึ้นจออาจารย์ได้ทันที`
           : `● กรอกรหัสนักศึกษา 3 ตัวท้ายด้านบนเพื่อผูกกระดาษคำตอบส่วนตัวและส่งแผนภาพขึ้นจอ`,
         "hsd-live-sync-hint"
       );
@@ -31356,8 +31191,6 @@
     if (!ws || ws.type !== "doh-diagram") return null;
     const meta = ws.diagramMeta || {};
     const nodesMeta = meta.nodes || {};
-    const linksCid = meta.linksInputId || "c1b_q1_links";
-    const linkSt = includeDrafts ? parseDohLinksString(state.hsdDrafts[linksCid] || "") : parseDohLinksString("");
     const readNodeDraft = (nodeKey) => {
       const nMeta = nodesMeta[nodeKey] || {};
       const cid = nMeta.inputId || `c1b_q1_${nodeKey}`;
@@ -31366,9 +31199,9 @@
     const outcomeVal = readNodeDraft("outcome");
     return {
       mode: includeDrafts ? "student-draft" : "blank-sheet",
-      outerRing: includeDrafts ? Boolean(linkSt.outerRing) : false,
-      innerRing: includeDrafts ? Boolean(linkSt.innerRing) : false,
-      edges: includeDrafts ? linkSt.edges : {},
+      outerRing: true,
+      innerRing: true,
+      edges: { ...STATIC_DOH_BI_EDGES },
       outcome: {
         title: outcomeVal || "ปัญหาสุขภาพตรงกลาง",
         sub: outcomeVal ? "" : "(ระบุภาวะสุขภาพหลักของ ด.ช.โมโน)"
@@ -31377,7 +31210,7 @@
         structural: {
           title: (nodesMeta.structural && nodesMeta.structural.title) || "ปัจจัยเชิงโครงสร้างที่มีอิทธิพลต่อความเหลื่อมล้ำด้านสุขภาพ",
           text: readNodeDraft("structural"),
-          placeholder: "ระบุปัจจัยโครงสร้าง/นโยบาย/ค่านิยม/โฆษณา และวาดวงล้อมชั้นนอก…"
+          placeholder: "ระบุปัจจัยเชิงโครงสร้าง/นโยบาย/ผังเมือง/ค่านิยม/โฆษณา…"
         },
         individual: {
           title: (nodesMeta.individual && nodesMeta.individual.title) || "ปัจจัยด้านปัจเจก",
