@@ -25216,12 +25216,15 @@
     // Explicit Question-first priority (NEVER rely on querySelectorAll DOM order, which puts .hsd-slide-left Scenario first!)
     const qPanes = [
       root.querySelector(".hsd-key-slide-stage"),
-      root.querySelector(".hsd-slide-right")
+      root.querySelector(".hsd-slide-right"),
+      root.querySelector(".ppt-ok-roster-card")
     ].filter((el) => el && !el.hidden && el.offsetParent !== null);
 
-    const scenPanes = [root.querySelector(".hsd-slide-left")].filter(
-      (el) => el && !el.hidden && el.offsetParent !== null
-    );
+    const scenPanes = [
+      root.querySelector(".hsd-slide-left"),
+      root.querySelector(".ppt-ok-card.is-compact-qr-only-card"),
+      root.querySelector(".ppt-opening-kahoot-stage")
+    ].filter((el) => el && !el.hidden && el.offsetParent !== null);
 
     const unifiedStageScroller = [
       root.querySelector(".ppt-fs-stage-wrap"),
@@ -27462,39 +27465,25 @@
       isRespSlide && (isAutoHoriz || sheetEl.offsetWidth < 820 || sheetEl.offsetHeight < 500);
     const fitZ = isCompactResp ? 0.96 : Number(sheetEl.dataset.pptFitZoom) || 0.92;
 
-    if (sheetEl.classList.contains("is-layout-opening-kahoot") && !isHandout) {
+    const isOpeningSlide = sheetEl.classList.contains("is-layout-opening-kahoot");
+    let isStackedOpeningStage = false;
+    if (isOpeningSlide && !isHandout) {
       const okStage = sheetEl.querySelector(".ppt-opening-kahoot-stage");
+      const okLeft = okStage && okStage.querySelector(".ppt-ok-col-qr");
+      const okRight = okStage && okStage.querySelector(".ppt-ok-right");
+      if (okLeft) okLeft.style.zoom = "";
+      if (okRight) okRight.style.zoom = "";
       if (okStage) {
-        const canScaleOk = !isCompactResp && sheetEl.offsetWidth >= 860 && sheetEl.offsetHeight >= 480;
-        [".ppt-ok-col-qr", ".ppt-ok-right"].forEach((colSel, idx) => {
-          const colEl = okStage.querySelector(colSel);
-          if (!colEl) return;
-          if (!canScaleOk) {
-            colEl.style.zoom = "";
-            return;
-          }
-          colEl.style.zoom = "1";
-          const stCs = window.getComputedStyle(okStage);
-          const padY = (parseFloat(stCs.paddingTop) || 0) + (parseFloat(stCs.paddingBottom) || 0);
-          const availH = Math.max(240, okStage.clientHeight - padY - 6);
-          let contentH = 0;
-          Array.from(colEl.children).forEach((ch) => {
-            contentH += ch.offsetHeight;
-          });
-          contentH += Math.max(0, colEl.children.length - 1) * 12;
-          if (contentH > 40) {
-            const maxZ = idx === 0 ? 1.32 : 1.36;
-            const rawZ = (availH * 0.94) / contentH;
-            const targetZ = Math.max(0.90, Math.min(maxZ, rawZ));
-            colEl.style.zoom = targetZ.toFixed(3);
-            if (colEl.scrollHeight > availH / targetZ + 14 && idx === 0) {
-              const safeZ = Math.max(0.88, Math.min(targetZ, (availH * 0.92) / Math.max(1, colEl.scrollHeight)));
-              colEl.style.zoom = safeZ.toFixed(3);
-            }
-          }
-        });
+        const stW = sheetEl.offsetWidth || okStage.clientWidth || 0;
+        const stH = sheetEl.offsetHeight || okStage.clientHeight || 0;
+        const isCrampedStage = (stW > 0 && stW < 720) || (stH > 0 && stH < 430);
+        const isNarrowStage = stW > 0 && stW < 680;
+        okStage.classList.toggle("is-ok-compact-stage", isCrampedStage);
+        okStage.classList.toggle("is-ok-1col-stage", isNarrowStage);
+        if (isCrampedStage || (okLeft && okRight && okRight.offsetTop > okLeft.offsetTop + 20)) {
+          isStackedOpeningStage = true;
+        }
       }
-      return;
     }
 
     if (
@@ -27521,7 +27510,7 @@
       const isLeft = side === "left";
       const isAuto = isLeft ? state.hsdLeftAutoFit !== false : state.hsdRightAutoFit !== false;
       const manualPct = (isLeft ? state.hsdLeftFontPct : state.hsdRightFontPct) || 100;
-      const paneEl = boxEl.closest(".hsd-slide-left, .hsd-slide-right");
+      const paneEl = boxEl.closest(".hsd-slide-left, .hsd-slide-right, .is-ok-autofit-pane");
       const dohShells = Array.from(boxEl.querySelectorAll(".doh-diagram-shell")).filter(
         (sh) => !sh.hidden && !sh.closest("[hidden]")
       );
@@ -27542,6 +27531,24 @@
           syncAllBoxTextareas();
         }
       };
+
+      if (isOpeningSlide && isStackedOpeningStage) {
+        boxEl._lastFitSig = "";
+        if (!isAuto) {
+          setBoxZoom(manualPct / 100);
+          boxEl.dataset.effectivePct = String(manualPct);
+          sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
+            b.textContent = `${manualPct}%`;
+          });
+        } else {
+          setBoxZoom(1);
+          boxEl.dataset.effectivePct = "100";
+          sheetEl.querySelectorAll(`[data-box-pct="${side}"]`).forEach((b) => {
+            b.textContent = "Auto 100%";
+          });
+        }
+        return;
+      }
 
       if (!isAuto) {
         boxEl._lastFitSig = "";
@@ -27592,7 +27599,8 @@
         return;
       }
 
-      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}:${isRespSlide ? "rs" : "16x9"}:${isCompactResp ? "c" : "d"}`;
+      const okItemSig = isOpeningSlide ? `:ok${boxEl.querySelectorAll(".ppt-ok-stu-chip, .ppt-ok-stu-lobby-btn").length}` : "";
+      const fitSig = `${pOffW}x${pOffH}@${fitZ.toFixed(4)}:${isRespSlide ? "rs" : "16x9"}:${isCompactResp ? "c" : "d"}${okItemSig}`;
       if (!forceBoxRefit && boxEl._lastFitSig === fitSig) {
         if (hasDohShell) {
           dohShells.forEach((sh) => {
@@ -27622,6 +27630,8 @@
 
         const minAutoPct = isHandout
           ? 24
+          : isOpeningSlide
+          ? 46
           : hasDohShell
           ? pOffW > pOffH
             ? 28
@@ -27633,6 +27643,8 @@
           : 64;
         const maxAutoPct = isHandout
           ? 118
+          : isOpeningSlide
+          ? 215
           : hasDohShell && pOffW < 760
           ? 104
           : isCompactResp
@@ -27756,8 +27768,15 @@
 
   function buildBoxFontSizeCtrlDOM(side) {
     const isLeft = side === "left";
+    const ctrl = make("div", null, "hsd-box-font-ctrl hsd-no-print");
+    ctrl.addEventListener("pointerdown", (ev) => ev.stopPropagation());
+
     const getDisplayedPct = () => {
-      const box = document.querySelector(`.ppt-slide-sheet .hsd-box-zoom-body[data-box-side="${side}"]`);
+      const hostSheet =
+        ctrl.closest(".ppt-slide-sheet") ||
+        document.querySelector("#pptPresentationOverlay:not([hidden]) .ppt-slide-sheet") ||
+        document.querySelector(".ppt-slide-sheet");
+      const box = hostSheet && hostSheet.querySelector(`.hsd-box-zoom-body[data-box-side="${side}"]`);
       if (box && box.dataset.effectivePct) {
         return Number(box.dataset.effectivePct) || 100;
       }
@@ -27803,9 +27822,6 @@
       applySlideBoxesZoom(document);
       broadcastPptPresentationState();
     };
-
-    const ctrl = make("div", null, "hsd-box-font-ctrl hsd-no-print");
-    ctrl.addEventListener("pointerdown", (ev) => ev.stopPropagation());
 
     const minusBtn = make("button", "ก−", "hsd-box-font-btn");
     minusBtn.type = "button";
@@ -27965,6 +27981,7 @@
 
   function populateOpeningKahootRosterCardDOM(cardEl) {
     if (!cardEl) return;
+    cardEl.classList.add("is-ok-autofit-pane");
     const isInteractive = cardEl.dataset.pptOkInteractive === "1" && !state.isPptSlideSharePopup;
     const st = getKahootRoomRosterStatus();
     const joinedSet = new Set(
@@ -27985,13 +28002,21 @@
     );
     rHead.appendChild(rTitleWrap);
 
-    if (isInteractive && typeof openHsdKahootLobbyModal === "function") {
-      const fullLobbyBtn = make("button", "ดูสถานะ Live Lobby ↗", "btn sm");
-      fullLobbyBtn.type = "button";
-      fullLobbyBtn.addEventListener("click", () => openHsdKahootLobbyModal());
-      rHead.appendChild(fullLobbyBtn);
+    if (isInteractive) {
+      const rHeadActions = make("div", null, "ppt-ok-roster-head-actions hsd-no-print");
+      if (typeof openHsdKahootLobbyModal === "function") {
+        const fullLobbyBtn = make("button", "ดูสถานะ Live Lobby ↗", "btn sm");
+        fullLobbyBtn.type = "button";
+        fullLobbyBtn.addEventListener("click", () => openHsdKahootLobbyModal());
+        rHeadActions.appendChild(fullLobbyBtn);
+      }
+      rHeadActions.appendChild(buildBoxFontSizeCtrlDOM("right"));
+      rHead.appendChild(rHeadActions);
     }
     cardEl.appendChild(rHead);
+
+    const rosterZoomBody = make("div", null, "hsd-box-zoom-body is-ok-roster-zoom-body");
+    rosterZoomBody.dataset.boxSide = "right";
 
     const grid = make("div", null, "ppt-ok-roster-grid");
     (st.assigned || []).forEach((s) => {
@@ -28017,12 +28042,17 @@
       grid.appendChild(chip);
     });
 
-    cardEl.appendChild(grid);
+    rosterZoomBody.appendChild(grid);
+    cardEl.appendChild(rosterZoomBody);
   }
 
   function refreshOpeningKahootSlideRosterDOM() {
     document.querySelectorAll("[data-ppt-ok-roster-mount='1']").forEach((el) => {
       populateOpeningKahootRosterCardDOM(el);
+      const parentSheet = el.closest(".ppt-slide-sheet");
+      if (parentSheet) {
+        autoFitSingleSheetBoxes(parentSheet, true);
+      }
     });
     document.querySelectorAll("[data-hsd-checkin-card='1']").forEach((el) => {
       if (typeof el._syncUI === "function") el._syncUI();
@@ -28143,8 +28173,16 @@
     }
     colQr.appendChild(cleanHeroCard);
 
-    const qrCard = make("div", null, "ppt-ok-card is-compact-qr-only-card");
-    qrCard.appendChild(make("span", `📱 QR ประจำห้อง ${roomCode}`, "ppt-ok-qr-badge"));
+    const qrCard = make("div", null, "ppt-ok-card is-compact-qr-only-card is-ok-autofit-pane");
+    const qrHead = make("div", null, "ppt-ok-qr-head");
+    qrHead.appendChild(make("span", `📱 QR ประจำห้อง ${roomCode}`, "ppt-ok-qr-badge"));
+    if (!exp && !state.isPptSlideSharePopup) {
+      qrHead.appendChild(buildBoxFontSizeCtrlDOM("left"));
+    }
+    qrCard.appendChild(qrHead);
+
+    const qrZoomBody = make("div", null, "hsd-box-zoom-body is-ok-qr-zoom-body");
+    qrZoomBody.dataset.boxSide = "left";
 
     const qrFrameBtn = make("button", null, "ppt-ok-qr-frame-btn");
     qrFrameBtn.type = "button";
@@ -28163,11 +28201,11 @@
         }
       });
     }
-    qrCard.appendChild(qrFrameBtn);
+    qrZoomBody.appendChild(qrFrameBtn);
 
     const urlPill = make("div", `🔗 ${rMeta.displayShortUrl}`, "ppt-ok-qr-url-pill");
     urlPill.title = rMeta.studentQrUrl;
-    qrCard.appendChild(urlPill);
+    qrZoomBody.appendChild(urlPill);
 
     if (!exp && !state.isPptSlideSharePopup && ROLE === "faculty") {
       const qrActions = make("div", null, "ppt-ok-join-row");
@@ -28176,11 +28214,11 @@
       goQ1Btn.type = "button";
       goQ1Btn.addEventListener("click", jumpToFirstQuestion);
       qrActions.appendChild(goQ1Btn);
-      qrCard.appendChild(qrActions);
+      qrZoomBody.appendChild(qrActions);
     }
-    colQr.appendChild(qrCard);
 
     if (!exp && !state.isPptSlideSharePopup && ROLE === "student") {
+      qrZoomBody.classList.add("has-stu-lobby-card");
       const knownStu = resolveKnownStudentForHsd();
       const isOnlineHere = Boolean(
         knownStu &&
@@ -28275,8 +28313,11 @@
         });
         stuCard.appendChild(caseRow);
       }
-      colQr.appendChild(stuCard);
+      qrZoomBody.appendChild(stuCard);
     }
+
+    qrCard.appendChild(qrZoomBody);
+    colQr.appendChild(qrCard);
 
     // Column 2 (Right): Spacious Real-Time Live Lobby Status Wall
     const rightCol = make("div", null, "ppt-ok-right");
@@ -28294,7 +28335,7 @@
     pinHero.append(pinLeft, pinRight);
     rightCol.appendChild(pinHero);
 
-    const rosterCard = make("div", null, "ppt-ok-roster-card");
+    const rosterCard = make("div", null, "ppt-ok-roster-card is-ok-autofit-pane");
     rosterCard.dataset.pptOkRosterMount = "1";
     rosterCard.dataset.pptOkMod = mod.code;
     rosterCard.dataset.pptOkInteractive = !exp ? "1" : "0";
