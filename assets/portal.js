@@ -2069,8 +2069,23 @@
     return true;
   }
 
-  function downloadHs1AnswerKey16x9Pdf() {
-    const fileName = "RACM303_2569_HS1_Answer_Key_16x9.pdf";
+  function isHsModuleAnswerKeyPdfUnlocked(modIdOpt) {
+    const cleanMod = /^HS[1-6]$/i.test(String(modIdOpt || "")) ? String(modIdOpt).toUpperCase() : "HS1";
+    if (ROLE === "faculty") return true;
+    const rel = HSD_KEY && Array.isArray(HSD_KEY.releasedModules) ? HSD_KEY.releasedModules : [];
+    return rel.includes(cleanMod);
+  }
+
+  function downloadHsModuleAnswerKey16x9Pdf(modIdOpt) {
+    const raw = String(modIdOpt || "").toUpperCase();
+    const cleanMod = /^HS[1-6]$/.test(raw) ? raw : (/^HS[1-6]$/.test(String(getActiveSlideSessionMod() || "")) ? getActiveSlideSessionMod() : "HS1");
+    if (!isHsModuleAnswerKeyPdfUnlocked(cleanMod)) {
+      const mObj = (HSD_DATA.modules || []).find((m) => m.id === cleanMod);
+      const whenTxt = (mObj && (mObj.unlockAfterLabel || mObj.unlockShortLabel || mObj.scheduleDate)) || "หลังจบคาบเรียน";
+      window.alert(`🔒 เฉลย Answer Key คาบ ${cleanMod} (RACM303_2569_${cleanMod}_Answer_Key_16x9.pdf) จะเปิดให้ดาวน์โหลดหลังจบคาบอภิปราย (${whenTxt})`);
+      return false;
+    }
+    const fileName = `RACM303_2569_${cleanMod}_Answer_Key_16x9.pdf`;
     const href = `exports/pdf/${fileName}`;
     const a = document.createElement("a");
     a.href = href;
@@ -2079,6 +2094,10 @@
     a.click();
     setTimeout(() => a.remove(), 400);
     return true;
+  }
+
+  function downloadHs1AnswerKey16x9Pdf() {
+    return downloadHsModuleAnswerKey16x9Pdf("HS1");
   }
 
   function mountHs1AnswerKey16x9FullBleedDOM(opts) {
@@ -14116,19 +14135,21 @@
             switchTab("hs-discussion");
           }
         },
-        {
-          uid: "course:hs1-ak-pdf",
-          icoCls: "is-pdf",
-          icoTxt: "PDF",
-          fileName: "RACM303_2569_HS1_Answer_Key_16x9.pdf",
-          kicker: "🔓 ไฟล์ PDF เฉลย Answer Key คาบ HS1 (16:9)",
-          headCls: "is-full",
-          title: "เฉลยแนวคำตอบมาตรฐาน + Essential Frameworks & Key Takeaways คาบ HS1 (.pdf)",
-          subDesc: "รวมโจทย์ไฮไลต์หลักฐาน แผนภาพ DoH Diagram Key เกณฑ์คะแนน 10 Essential Frameworks และ Key Takeaways #1–#6 (31 หน้า 16:9)",
-          chipLabel: "⬇ ดาวน์โหลด Answer Key HS1",
-          meta: "31 หน้า · 16:9",
-          onOpen: () => downloadHs1AnswerKey16x9Pdf()
-        },
+        ...(HSD_DATA.modules || [])
+          .filter((m) => isHsModuleAnswerKeyPdfUnlocked(m.code))
+          .map((m) => ({
+            uid: `course:${m.code.toLowerCase()}-ak-pdf`,
+            icoCls: "is-pdf",
+            icoTxt: "KEY",
+            fileName: `RACM303_2569_${m.code}_Answer_Key_16x9.pdf`,
+            kicker: `🔓 ไฟล์ PDF เฉลย Answer Key คาบ ${m.code} (16:9)`,
+            headCls: "is-full",
+            title: `เฉลยแนวคำตอบมาตรฐาน & Key Takeaways คาบ ${m.code}: ${m.title} (.pdf)`,
+            subDesc: `รวมโจทย์ไฮไลต์หลักฐาน เฉลยแนวคำตอบมาตรฐาน เกณฑ์การให้คะแนน และ Key Takeaways ประจำคาบ ${m.code} (16:9)`,
+            chipLabel: `⬇ ดาวน์โหลด Answer Key ${m.code}`,
+            meta: `${m.code} · 16:9`,
+            onOpen: () => downloadHsModuleAnswerKey16x9Pdf(m.code)
+          })),
         {
           uid: "course:disc-pdf",
           icoCls: "is-pdf",
@@ -18079,11 +18100,18 @@
           ev.stopPropagation();
           downloadHsBlankWorksheet16x9Pdf(curMod.id, 0);
         });
-        const allPdfBtn = make("button", "⬇ PDF พร้อม Answer Key HS1", "hs-atv-mini-dl");
+        const miniAkUnlocked = isHsModuleAnswerKeyPdfUnlocked(curMod.code);
+        const allPdfBtn = make(
+          "button",
+          miniAkUnlocked
+            ? `⬇ PDF พร้อม Answer Key ${curMod.code}`
+            : `🔒 Answer Key ${curMod.code} (${curMod.unlockShortLabel || "หลังจบคาบ"})`,
+          "hs-atv-mini-dl"
+        );
         allPdfBtn.type = "button";
         allPdfBtn.addEventListener("click", (ev) => {
           ev.stopPropagation();
-          downloadHs1AnswerKey16x9Pdf();
+          downloadHsModuleAnswerKey16x9Pdf(curMod.code);
         });
         foot.append(scrollBtn, pdfBtn, allPdfBtn);
       } else if (step.key === "vdo-lecture") {
@@ -19228,9 +19256,16 @@
     dlPdfModBtn.type = "button";
     dlPdfModBtn.addEventListener("click", () => downloadHsBlankWorksheet16x9Pdf(curMod.id, 0));
 
-    const dlPdfAllBtn = make("button", "⬇ PDF พร้อม Answer Key คาบ HS1 (16:9)", "tv-hero-btn is-glass");
+    const heroAkUnlocked = isHsModuleAnswerKeyPdfUnlocked(curMod.code);
+    const dlPdfAllBtn = make(
+      "button",
+      heroAkUnlocked
+        ? `⬇ PDF พร้อม Answer Key คาบ ${curMod.code} (16:9)`
+        : `🔒 PDF พร้อม Answer Key คาบ ${curMod.code} (เปิด ${curMod.unlockShortLabel || "หลังจบคาบ"})`,
+      "tv-hero-btn is-glass"
+    );
     dlPdfAllBtn.type = "button";
-    dlPdfAllBtn.addEventListener("click", () => downloadHs1AnswerKey16x9Pdf());
+    dlPdfAllBtn.addEventListener("click", () => downloadHsModuleAnswerKey16x9Pdf(curMod.code));
 
     const backSlideBtn = make(
       "button",
@@ -32412,9 +32447,21 @@
       }
 
       const secHead = make("div", null, "gdrive-section-head");
-      const dlCentralAllBtn = make("button", "⬇ PDF พร้อม Answer Key & Key Takeaway คาบ HS1 (16:9)", "btn sm teal");
+      const effHdrMod = /^HS[1-6]$/.test(String(activeDeckMod || ""))
+        ? activeDeckMod
+        : matchedMods[0]
+        ? matchedMods[0].code
+        : "HS1";
+      const hdrAkUnlocked = isHsModuleAnswerKeyPdfUnlocked(effHdrMod);
+      const dlCentralAllBtn = make(
+        "button",
+        hdrAkUnlocked
+          ? `⬇ PDF พร้อม Answer Key & Key Takeaway คาบ ${effHdrMod} (16:9)`
+          : `🔒 PDF พร้อม Answer Key คาบ ${effHdrMod} (เปิด ${((HSD_DATA.modules || []).find((x) => x.id === effHdrMod) || {}).unlockShortLabel || "หลังจบคาบ"})`,
+        "btn sm teal"
+      );
       dlCentralAllBtn.type = "button";
-      dlCentralAllBtn.addEventListener("click", () => downloadHs1AnswerKey16x9Pdf());
+      dlCentralAllBtn.addEventListener("click", () => downloadHsModuleAnswerKey16x9Pdf(effHdrMod));
       secHead.append(
         make(
           "span",
@@ -32489,6 +32536,17 @@
             downloadHsBlankWorksheet16x9Pdf(m.id, 0);
           });
           qActs.appendChild(dlBtn);
+          const cardAkUnlocked = isHsModuleAnswerKeyPdfUnlocked(m.code);
+          const dlKeyBtn = make("button", cardAkUnlocked ? "⬇ Key" : "🔒 Key", "gdrive-icon-act-btn is-mini-badge");
+          dlKeyBtn.type = "button";
+          dlKeyBtn.title = cardAkUnlocked
+            ? `ดาวน์โหลด PDF พร้อม Answer Key & Key Takeaways คาบ ${m.code} (16:9)`
+            : `เฉลย Answer Key คาบ ${m.code} จะเปิดหลังจบคาบ (${m.unlockAfterLabel || m.scheduleDate || ""})`;
+          dlKeyBtn.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            downloadHsModuleAnswerKey16x9Pdf(m.code);
+          });
+          qActs.appendChild(dlKeyBtn);
           cHead.appendChild(qActs);
           card.appendChild(cHead);
 
@@ -34052,12 +34110,21 @@
       statusMsg.textContent = `✓ ดาวน์โหลดไฟล์ .PDF (16:9 Optimal Font Blank Worksheet) เรียบร้อยแล้ว!`;
     });
 
-    const btnPdfCentralAll = make("button", "⬇ PDF พร้อม Answer Key & Key Takeaway คาบ HS1 (16:9)", "btn teal");
+    const actExportMod = /^HS[1-6]$/.test(String(getActiveSlideSessionMod() || "")) ? getActiveSlideSessionMod() : "HS1";
+    const btnPdfCentralAll = make(
+      "button",
+      isHsModuleAnswerKeyPdfUnlocked(actExportMod)
+        ? `⬇ PDF พร้อม Answer Key & Key Takeaway คาบ ${actExportMod} (16:9)`
+        : `🔒 PDF พร้อม Answer Key คาบ ${actExportMod} (เปิดหลังจบคาบ)`,
+      "btn teal"
+    );
     btnPdfCentralAll.type = "button";
     btnPdfCentralAll.dataset.expActionPdfAll = "1";
     btnPdfCentralAll.addEventListener("click", () => {
-      downloadHs1AnswerKey16x9Pdf();
-      statusMsg.textContent = `✓ ดาวน์โหลดไฟล์ PDF พร้อม Answer Key, Essential Frameworks & Key Takeaways คาบ HS1 (16:9) เรียบร้อยแล้ว!`;
+      const targetMod = /^HS[1-6]$/.test(String(getActiveSlideSessionMod() || "")) ? getActiveSlideSessionMod() : "HS1";
+      if (downloadHsModuleAnswerKey16x9Pdf(targetMod)) {
+        statusMsg.textContent = `✓ ดาวน์โหลดไฟล์ PDF พร้อม Answer Key & Key Takeaways คาบ ${targetMod} (16:9) เรียบร้อยแล้ว!`;
+      }
     });
 
     actBtns.append(btnPdfMod, btnPdfCentralAll, btnPrintHandout);
@@ -35055,11 +35122,20 @@
         dlPdfCentralBtn.setAttribute("download", rMeta.centralModulePdfFileName);
 
         rightWrap.append(qrZoomBtn, dlPdfRoomBtn, dlPdfCentralBtn);
-        if (effModForGate === "HS1" && rMeta.hs1AnswerKeyPdfHref) {
-          const dlPdfHs1AkBtn = make("a", "⬇ PDF พร้อม Answer Key HS1 (16:9)", "hsd-drr-btn");
-          dlPdfHs1AkBtn.href = rMeta.hs1AnswerKeyPdfHref;
-          dlPdfHs1AkBtn.setAttribute("download", rMeta.hs1AnswerKeyPdfFileName);
-          rightWrap.appendChild(dlPdfHs1AkBtn);
+        if (/^HS[1-6]$/.test(effModForGate) && rMeta.answerKeyPdfHref) {
+          if (rMeta.answerKeyUnlocked) {
+            const dlPdfModAkBtn = make("a", `⬇ PDF พร้อม Answer Key ${effModForGate} (16:9)`, "hsd-drr-btn");
+            dlPdfModAkBtn.href = rMeta.answerKeyPdfHref;
+            dlPdfModAkBtn.setAttribute("download", rMeta.answerKeyPdfFileName);
+            rightWrap.appendChild(dlPdfModAkBtn);
+          } else {
+            const lockedModAkBtn = make("button", `🔒 Answer Key ${effModForGate} (${rMeta.unlockShortLabel})`, "hsd-drr-btn");
+            lockedModAkBtn.type = "button";
+            lockedModAkBtn.style.opacity = "0.75";
+            lockedModAkBtn.style.cursor = "not-allowed";
+            lockedModAkBtn.addEventListener("click", () => downloadHsModuleAnswerKey16x9Pdf(effModForGate));
+            rightWrap.appendChild(lockedModAkBtn);
+          }
         }
         if (ROLE === "student") {
           const leavePortalBtn = make("button", "🚪 ออกจากห้องเรียน", "hsd-drr-btn");
@@ -45014,6 +45090,8 @@
     openHsDiscussion,
     openHsDiscussionRoom,
     downloadHsBlankWorksheet16x9Pdf,
+    isHsModuleAnswerKeyPdfUnlocked,
+    downloadHsModuleAnswerKey16x9Pdf,
     downloadHs1AnswerKey16x9Pdf,
     mountHs1AnswerKey16x9FullBleedDOM,
     openHsDriveFolder: () => openHsGoogleDriveFolder(),
