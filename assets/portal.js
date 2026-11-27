@@ -2046,8 +2046,8 @@
   function downloadHsBlankWorksheet16x9Pdf(modIdOrAll, roomIdOpt) {
     const rawMod = String(modIdOrAll || "").toUpperCase();
     const isAll = rawMod === "ALL" || rawMod === "HS1-HS6";
-    let href = "exports/pdf/RACM303_2569_HS1-HS6_Blank_Worksheet_16x9.pdf";
-    let fileName = "RACM303_2569_HS1-HS6_Blank_Worksheet_16x9.pdf";
+    let href = "exports/pdf/RACM303_2569_HS1_Answer_Key_16x9.pdf";
+    let fileName = "RACM303_2569_HS1_Answer_Key_16x9.pdf";
     if (!isAll) {
       const cleanMod = /^HS[1-6]$/.test(rawMod) ? rawMod : getActiveSlideSessionMod() || "HS1";
       const rNum = Number(roomIdOpt) || 0;
@@ -14115,6 +14115,19 @@
             if ($("hsdModuleSelect")) $("hsdModuleSelect").value = "ALL";
             switchTab("hs-discussion");
           }
+        },
+        {
+          uid: "course:hs1-ak-pdf",
+          icoCls: "is-pdf",
+          icoTxt: "PDF",
+          fileName: "RACM303_2569_HS1_Answer_Key_16x9.pdf",
+          kicker: "🔓 ไฟล์ PDF เฉลย Answer Key คาบ HS1 (16:9)",
+          headCls: "is-full",
+          title: "เฉลยแนวคำตอบมาตรฐาน + Essential Frameworks & Key Takeaways คาบ HS1 (.pdf)",
+          subDesc: "รวมโจทย์ไฮไลต์หลักฐาน แผนภาพ DoH Diagram Key เกณฑ์คะแนน 10 Essential Frameworks และ Key Takeaways #1–#6 (31 หน้า 16:9)",
+          chipLabel: "⬇ ดาวน์โหลด Answer Key HS1",
+          meta: "31 หน้า · 16:9",
+          onOpen: () => downloadHs1AnswerKey16x9Pdf()
         },
         {
           uid: "course:disc-pdf",
@@ -35042,6 +35055,12 @@
         dlPdfCentralBtn.setAttribute("download", rMeta.centralModulePdfFileName);
 
         rightWrap.append(qrZoomBtn, dlPdfRoomBtn, dlPdfCentralBtn);
+        if (effModForGate === "HS1" && rMeta.hs1AnswerKeyPdfHref) {
+          const dlPdfHs1AkBtn = make("a", "⬇ PDF พร้อม Answer Key HS1 (16:9)", "hsd-drr-btn");
+          dlPdfHs1AkBtn.href = rMeta.hs1AnswerKeyPdfHref;
+          dlPdfHs1AkBtn.setAttribute("download", rMeta.hs1AnswerKeyPdfFileName);
+          rightWrap.appendChild(dlPdfHs1AkBtn);
+        }
         if (ROLE === "student") {
           const leavePortalBtn = make("button", "🚪 ออกจากห้องเรียน", "hsd-drr-btn");
           leavePortalBtn.type = "button";
