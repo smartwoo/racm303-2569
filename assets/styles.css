@@ -43393,10 +43393,22 @@ html[data-theme="dark"] .ppt-ss-menu-select {
   border-color: #64748b;
 }
 
+.ppt-ss-menu-chip.is-accent {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
 html[data-theme="dark"] .ppt-ss-menu-chip {
   background: #1e293b;
   border-color: rgba(255, 255, 255, 0.16);
   color: #e2e8f0;
+}
+
+html[data-theme="dark"] .ppt-ss-menu-chip.is-accent {
+  background: rgba(37, 99, 235, 0.25);
+  border-color: #60a5fa;
+  color: #bfdbfe;
 }
 
 .ppt-ss-menu-end {
@@ -43416,9 +43428,10 @@ html[data-theme="dark"] .ppt-ss-menu-chip {
   background: #b91c1c;
 }
 
-/* 3. Pure Case Scenario Full-Screen Slide Layout */
+/* 3. Pure Case Scenario Full-Screen Slide & Full-Screen Answer Key Layout */
 .ppt-slide-sheet.is-layout-case-scenario .hsd-slide-left,
-.ppt-slide-sheet .hsd-slide-stage.is-layout-case-scenario > .hsd-slide-left {
+.ppt-slide-sheet .hsd-slide-stage.is-layout-case-scenario > .hsd-slide-left,
+.ppt-slide-sheet .hsd-slide-stage.is-layout-key-full > .hsd-slide-right {
   grid-column: 1 / -1 !important;
   grid-row: 1 / -1 !important;
   width: 100% !important;
@@ -43432,6 +43445,46 @@ html[data-theme="dark"] .ppt-ss-menu-chip {
 .ppt-slide-sheet.is-layout-case-scenario .hsd-scen-body p {
   margin-bottom: 0.72em;
 }
+
+/* 4. Multi-Color Interconnected Quote / Sentence Highlighting (1 Quote -> 2..4 Colors) */
+mark.hsd-clue-hl {
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+mark.hsd-clue-hl .hsd-clue-tag + .hsd-clue-tag {
+  margin-left: -1px;
+}
+
+mark.hsd-clue-hl .hsd-clue-tag.is-tag-c1 { background: #2563eb !important; color: #ffffff !important; }
+mark.hsd-clue-hl .hsd-clue-tag.is-tag-c2 { background: #0d9488 !important; color: #ffffff !important; }
+mark.hsd-clue-hl .hsd-clue-tag.is-tag-c3 { background: #d97706 !important; color: #ffffff !important; }
+mark.hsd-clue-hl .hsd-clue-tag.is-tag-c4 { background: #7c3aed !important; color: #ffffff !important; }
+mark.hsd-clue-hl .hsd-clue-tag.is-tag-c5 { background: #e11d48 !important; color: #ffffff !important; }
+mark.hsd-clue-hl .hsd-clue-tag.is-tag-c6 { background: #059669 !important; color: #ffffff !important; }
+
+mark.hsd-clue-hl.is-multi-hl {
+  border-bottom: none !important;
+  padding-bottom: 3px !important;
+  background-color: transparent !important;
+  background-image: var(--multi-hl-line), var(--multi-hl-bg) !important;
+  background-size: 100% 3px, 100% 100% !important;
+  background-position: 0 100%, 0 0 !important;
+  background-repeat: no-repeat !important;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+html[data-theme="dark"] mark.hsd-clue-hl.is-multi-hl {
+  color: #f8fafc !important;
+}
+
+mark.hsd-clue-hl.is-focused[data-active-focus-c="1"] { box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.55) !important; }
+mark.hsd-clue-hl.is-focused[data-active-focus-c="2"] { box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.55) !important; }
+mark.hsd-clue-hl.is-focused[data-active-focus-c="3"] { box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.55) !important; }
+mark.hsd-clue-hl.is-focused[data-active-focus-c="4"] { box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.55) !important; }
+mark.hsd-clue-hl.is-focused[data-active-focus-c="5"] { box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.55) !important; }
+mark.hsd-clue-hl.is-focused[data-active-focus-c="6"] { box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.55) !important; }
 
 /* 4. Key Takeaway Synthesized Framework Diagram Visual Stage (Preceding Narrative Takeaway Slide) */
 .ppt-concept-summary-stage.is-framework-visual-stage {
@@ -43607,6 +43660,81 @@ html[data-theme="dark"] .ppt-case-cover-title {
 
 
 
+
+/* ==========================================================================
+   HS1 Case 1: Center Health Status (ภาวะอ้วนในเด็ก) Highlight & Evidence Link
+   ========================================================================== */
+.doh-key-outcome-box.is-highlighted-outcome {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 9px 6px;
+  border-radius: 12px;
+  background: rgba(255, 241, 242, 0.94);
+  border: 1.5px solid rgba(225, 29, 72, 0.45);
+  box-shadow: 0 3px 10px rgba(225, 29, 72, 0.09);
+  cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.14s ease, opacity 0.14s ease, background 0.14s ease;
+}
+
+html[data-theme="dark"] .doh-key-outcome-box.is-highlighted-outcome {
+  background: rgba(136, 19, 55, 0.34);
+  border-color: rgba(251, 113, 133, 0.52);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.32);
+}
+
+.doh-key-outcome-box.is-highlighted-outcome:hover,
+.doh-key-outcome-box.is-highlighted-outcome.is-focused {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 2.5px rgba(225, 29, 72, 0.62), 0 5px 14px rgba(225, 29, 72, 0.18);
+}
+
+.doh-key-outcome-box.is-highlighted-outcome.is-dimmed {
+  opacity: 0.34;
+}
+
+.doh-key-outcome-pill-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 1px;
+}
+
+.doh-key-outcome-title mark.is-outcome-title-hl {
+  font-size: inherit;
+  font-weight: 900;
+  color: #881337;
+  padding: 1px 6px 1px 4px;
+  border-radius: 5px;
+}
+
+html[data-theme="dark"] .doh-key-outcome-title mark.is-outcome-title-hl {
+  color: #ffe4e6;
+}
+
+.doh-key-outcome-sub mark.is-outcome-sub-hl {
+  font-size: inherit;
+  font-weight: 700;
+  color: #9f1239;
+  background: rgba(255, 228, 230, 0.78);
+  padding: 0.5px 5px;
+  border-radius: 4px;
+  border-bottom-width: 1.5px;
+}
+
+html[data-theme="dark"] .doh-key-outcome-sub mark.is-outcome-sub-hl {
+  color: #fecdd3;
+  background: rgba(225, 29, 72, 0.24);
+}
+
+.ppt-key-row-hide-btn.is-outcome-hide {
+  font-size: 9.5px !important;
+  padding: 1px 5px !important;
+  line-height: 1.2 !important;
+}
 
 /* ==========================================================================
    Key Takeaway Analytical Matrix Stage (4 Levels x 3 Elements + Citations)
