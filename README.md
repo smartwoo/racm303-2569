@@ -28,7 +28,7 @@
 - **HS4 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS4_health_behaviour_concise_summary.md](lessons/HS4_health_behaviour_concise_summary.md) — พฤติกรรมสุขภาพ (Health Behavior) การปรับเปลี่ยนพฤติกรรม (Behavior Change) และการสร้างเสริมสุขภาพ (Health Promotion)
 - **HS5 (ฉบับสรุปกระชับ + 8 อินโฟกราฟิก):** [lessons/HS5_primary_health_care_concise_summary.md](lessons/HS5_primary_health_care_concise_summary.md) — ระบบสุขภาพปฐมภูมิ (Primary Health Care) และบริการปฐมภูมิ (Primary Care)
 - **HS6 (ฉบับสรุปกระชับ + 5 อินโฟกราฟิก):** [lessons/HS6_health_insurance_concise_summary.md](lessons/HS6_health_insurance_concise_summary.md) — การประกันสุขภาพ (Health Insurance) หลักประกันสุขภาพถ้วนหน้า (Universal Health Coverage) และกลไกการจ่ายเงินแก่ผู้ให้บริการ (Provider Payment Methods)
-- *(สำหรับเอกสารคำสอนฉบับเต็มครบทั้ง `HS1–HS6`, สมุดแบบฝึกหัด `Workbook`, บัตรคำศัพท์ `111 คำ` และโจทย์ฝึกคิด `60 ข้อ` สามารถเปิดอ่านและฝึกทำแบบโต้ตอบได้บนเว็บพอร์ทัลในแท็บ **บทเรียน HS1–HS6 & ฉบับย่อ** และ **ทบทวนเร็ว · คำศัพท์ · โจทย์**)*
+- *(สำหรับเอกสารคำสอนฉบับเต็มครบทั้ง `HS1–HS6`, สมุดแบบฝึกหัด `Workbook`, บัตรคำศัพท์ `125 คำ` และโจทย์ Self-Quiz ตรงกรอบ Table Spec `42 ข้อ` สามารถเปิดอ่านและฝึกทำแบบโต้ตอบได้บนเว็บพอร์ทัลในแท็บ **บทเรียน HS1–HS6 & ฉบับย่อ** และ **ทบทวนเร็ว · คำศัพท์ · โจทย์**)*
 
 ### 3. ห้องเรียนออนไลน์ Zoom ประจำรายวิชา
 | วัน-เวลา | คาบเรียน | ลิงก์ Zoom | Meeting ID | Passcode |
