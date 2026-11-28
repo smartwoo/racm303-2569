@@ -1,8 +1,8 @@
 window.RACM_HS_DISCUSSION_DATA = {
-  "updatedAt": "2026-11-24",
+  "updatedAt": "2026-11-28",
   "totalModules": 6,
-  "totalCases": 12,
-  "totalSubQuestions": 23,
+  "totalCases": 13,
+  "totalSubQuestions": 24,
   "modules": [
     {
       "id": "HS1",
@@ -16,7 +16,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "docId": "HS1",
       "conciseDocId": "HS1-CONCISE",
       "wbDocId": "HS1-WB",
-      "summaryFocus": "ฝึกประยุกต์ใช้กรอบแนวคิดปัจจัยกำหนดสุขภาพสร้างแผนภาพความเชื่อมโยงเชิงระบบจากกรณีภาวะอ้วนในเด็ก (เคสที่ 1) วิเคราะห์ปัจจัยกำหนดสุขภาพทางสังคมตามกรอบ WHO CSDH และระดับการป้องกันโรคจากกรณีการคัดกรองสารเสพติดในคลินิกฝากครรภ์ (เคสที่ 2) และเชื่อมสู่นิยามสุขภาพ 4 มิติ ปัจจัยกำหนดสุขภาพ และการจำแนกระดับการป้องกันโรคทั้ง 4 ระดับของคนวัยทำงาน (เคสที่ 3)",
+      "summaryFocus": "ฝึกประยุกต์ใช้กรอบแนวคิดปัจจัยกำหนดสุขภาพสร้างแผนภาพความเชื่อมโยงเชิงระบบจากกรณีเด็กชายวัยเรียนในชุมชนเมือง (เคสที่ 1) วิเคราะห์ปัจจัยกำหนดสุขภาพทางสังคมตามกรอบ WHO CSDH และระดับการป้องกันโรคในคลินิกฝากครรภ์ (เคสที่ 2) เชื่อมสู่นิยามสุขภาพ 4 มิติ ปัจจัยกำหนดสุขภาพ และการจำแนกระดับการป้องกันโรคทั้ง 4 ระดับของคนวัยทำงาน (เคสที่ 3)",
       "unlockAfterIso": "2026-11-26T12:00:00+07:00",
       "unlockAfterLabel": "วันพฤหัสบดีที่ 26 พฤศจิกายน 2569 เวลา 12.00 น.",
       "unlockShortLabel": "พฤ. 26 พ.ย. · 12.00 น."
@@ -33,7 +33,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "docId": "HS2",
       "conciseDocId": "HS2-CONCISE",
       "wbDocId": "HS2-WB",
-      "summaryFocus": "ฝึกคิดเชิงระบบในฐานะผู้บริหารโรงพยาบาลชุมชนด้วยกรอบ WHO 6 Building Blocks และฝึกเปรียบเทียบการเลือกรูปแบบการดูแล (Models of Care: Acute vs Chronic/Ambulatory Care) ตามกรอบ WHAT–WHY–HOW (6W)",
+      "summaryFocus": "ฝึกคิดเชิงระบบในฐานะผู้บริหารโรงพยาบาลชุมชนด้วยกรอบ WHO 6 Building Blocks (เคสที่ 1) และฝึกวิเคราะห์เลือกรูปแบบการดูแลสุขภาพ (Models of Care) ให้สอดคล้องกับสภาวะผู้ป่วย เป้าหมาย การบูรณาการบริการ การวางแผนตัดสินใจ และการประเมินผลลัพธ์ (เคสที่ 2 และเคสที่ 3)",
       "unlockAfterIso": "2026-11-30T12:00:00+07:00",
       "unlockAfterLabel": "วันจันทร์ที่ 30 พฤศจิกายน 2569 เวลา 12.00 น.",
       "unlockShortLabel": "จ. 30 พ.ย. · 12.00 น."
@@ -50,7 +50,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "docId": "HS3",
       "conciseDocId": "HS3-CONCISE",
       "wbDocId": "",
-      "summaryFocus": "ประเมินจุดแข็งและช่องว่างของนโยบายสุขภาพระดับประเทศ (Cancer Anywhere และ Palliative Care) ด้วยกรอบคุณลักษณะอันพึงประสงค์ EQESaRR ทั้งองค์ประกอบหลักและองค์ประกอบย่อยอย่างมีหลักฐานรองรับ",
+      "summaryFocus": "ประเมินจุดแข็งและช่องว่างของนโยบายและระบบบริการสุขภาพด้วยกรอบคุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ (EQESaRR) ทั้งคุณลักษณะหลักและคุณลักษณะย่อยอย่างมีหลักฐานจากสถานการณ์รองรับ (2 กรณีศึกษา)",
       "unlockAfterIso": "2026-11-30T17:00:00+07:00",
       "unlockAfterLabel": "วันจันทร์ที่ 30 พฤศจิกายน 2569 เวลา 17.00 น.",
       "unlockShortLabel": "จ. 30 พ.ย. · 17.00 น."
@@ -67,7 +67,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "docId": "HS4",
       "conciseDocId": "HS4-CONCISE",
       "wbDocId": "",
-      "summaryFocus": "ก้าวข้ามกับดักการสอนสุขศึกษาแบบให้ความรู้เพียงอย่างเดียว สู่การวิเคราะห์ปัจจัยกำหนดสุขภาพเชิงพาณิชย์ (CDoH) กลไกพฤติกรรมตามตัวแบบ COM-B และกลยุทธ์การสร้างเสริมสุขภาพ 5 ด้านตามกฎบัตรออตตาวา",
+      "summaryFocus": "วิเคราะห์พฤติกรรมสุขภาพ กลไกการปรับเปลี่ยนพฤติกรรมตามตัวแบบ COM-B และกลยุทธ์การสร้างเสริมสุขภาพ 5 ด้านตามกฎบัตรออตตาวา (Ottawa Charter) จากกรณีศึกษาเกษตรกรไทย",
       "unlockAfterIso": "2026-12-01T12:00:00+07:00",
       "unlockAfterLabel": "วันอังคารที่ 1 ธันวาคม 2569 เวลา 12.00 น.",
       "unlockShortLabel": "อ. 1 ธ.ค. · 12.00 น."
@@ -84,7 +84,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "docId": "HS5",
       "conciseDocId": "HS5-CONCISE",
       "wbDocId": "",
-      "summaryFocus": "แยกแยะระดับของ Primary Care (บริการด่านแรกรายบุคคล 5 คุณลักษณะ) ออกจาก Primary Health Care (ยุทธศาสตร์เชิงระบบทั้งสังคม 3 เสาหลักตามปฏิญญา Astana) ผ่านกรณีศึกษาจริงของโครงการ “สุขภาวะข้างถนน”",
+      "summaryFocus": "วิเคราะห์คุณลักษณะของบริการปฐมภูมิระดับบุคคล 5 ประการ (Primary Care) และองค์ประกอบหลักของระบบสุขภาพปฐมภูมิ (Primary Health Care: PHC) ตามปฏิญญา Astana จากกรณีศึกษาโครงการ “สุขภาวะข้างถนน”",
       "unlockAfterIso": "2026-12-01T17:00:00+07:00",
       "unlockAfterLabel": "วันอังคารที่ 1 ธันวาคม 2569 เวลา 17.00 น.",
       "unlockShortLabel": "อ. 1 ธ.ค. · 17.00 น."
@@ -101,7 +101,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "docId": "HS6",
       "conciseDocId": "HS6-CONCISE",
       "wbDocId": "",
-      "summaryFocus": "วิเคราะห์ข้อมูลติดตาม UHC โลก (SDG 3.8.1 & 3.8.2) ใช้ทฤษฎีการประกันสุขภาพอธิบายช่องว่างความคุ้มครองในตลาดเอกชนและแรงงานนอกระบบ และเปรียบเทียบแรงจูงใจของ FFS, Capitation และ Pay for Performance (P4P)",
+      "summaryFocus": "วิเคราะห์ข้อมูลติดตามความก้าวหน้า UHC โลก (SDG 3.8.1 & 3.8.2) ประยุกต์ใช้ทฤษฎีการประกันสุขภาพวิเคราะห์ช่องว่างความคุ้มครองในตลาดเอกชนและหลักประกันแรงงานนอกระบบ และเปรียบเทียบกลไกการจ่ายเงินแก่ผู้ให้บริการ (FFS · Capitation · P4P)",
       "unlockAfterIso": "2026-12-04T12:00:00+07:00",
       "unlockAfterLabel": "วันศุกร์ที่ 4 ธันวาคม 2569 เวลา 12.00 น.",
       "unlockShortLabel": "ศ. 4 ธ.ค. · 12.00 น."
@@ -112,12 +112,11 @@ window.RACM_HS_DISCUSSION_DATA = {
       "id": "case-hs1-2",
       "caseNumber": 1,
       "module": "HS1",
-      "title": "กรณีศึกษาที่ 1: ภาวะอ้วนในเด็กและการสร้างแผนภาพปัจจัยกำหนดสุขภาพ (Determinants of Health Diagram)",
+      "title": "กรณีศึกษาที่ 1: เด็กชายวัยเรียนในชุมชนเมืองกับการสร้างแผนภาพปัจจัยกำหนดสุขภาพ (Determinants of Health Diagram)",
       "subtitle": "เด็กชายโมโน อายุ 10 ขวบ นักเรียนชั้น ป.5 ในชานกรุงเทพฯ",
       "frameworks": [
         "กรอบแนวคิดปัจจัยกำหนดสุขภาพ (Determinants of Health Framework)",
-        "ความเชื่อมโยงและพลวัตของปัจจัย 3 กลุ่ม (ปัจเจก · สังคมและสิ่งแวดล้อม · ระบบบริการสุขภาพ)",
-        "ปัจจัยเชิงโครงสร้างที่มีอิทธิพลต่อความเหลื่อมล้ำด้านสุขภาพและปัจจัยทางสังคมที่มีผลต่อสุขภาพ (Structural & Intermediary Determinants)"
+        "ความเชื่อมโยงและพลวัตของปัจจัยระดับปัจเจก สังคมสิ่งแวดล้อม ระบบบริการสุขภาพ และปัจจัยเชิงโครงสร้าง"
       ],
       "scenarioBlocks": [
         {
@@ -350,7 +349,7 @@ window.RACM_HS_DISCUSSION_DATA = {
           }
         }
       ],
-      "coverTitle": "เด็กชายโมโนกับภาวะอ้วนในเด็ก"
+      "coverTitle": "เด็กชายโมโนกับการวิเคราะห์ปัจจัยกำหนดสุขภาพ"
     },
     {
       "id": "case-hs1-anc",
@@ -359,9 +358,8 @@ window.RACM_HS_DISCUSSION_DATA = {
       "title": "กรณีศึกษาที่ 2: การวิเคราะห์ปัจจัยกำหนดสุขภาพทางสังคม (Social Determinants of Health) และการคัดกรองสารเสพติดในคลินิกฝากครรภ์ (ANC)",
       "subtitle": "หญิงตั้งครรภ์วัยรุ่น (อายุ 15–18 ปี) ที่มีผลตรวจคัดกรอง Urine Amphetamine Positive ณ โรงพยาบาลชุมชน",
       "frameworks": [
-        "กรอบแนวคิดปัจจัยกำหนดสุขภาพทางสังคม (Conceptual Framework for Action on the Social Determinants of Health: WHO CSDH)",
-        "การจำแนกปัจจัยเชิงโครงสร้างที่มีอิทธิพลต่อความเหลื่อมล้ำด้านสุขภาพ (Structural Determinants) และปัจจัยทางสังคมที่มีผลต่อสุขภาพ (Intermediary Determinants)",
-        "ระดับของการป้องกันโรค (Levels of Disease Prevention — Secondary Prevention / Early Detection)"
+        "กรอบแนวคิดปัจจัยกำหนดสุขภาพทางสังคม (WHO CSDH: Structural & Intermediary Determinants)",
+        "การจำแนกระดับของการป้องกันโรค (Levels of Disease Prevention)"
       ],
       "scenarioBlocks": [
         {
@@ -833,8 +831,7 @@ window.RACM_HS_DISCUSSION_DATA = {
       "subtitle": "นายสมชาย อายุ 40 ปี ผู้จัดการฝ่ายผลิตโรงงานประกอบฮาร์ดดิสก์",
       "frameworks": [
         "นิยามสุขภาพ 4 มิติ (ธรรมนูญว่าด้วยระบบสุขภาพแห่งชาติ พ.ศ. 2552)",
-        "ปัจจัยกำหนดสุขภาพ (Determinants of Health)",
-        "ระดับของการป้องกันโรค 4 ระดับ (Primary – Quaternary Prevention)"
+        "ปัจจัยกำหนดสุขภาพ (Determinants of Health) และระดับของการป้องกันโรค 4 ระดับ (Primary – Quaternary Prevention)"
       ],
       "scenarioBlocks": [
         {
@@ -1442,11 +1439,10 @@ window.RACM_HS_DISCUSSION_DATA = {
       "caseNumber": 1,
       "module": "HS2",
       "title": "กรณีศึกษาที่ 1: วิกฤตภาระงานแพทย์ใช้ทุน (Intern) ลาออก และการวิเคราะห์ปัญหาโรงพยาบาลชุมชนเชิงระบบ",
-      "subtitle": "การสังเคราะห์ปัญหาและทางออกของโรงพยาบาลชุมชนตามกรอบแนวคิด WHO 6 Building Blocks",
+      "subtitle": "การสังเคราะห์ปัญหาและแนวทางแก้ไขของโรงพยาบาลชุมชนตามกรอบแนวคิด WHO 6 Building Blocks",
       "frameworks": [
-        "องค์ประกอบระบบสุขภาพ 6 ด้าน (WHO 6 Building Blocks)",
-        "การคิดเชิงระบบและความเชื่อมโยงข้ามองค์ประกอบ (Systems Thinking)",
-        "การกระจายอำนาจและการจัดบริการปฐมภูมิเครือข่าย รพช.–รพ.สต."
+        "องค์ประกอบหลักของระบบสุขภาพ 6 ด้าน (WHO 6 Building Blocks)",
+        "การคิดเชิงระบบและความเชื่อมโยงระหว่างปัญหาและแนวทางแก้ไขในโรงพยาบาลชุมชน"
       ],
       "scenarioBlocks": [
         {
@@ -1815,12 +1811,11 @@ window.RACM_HS_DISCUSSION_DATA = {
       "id": "case-3",
       "caseNumber": 2,
       "module": "HS2",
-      "title": "กรณีศึกษาที่ 2: การเลือกรูปแบบการดูแลสุขภาพ (Models of Care) เปรียบเทียบสภาวะผู้ป่วย 2 ระยะ (Contrasting Cases)",
-      "subtitle": "วิเคราะห์ความสอดคล้องของ WHAT (Model of Care) · WHY (Patient Conditions) · HOW (Care Management – 6W)",
+      "title": "กรณีศึกษาที่ 2: การเลือกรูปแบบการดูแลสุขภาพ (Models of Care) เปรียบเทียบสภาวะผู้ป่วย 2 ระยะ",
+      "subtitle": "วิเคราะห์ความสอดคล้องของ WHAT (Model of Care) · WHY (Patient Conditions) · HOW (Care Delivery Approach)",
       "frameworks": [
         "รูปแบบการดูแลสุขภาพตามความต่อเนื่องของการดูแล (Models of Care)",
-        "กรอบการออกแบบการจัดบริการ 6W (Why, What, Where, Who, Whom, How)",
-        "Acute Care vs Chronic / Ambulatory & Rehabilitative Care"
+        "การวิเคราะห์ความสอดคล้องของสภาวะผู้ป่วย เป้าหมาย และแนวทางการจัดบริการดูแล (WHAT · WHY · HOW)"
       ],
       "scenarioBlocks": [
         {
@@ -1989,15 +1984,278 @@ window.RACM_HS_DISCUSSION_DATA = {
       "coverTitle": "การเลือกรูปแบบการดูแลผู้ป่วย 2 ระยะ (Models of Care)"
     },
     {
+      "id": "case-hs2-3",
+      "caseNumber": 3,
+      "module": "HS2",
+      "title": "กรณีศึกษาที่ 3: การวิเคราะห์เปรียบเทียบรูปแบบการดูแลสุขภาพในผู้ป่วยที่มีความต้องการดูแลต่อเนื่อง 2 กรณี",
+      "subtitle": "วิเคราะห์เปรียบเทียบรูปแบบการดูแล เป้าหมาย การบูรณาการบริการ การวางแผนตัดสินใจ จุดเริ่มต้น และการประเมินผลลัพธ์",
+      "frameworks": [
+        "รูปแบบการดูแลสุขภาพตลอดความต่อเนื่องของการดูแล (Models of Care Across the Care Continuum)",
+        "การบูรณาการบริการ กระบวนการวางแผนตัดสินใจ และการประเมินผลลัพธ์ที่ยึดผู้ป่วยและครอบครัวเป็นศูนย์กลาง"
+      ],
+      "scenarioBlocks": [
+        {
+          "type": "callout",
+          "title": "ผู้ป่วยรายที่ 1",
+          "text": "คุณยายวัย 85 ปี มีภาวะสมองเสื่อมและมีประวัติกระดูกสะโพกหักเมื่อ 2 ปีก่อน ทำให้มีข้อจำกัดในการดูแลตนเองและต้องใช้รถเข็นเป็นส่วนใหญ่ ปัจจุบันอาศัยอยู่กับลูกสาวซึ่งเป็นผู้ดูแลหลัก โดยมีทีมสุขภาพจากศูนย์บริการสาธารณสุขใกล้บ้านแวะมาเยี่ยมเป็นประจำเพื่อประเมินความสามารถในการทำกิจวัตรประจำวัน (ADL) ให้คำแนะนำด้านโภชนาการ และทำกายภาพบำบัดเพื่อคงสภาพการทำงานของกล้ามเนื้อ นอกจากนี้ยังมีอาสาสมัครจากชมรมผู้สูงอายุในชุมชนแวะมาพูดคุยเพื่อคลายเหงาเป็นครั้งคราว"
+        },
+        {
+          "type": "callout",
+          "title": "ผู้ป่วยรายที่ 2",
+          "text": "ชายวัย 60 ปี ได้รับการวินิจฉัยว่าเป็นมะเร็งปอดระยะลุกลามเมื่อ 6 เดือนก่อน และยังคงเข้ารับการรักษาด้วยเคมีบำบัดเพื่อชะลอการเติบโตของโรค ควบคู่ไปกับการรักษามะเร็งโดยตรง ทีมแพทย์และพยาบาลได้ให้ความสำคัญเป็นพิเศษกับการจัดการอาการต่าง ๆ ที่รบกวนคุณภาพชีวิตของผู้ป่วย เช่น อาการปวดและอาการหอบเหนื่อย เพื่อให้เขาสามารถใช้ชีวิตประจำวันได้สบายที่สุดเท่าที่จะเป็นไปได้ นอกจากนี้ ยังมีนักสังคมสงเคราะห์เข้ามาพูดคุยกับผู้ป่วยและครอบครัว เพื่อร่วมกันวางแผนการดูแลในอนาคตให้สอดคล้องกับความต้องการและความปรารถนาของผู้ป่วยเอง"
+        }
+      ],
+      "questions": [
+        {
+          "id": "q-hs2-3-compare",
+          "label": "ประเด็นอภิปรายที่ 3.1",
+          "title": "การวิเคราะห์เปรียบเทียบรูปแบบการดูแลของผู้ป่วยทั้งสองรายตามประเด็นคำถามชี้นำ 5 มิติ",
+          "prompt": "โปรดวิเคราะห์สถานการณ์ของผู้ป่วยทั้งสองราย แล้วเติมข้อมูลในตารางเปรียบเทียบด้านล่างให้สมบูรณ์ โดยคำตอบในแต่ละช่องควรอธิบายเหตุผลประกอบและเปรียบเทียบความแตกต่างที่สำคัญของรูปแบบการดูแลทั้งสองอย่างชัดเจน ตามประเด็นคำถามชี้นำทั้ง 5 ประเด็นที่กำหนดให้",
+          "worksheet": {
+            "type": "table",
+            "headers": [
+              "ประเด็นการวิเคราะห์และคำถามชี้นำ",
+              "กรณีผู้ป่วยรายที่ 1 (คุณยายวัย 85 ปี)",
+              "กรณีผู้ป่วยรายที่ 2 (ชายวัย 60 ปี)"
+            ],
+            "rows": [
+              {
+                "rowId": "model",
+                "cells": [
+                  {
+                    "static": "1. Model of Care ที่เหมาะสม\n• รูปแบบการดูแลหลักใดเหมาะสมที่สุดสำหรับผู้ป่วยรายนี้ และเพราะเหตุใด?"
+                  },
+                  {
+                    "inputId": "c2_3_p1_model",
+                    "placeholder": "ระบุชื่อรูปแบบการดูแลและเหตุผลเชื่อมโยงสภาวะผู้ป่วยรายที่ 1…",
+                    "compact": false,
+                    "maxWords": 35,
+                    "maxChars": 200,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤35 คำ)"
+                  },
+                  {
+                    "inputId": "c2_3_p2_model",
+                    "placeholder": "ระบุชื่อรูปแบบการดูแลและเหตุผลเชื่อมโยงสภาวะผู้ป่วยรายที่ 2…",
+                    "compact": false,
+                    "maxWords": 35,
+                    "maxChars": 200,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤35 คำ)"
+                  }
+                ]
+              },
+              {
+                "rowId": "goal",
+                "cells": [
+                  {
+                    "static": "2. เป้าหมายและการบูรณาการบริการ\n• เป้าหมายของการดูแล Care Model นี้คืออะไร และบูรณาการบริการด้านใดเข้าด้วยกัน?"
+                  },
+                  {
+                    "inputId": "c2_3_p1_goal",
+                    "placeholder": "ระบุเป้าหมายหลักและการบูรณาการบริการที่จำเป็นในรายที่ 1…",
+                    "compact": false,
+                    "maxWords": 45,
+                    "maxChars": 240,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤45 คำ)"
+                  },
+                  {
+                    "inputId": "c2_3_p2_goal",
+                    "placeholder": "ระบุเป้าหมายหลักและการบูรณาการเข้ากับการรักษาหลักในรายที่ 2…",
+                    "compact": false,
+                    "maxWords": 45,
+                    "maxChars": 240,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤45 คำ)"
+                  }
+                ]
+              },
+              {
+                "rowId": "plan",
+                "cells": [
+                  {
+                    "static": "3. การวางแผนและการตัดสินใจ\n• กระบวนการวางแผนขับเคลื่อนโดยใครเป็นหลัก และปัจจัยใดสำคัญที่สุดในการตัดสินใจ?"
+                  },
+                  {
+                    "inputId": "c2_3_p1_plan",
+                    "placeholder": "ระบุผู้ร่วมวางแผนหลักและปัจจัยสำคัญในการตัดสินใจของรายที่ 1…",
+                    "compact": false,
+                    "maxWords": 40,
+                    "maxChars": 220,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤40 คำ)"
+                  },
+                  {
+                    "inputId": "c2_3_p2_plan",
+                    "placeholder": "ระบุกระบวนการวางแผนล่วงหน้าและบทบาทผู้ป่วยในรายที่ 2…",
+                    "compact": false,
+                    "maxWords": 40,
+                    "maxChars": 220,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤40 คำ)"
+                  }
+                ]
+              },
+              {
+                "rowId": "time",
+                "cells": [
+                  {
+                    "static": "4. จุดเริ่มต้นและความต่อเนื่อง\n• ควรเริ่มต้นที่จุดใดในเส้นทางการเจ็บป่วย และมีความต่อเนื่องกับการรักษาหลักอย่างไร?"
+                  },
+                  {
+                    "inputId": "c2_3_p1_time",
+                    "placeholder": "ระบุจุดเริ่มต้นและกรอบเวลาความต่อเนื่องในรายที่ 1…",
+                    "compact": false,
+                    "maxWords": 35,
+                    "maxChars": 190,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤35 คำ)"
+                  },
+                  {
+                    "inputId": "c2_3_p2_time",
+                    "placeholder": "ระบุจุดเริ่มต้นและความต่อเนื่องควบคู่การรักษาหลักในรายที่ 2…",
+                    "compact": false,
+                    "maxWords": 35,
+                    "maxChars": 190,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤35 คำ)"
+                  }
+                ]
+              },
+              {
+                "rowId": "eval",
+                "cells": [
+                  {
+                    "static": "5. การประเมินผลลัพธ์\n• ประเมินความสำเร็จจากผลลัพธ์ในมิติใดเป็นสำคัญเพื่อสะท้อนมุมมองผู้ป่วยและครอบครัว?"
+                  },
+                  {
+                    "inputId": "c2_3_p1_eval",
+                    "placeholder": "ระบุตัวชี้วัดความสำเร็จทั้งฝั่งผู้ป่วยและผู้ดูแลหลักในรายที่ 1…",
+                    "compact": false,
+                    "maxWords": 45,
+                    "maxChars": 240,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤45 คำ)"
+                  },
+                  {
+                    "inputId": "c2_3_p2_eval",
+                    "placeholder": "ระบุตัวชี้วัดความสำเร็จด้านอาการและความปรารถนาผู้ป่วยในรายที่ 2…",
+                    "compact": false,
+                    "maxWords": 45,
+                    "maxChars": 240,
+                    "maxLines": 3,
+                    "a4BoxLabel": "กรอบ A4 กระชับ (≤45 คำ)"
+                  }
+                ]
+              }
+            ],
+            "colWidths": [
+              "28%",
+              "36%",
+              "36%"
+            ]
+          },
+          "conceptSummarySlide": {
+            "id": "cs-hs2-3-ltc-pc",
+            "takeawayNumber": 3,
+            "badge": "ขั้น ⑦ Key Takeaway #3",
+            "studentBadge": "Key Takeaway #3",
+            "shortLabel": "⑦ Key Takeaway #3",
+            "studentShortLabel": "Key Takeaway #3",
+            "kicker": "Key Takeaway #3",
+            "title": "การดูแลระยะยาวเทียบกับการดูแลแบบประคับประคอง",
+            "enTitle": "Long-Term Care vs. Early Integrated Palliative Care",
+            "sourceNote": "WHO Integrated Continuum of Long-Term Care (2021) · Temel et al. (2010)",
+            "frameworkSynthesisSlides": [
+              {
+                "id": "cs-hs2-3-fw-ltc",
+                "kicker": "Key Takeaway #3 · Framework (1/2)",
+                "badge": "ขั้น ⑤ Key Takeaway #3 (WHO Long-Term Care)",
+                "studentBadge": "Key Takeaway #3 · WHO Long-Term Care",
+                "shortLabel": "⑤ ภาพ LTC",
+                "studentShortLabel": "Framework LTC",
+                "stageBtnLabel": "⑤ ภาพ LTC",
+                "studentStageBtnLabel": "🖼 ภาพ LTC",
+                "title": "ความต่อเนื่องบูรณาการของการดูแลระยะยาวเพื่อคงความสามารถในการทำหน้าที่",
+                "enTitle": "WHO Integrated Continuum of Long-Term Care (WHO, 2021)",
+                "sourceNote": "WHO Framework for Countries to Achieve an Integrated Continuum of Long-Term Care (2021)",
+                "imageSrc": "assets/images/hs2-concise-fig12.jpg",
+                "imageAlt": "WHO Public Health Framework for Healthy Ageing and Integrated Continuum of Long-Term Care",
+                "caption": "เมื่อความสามารถภายในตัวบุคคล (Intrinsic Capacity) ลดลงจนเกิดภาวะพึ่งพิง ระบบการดูแลระยะยาว (Long-Term Care) ต้องบูรณาการบริการสุขภาพปฐมภูมิเข้ากับบริการทางสังคมและสนับสนุนผู้ดูแลหลัก เพื่อยกระดับความสามารถในการใช้ชีวิตจริง (Functional Ability)",
+                "nextBtnLabel": "ภาพ Early Palliative Care (Slide ถัดไป)"
+              },
+              {
+                "id": "cs-hs2-3-fw-pc",
+                "kicker": "Key Takeaway #3 · Framework (2/2)",
+                "badge": "ขั้น ⑥ Key Takeaway #3 (Early Palliative Care)",
+                "studentBadge": "Key Takeaway #3 · Early Palliative Care",
+                "shortLabel": "⑥ ภาพ Palliative",
+                "studentShortLabel": "Framework Palliative",
+                "stageBtnLabel": "⑥ ภาพ Palliative",
+                "studentStageBtnLabel": "🖼 ภาพ Palliative",
+                "title": "การดูแลแบบประคับประคองบูรณาการตั้งแต่ระยะแรกควบคู่การรักษาหลัก",
+                "enTitle": "Modern Early Integrated Palliative Care & Illness Trajectories",
+                "sourceNote": "Temel et al. (2010) NEJM · Murray et al. (2005) BMJ",
+                "imageSrc": "assets/images/hs2-concise-fig13.jpg",
+                "imageAlt": "Evolution of the Palliative Care Continuum and Three Classic Illness Trajectories",
+                "caption": "การดูแลประคับประคองยุคใหม่เริ่มทันทีเมื่อวินิจฉัยโรคที่คุกคามชีวิต (ไม่ต้องรอระยะสุดท้ายหรือหยุดเคมีบำบัด) โดยบูรณาการการจัดการอาการรบกวนและ Advance Care Planning (ACP) ควบคู่กับการรักษาจำเพาะต่อโรค",
+                "nextBtnLabel": "สรุปเปรียบเทียบ 4 มิติ (Slide ถัดไป)"
+              }
+            ],
+            "coreTerm": "“Long-Term Care เทียบกับ Palliative Care”",
+            "coreDefinitionLead": "แยกแยะด้วยเงื่อนไขตั้งต้น เป้าหมายหลัก และการบูรณาการบริการ โดย LTC มุ่งคงความสามารถในการทำกิจวัตร (ADL) ในภาวะพึ่งพิงยืดเยื้อ ส่วน Palliative Care มุ่งบรรเทาความทุกข์ทรมานเพื่อคุณภาพชีวิตในโรคคุกคามชีวิต",
+            "coreDefinitionQualifier": "และเริ่มได้ตั้งแต่ระยะแรกควบคู่กับการรักษาจำเพาะต่อโรค",
+            "coreDefinition": "แยกแยะด้วยเงื่อนไขตั้งต้น เป้าหมายหลัก และการบูรณาการบริการ โดย Long-Term Care มุ่งคงความสามารถในการทำกิจวัตร (ADL) ในภาวะพึ่งพิงยืดเยื้อ ส่วน Palliative Care มุ่งบรรเทาความทุกข์ทรมานเพื่อคุณภาพชีวิตในโรคคุกคามชีวิต และเริ่มได้ตั้งแต่ระยะแรกควบคู่กับการรักษาจำเพาะต่อโรค",
+            "dimensions": [
+              {
+                "num": "01",
+                "thTitle": "เงื่อนไขตั้งต้นและจุดเริ่มต้น",
+                "enTitle": "Trigger & Starting Point",
+                "definition": "LTC เริ่มเมื่อเกิดภาวะพึ่งพิงและดูแลต่อเนื่องระยะยาว ส่วน Palliative Care เริ่มตั้งแต่แรกวินิจฉัยโรคคุกคามชีวิตควบคู่กับการรักษาหลัก",
+                "anchor": "ข้อ 1 & 4: สมองเสื่อม/สะโพกหักมีภาวะพึ่งพิง vs มะเร็งระยะลุกลามที่ยังรับเคมีบำบัด"
+              },
+              {
+                "num": "02",
+                "thTitle": "เป้าหมายและการบูรณาการบริการ",
+                "enTitle": "Core Goal & Service Integration",
+                "definition": "LTC บูรณาการบริการสุขภาพ (กายภาพ/โภชนาการ) กับบริการทางสังคม (อาสาสมัคร/ADL) แบบองค์รวม ส่วน Palliative บูรณาการการลดอาการปวด/เหนื่อยเข้ากับการรักษาโรค",
+                "anchor": "ข้อ 2: Functional Capacity & Holistic Care vs Symptom Management & QoL"
+              },
+              {
+                "num": "03",
+                "thTitle": "การวางแผนและการตัดสินใจร่วม",
+                "enTitle": "Planning & Decision-Making",
+                "definition": "LTC ขับเคลื่อนโดยทีมสหวิชาชีพร่วมกับผู้ดูแลหลักเมื่อผู้ป่วยตัดสินใจเองได้จำกัด ส่วน Palliative ใช้ Advance Care Planning (ACP) ยึดคุณค่าและความปรารถนาผู้ป่วยเป็นศูนย์กลาง",
+                "anchor": "ข้อ 3: Caregiver Partnership vs Patient-Centered Shared Decision-Making"
+              },
+              {
+                "num": "04",
+                "thTitle": "การประเมินผลลัพธ์ความสำเร็จ",
+                "enTitle": "Patient & Family-Centered Outcomes",
+                "definition": "LTC วัดทั้งการคงสภาพ ADL/ลดภาวะแทรกซ้อนและการหนุนเสริมผู้ดูแล ส่วน Palliative วัดการควบคุมอาการรบกวนและความสอดคล้องกับความปรารถนาผู้ป่วย",
+                "anchor": "ข้อ 5: ประเมินครอบคลุมทั้งสุขภาวะผู้ป่วยและศักยภาพการรับมือของครอบครัว"
+              }
+            ],
+            "caseBridgeLabel": "เชื่อมโยงโจทย์ HS2 กรณีที่ 3 · LTC vs Palliative Care",
+            "caseBridge": "ผู้สูงอายุภาวะพึ่งพิงแต่ยังไม่ใกล้เสียชีวิตต้องการ LTC ที่เชื่อมสุขภาพ–สังคม ส่วนผู้ป่วยมะเร็งระยะลุกลามที่ยังได้เคมีบำบัดต้องการ Early Integrated Palliative Care คู่กับ ACP",
+            "docId": "HS2-CONCISE",
+            "docSec": "5.4",
+            "docLabel": "อ่านเพิ่มเติม HS2 (5.4–5.5)"
+          }
+        }
+      ],
+      "coverTitle": "การเปรียบเทียบรูปแบบการดูแลผู้ป่วยต่อเนื่อง 2 กรณี"
+    },
+    {
       "id": "case-4",
       "caseNumber": 1,
       "module": "HS3",
       "title": "กรณีศึกษาที่ 1: นโยบาย “Cancer Anywhere” (มะเร็งรักษาทุกที่) กับคุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ",
-      "subtitle": "การประเมินคุณลักษณะที่โดดเด่นและช่องว่างเชิงระบบด้วยกรอบ EQESaRR",
+      "subtitle": "การประเมินคุณลักษณะที่โดดเด่นและคุณลักษณะที่ยังบกพร่องเชิงระบบด้วยกรอบแนวคิดคุณลักษณะอันพึงประสงค์",
       "frameworks": [
-        "คุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ (EQESaRR)",
-        "ความเป็นธรรมในการเข้าถึงบริการ (Equity & Accessibility)",
-        "คุณภาพบริการ (Quality: Timeliness) และประสิทธิภาพการจัดสรรทรัพยากร (Allocative Efficiency)"
+        "กรอบคุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ (Desirable Characteristics of Health Services Systems)",
+        "การจำแนกคุณลักษณะหลัก คุณลักษณะย่อย และหลักฐานเชิงประจักษ์จากนโยบายสาธารณะ"
       ],
       "scenarioBlocks": [
         {
@@ -2305,11 +2563,10 @@ window.RACM_HS_DISCUSSION_DATA = {
       "caseNumber": 2,
       "module": "HS3",
       "title": "กรณีศึกษาที่ 2: ช่องว่างของการจัดบริการดูแลแบบประคับประคอง (Palliative Care) ในสังคมสูงวัยไทย",
-      "subtitle": "การวิเคราะห์ช่องว่างคุณภาพและความเป็นธรรมของการส่งมอบบริการระยะท้าย",
+      "subtitle": "การวิเคราะห์ข้อบกพร่องและโอกาสพัฒนาเชิงระบบตามกรอบคุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ",
       "frameworks": [
-        "คุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ (EQESaRR)",
-        "คุณภาพบริการสุขภาพ (Quality: Effectiveness & Patient-Centeredness)",
-        "ความครอบคลุมที่มีประสิทธิผล (Effective Coverage) และการวางแผนการดูแลล่วงหน้า (ACP)"
+        "กรอบคุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ (Desirable Characteristics of Health Services Systems)",
+        "การเชื่อมโยงคุณลักษณะหลัก คุณลักษณะย่อย และหลักฐานเชิงประจักษ์จากสถานการณ์"
       ],
       "scenarioBlocks": [
         {
@@ -2490,11 +2747,10 @@ window.RACM_HS_DISCUSSION_DATA = {
       "caseNumber": 1,
       "module": "HS4",
       "title": "กรณีศึกษาที่ 1: กับดักสารเคมีและทางออกที่ยั่งยืน — กรณีศึกษาเกษตรกรไทย",
-      "subtitle": "การวิเคราะห์ปัจจัยกำหนดสุขภาพเชิงพาณิชย์ (CDoH) ตัวแบบพฤติกรรม COM-B และกฎบัตรออตตาวา (Ottawa Charter)",
+      "subtitle": "การวิเคราะห์พฤติกรรมสุขภาพ กลไกการปรับเปลี่ยนพฤติกรรม (COM-B) และกลยุทธ์กฎบัตรออตตาวา (Ottawa Charter)",
       "frameworks": [
-        "การจำแนกพฤติกรรมที่เป็นปัญหา vs พฤติกรรมเป้าหมาย (Problem vs Target Behavior)",
-        "กรอบแนวคิดความสามารถ–โอกาส–แรงจูงใจ (COM-B Model)",
-        "กลยุทธ์การสร้างเสริมสุขภาพ 5 ด้านตามกฎบัตรออตตาวา (Ottawa Charter 5 Action Areas)"
+        "การจำแนกพฤติกรรมเดิมที่เป็นปัญหาและพฤติกรรมใหม่ที่ต้องการส่งเสริม",
+        "กรอบแนวคิดความสามารถ–โอกาส–แรงจูงใจ (COM-B Model) และกลยุทธ์กฎบัตรออตตาวา 5 ด้าน (Ottawa Charter)"
       ],
       "scenarioBlocks": [
         {
@@ -2995,12 +3251,11 @@ window.RACM_HS_DISCUSSION_DATA = {
       "id": "case-7",
       "caseNumber": 1,
       "module": "HS5",
-      "title": "กรณีศึกษาที่ 1: “สุขภาวะข้างถนน” ภารกิจต่อจิ๊กซอว์สุขภาพเพื่อคนไร้บ้าน",
+      "title": "กรณีศึกษาที่ 1: โครงการ “สุขภาวะข้างถนน” ภารกิจต่อจิ๊กซอว์สุขภาพเพื่อคนไร้บ้าน",
       "subtitle": "การวิเคราะห์คุณลักษณะบริการปฐมภูมิ 5 ประการ (Primary Care) และองค์ประกอบหลักของระบบสุขภาพปฐมภูมิ (PHC)",
       "frameworks": [
-        "คุณลักษณะของบริการปฐมภูมิที่ดี 5 ประการ (First-Contact, Comprehensiveness, Continuity, Coordination, Person-Centeredness)",
-        "องค์ประกอบ 3 เสาหลักของ Primary Health Care ตามปฏิญญา Astana (2018)",
-        "การทำงานข้ามภาคส่วนและการเสริมพลังกลุ่มเปราะบาง"
+        "คุณลักษณะของบริการสุขภาพระดับบุคคล / บริการปฐมภูมิ 5 ประการ (Characteristics of Primary Care)",
+        "องค์ประกอบหลักของระบบสุขภาพปฐมภูมิ (Primary Health Care: PHC) ตามปฏิญญา Astana (2018)"
       ],
       "scenarioBlocks": [
         {
@@ -3308,18 +3563,17 @@ window.RACM_HS_DISCUSSION_DATA = {
           }
         }
       ],
-      "coverTitle": "“สุขภาวะข้างถนน” การดูแลสุขภาพคนไร้บ้าน"
+      "coverTitle": "โครงการ “สุขภาวะข้างถนน” การดูแลสุขภาพคนไร้บ้าน"
     },
     {
       "id": "case-8",
       "caseNumber": 1,
       "module": "HS6",
       "title": "กรณีศึกษาที่ 1: ความก้าวหน้าสู่หลักประกันสุขภาพถ้วนหน้า (Progress toward Universal Health Coverage: SDG 3.8)",
-      "subtitle": "การติดตามการเปลี่ยนแปลงความครอบคลุมบริการที่จำเป็น (SDG 3.8.1) และภาระค่าใช้จ่ายด้านสุขภาพที่ก่อให้เกิดหายนะทางการเงิน (SDG 3.8.2) ใน 138 ประเทศ",
+      "subtitle": "การวิเคราะห์แนวโน้มความครอบคลุมบริการที่จำเป็น (SDG 3.8.1) และภาระค่าใช้จ่ายด้านสุขภาพ (SDG 3.8.2) ใน 138 ประเทศ",
       "frameworks": [
-        "เป้าหมายหลักประกันสุขภาพถ้วนหน้า (Universal Health Coverage: SDG 3.8.1 & 3.8.2)",
-        "ลูกบาศก์หลักประกันสุขภาพถ้วนหน้า 3 มิติ (UHC Cube: X Population · Z Services · Y Direct Costs)",
-        "บันไดความครอบคลุมที่มีประสิทธิผล (Effective Coverage: Campbell et al., 2013) และการคุ้มครองความเสี่ยงทางการเงิน"
+        "ตัวชี้วัดเป้าหมายการพัฒนาที่ยั่งยืนด้านหลักประกันสุขภาพถ้วนหน้า (SDG 3.8.1 & SDG 3.8.2)",
+        "การวิเคราะห์แนวโน้มและปัจจัยเชิงระบบของการขยายหลักประกันสุขภาพถ้วนหน้าในระดับโลก"
       ],
       "scenarioBlocks": [
         {
@@ -3630,11 +3884,10 @@ window.RACM_HS_DISCUSSION_DATA = {
       "caseNumber": 2,
       "module": "HS6",
       "title": "กรณีศึกษาที่ 2: ประกันสุขภาพเอกชนกับผู้ขายบริการทางเพศ (Sex Workers) และแรงงานนอกระบบ",
-      "subtitle": "การวิเคราะห์ข้อยกเว้นของประกันสุขภาพเอกชนตามทฤษฎีการประกันสุขภาพ และแนวทางเพิ่มหลักประกันความมั่นคงด้านสังคมในไทย",
+      "subtitle": "การวิเคราะห์ข้อยกเว้นของประกันสุขภาพเอกชนตามทฤษฎีการประกันสุขภาพ และแนวทางเพิ่มหลักประกันความมั่นคงทางสังคมในไทย",
       "frameworks": [
-        "สมมติฐานพื้นฐานทฤษฎีการประกันสุขภาพ 5 ประการ (Basic Assumptions: p < 1, Asymmetric Info / Adverse Selection)",
-        "ข้อยกเว้นมาตรฐาน 21 ข้อของ คปภ. และผลกระทบภายนอกทางบวก (Positive Externalities) ของบริการป้องกันเชิงรุก",
-        "การเปรียบเทียบสิทธิประกันสังคม มาตรา 33 · มาตรา 39 · มาตรา 40 (ทางเลือก 70 / 100 / 300 บาท/เดือน)"
+        "ทฤษฎีการประกันสุขภาพและเศรษฐศาสตร์สาธารณสุข (Health Insurance Theory)",
+        "ระบบหลักประกันสุขภาพและหลักประกันความมั่นคงทางสังคมของประเทศไทยสำหรับแรงงานนอกระบบ"
       ],
       "scenarioBlocks": [
         {
@@ -3928,7 +4181,7 @@ window.RACM_HS_DISCUSSION_DATA = {
           }
         }
       ],
-      "coverTitle": "ประกันสุขภาพเอกชนกับผู้ขายบริการทางเพศ"
+      "coverTitle": "ประกันสุขภาพเอกชนกับผู้ขายบริการทางเพศและแรงงานนอกระบบ"
     },
     {
       "id": "case-10",
@@ -3937,9 +4190,8 @@ window.RACM_HS_DISCUSSION_DATA = {
       "title": "กรณีศึกษาที่ 3: การจ่ายตามผลงาน (Pay for Performance: P4P) เปรียบเทียบกับกลไกการจ่ายเงินหลัก (FFS vs Capitation)",
       "subtitle": "กรณีประกาศ สปสช. เรื่องการจ่ายเพิ่มเติมแบบ P4P ในโรคหืด (Asthma) และโรคปอดอุดกั้นเรื้อรัง (COPD)",
       "frameworks": [
-        "กลไกการจ่ายเงินตามรายบริการ (Fee-for-Services: FFS) และสมการรายจ่ายสุขภาพ",
-        "กลไกการจ่ายแบบเหมาจ่ายรายหัว (Capitation: Inclusive vs Exclusive) และตาราง World Health Report 2000",
-        "บทบาทและเงื่อนไขของการจ่ายตามผลงาน (Pay for Performance: P4P) ในการปิดช่องว่างของระบบการจ่ายเดิม"
+        "กลไกการจ่ายเงินแก่ผู้ให้บริการทางการแพทย์ (Fee-for-Service · Capitation · Pay for Performance)",
+        "แรงจูงใจทางการเงินต่อพฤติกรรมการจัดบริการและผลลัพธ์ของระบบสุขภาพ"
       ],
       "scenarioBlocks": [
         {
@@ -4471,7 +4723,7 @@ window.RACM_HS_DISCUSSION_DATA = {
           }
         }
       ],
-      "coverTitle": "การจ่ายตามผลงาน (Pay for performance)"
+      "coverTitle": "การจ่ายตามผลงาน (Pay for Performance: P4P)"
     }
   ]
 };

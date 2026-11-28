@@ -14203,10 +14203,10 @@
           fileName: "RACM303_ใบงาน_Discussion_รวมทุกบท_HS1-HS6_(เลื่อนอ่านยาว).web",
           kicker: "📜 ใบงาน Discussion รวมทุกบท (Scroll)",
           headCls: "is-concise",
-          title: "ใบงานกรณีศึกษารวมครบ HS1–HS6 (12 กรณี · 23 ข้อย่อย)",
+          title: "ใบงานกรณีศึกษารวมครบ HS1–HS6 (13 กรณี · 24 ข้อย่อย)",
           subDesc: "เปิดหน้าเว็บโหมดเลื่อนอ่านยาวครบทุกกรณีศึกษาในหน้าเดียว สำหรับทบทวนภาพรวมหรือพิมพ์เตรียมสอบ Open Note",
           chipLabel: "Web Scroll · ครบ 6 บท",
-          meta: "HS1–HS6 · 12 กรณีศึกษา",
+          meta: "HS1–HS6 · 13 กรณีศึกษา",
           onOpen: () => {
             state.hsdViewMode = "scroll";
             state.hsdModule = "ALL";
@@ -14288,7 +14288,7 @@
           fileName: "RACM303_เฉลยรวม_Discussion_Teacher_Key_HS1-HS6.gdoc",
           kicker: "📕 เฉลยรวม Discussion & ต้นฉบับ (Faculty)",
           headCls: "is-faculty",
-          title: "เฉลยและคู่มือนำอภิปราย Discussion ระบบสุขภาพ HS1–HS6 (ครบ 12 กรณีศึกษา)",
+          title: "เฉลยและคู่มือนำอภิปราย Discussion ระบบสุขภาพ HS1–HS6 (ครบ 13 กรณีศึกษา)",
           subDesc: "เอกสารเฉพาะคณาจารย์และผู้ประสานงานรายวิชา ครบทั้งแผนนำอภิปรายและเกณฑ์ประเมิน",
           chipLabel: "เฉพาะคณาจารย์",
           meta: "Faculty Member Portal",
@@ -33590,7 +33590,7 @@
       storageBox.innerHTML =
         `<div class="gdrive-storage-head">☁️ <span>คลังสไลด์สอนพร้อมใช้งาน</span></div>` +
         `<div class="gdrive-storage-track"><div class="gdrive-storage-fill" style="width:100%"></div></div>` +
-        `<div class="gdrive-storage-caption">ครบทั้ง 6 คาบ (HS1–HS6) · 12 กรณีศึกษา · 23 ข้อย่อย พร้อมเฉลย Teacher Key รายขั้น</div>`;
+        `<div class="gdrive-storage-caption">ครบทั้ง 6 คาบ (HS1–HS6) · 13 กรณีศึกษา · 24 ข้อย่อย พร้อมเฉลย Teacher Key รายขั้น</div>`;
     } else {
       const pct = allProg.total > 0 ? Math.min(100, Math.round((allProg.filled / allProg.total) * 100)) : 0;
       storageBox.innerHTML =
@@ -33739,7 +33739,7 @@
             icoCls: "is-docx",
             icoTxt: "W",
             name: "RACM303_ใบงานรวมทุกบท_HS1-HS6_โหมดเลื่อนอ่านยาว.web",
-            sub: "เปิดหน้าเว็บโหมดเลื่อนอ่านยาวครบทั้ง 12 กรณีศึกษา (23 ข้อย่อย) ในหน้าเดียว",
+            sub: "เปิดหน้าเว็บโหมดเลื่อนอ่านยาวครบทั้ง 13 กรณีศึกษา (24 ข้อย่อย) ในหน้าเดียว",
             badge: "Web Scroll",
             onClick: () => {
               closeHsdGoogleDrivePickerModal();
@@ -43279,6 +43279,11 @@
       "(1) WHAT: รูปแบบการดูแลสุขภาพ (Model of Care)",
       "(2) WHY: ลักษณะอาการหรือสภาวะทางคลินิกของผู้ป่วย",
       "(3) HOW: แก่นสาระของแนวทางการจัดการดูแล"
+    ],
+    "q-hs2-3-compare": [
+      "อธิบายเหตุผลประกอบ",
+      "เปรียบเทียบความแตกต่างที่สำคัญของรูปแบบการดูแลทั้งสองอย่างชัดเจน",
+      "ตามประเด็นคำถามชี้นำทั้ง 5 ประเด็น"
     ],
     "q-4-1": [
       "คุณลักษณะอันพึงประสงค์ของระบบบริการสุขภาพ",
