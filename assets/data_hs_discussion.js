@@ -2552,7 +2552,43 @@ window.RACM_HS_DISCUSSION_DATA = {
             "caseBridge": "นโยบายที่เพิ่มความสะดวกในการเข้าถึงอาจกระทบต่อประสิทธิภาพเชิงการจัดสรร ความแออัดใน รพ.ใหญ่ และความยั่งยืนงบประมาณหากขาดกลไกกำกับ",
             "docId": "HS3-CONCISE",
             "docSec": "4.2",
-            "docLabel": "อ่านเพิ่มเติม HS3 (4.1–4.2)"
+            "docLabel": "อ่านเพิ่มเติม HS3 (4.1–4.2)",
+            "frameworkSynthesisSlides": [
+              {
+                "id": "cs-hs3-eff-fw",
+                "kicker": "Key Takeaway #2 · Economic Efficiency Framework",
+                "badge": "ขั้น ⑤ Key Takeaway #2 (Efficiency Subset & PPF)",
+                "studentBadge": "Key Takeaway #2 · Efficiency Subset & PPF",
+                "shortLabel": "⑤ ภาพ Efficiency",
+                "studentShortLabel": "Framework Efficiency",
+                "stageBtnLabel": "⑤ ภาพ Efficiency",
+                "studentStageBtnLabel": "🖼 ภาพ Efficiency",
+                "title": "ความสัมพันธ์เชิงเซตย่อยของประสิทธิภาพ เส้น PPF และหลักประกันความเป็นธรรม",
+                "enTitle": "Nested Subset Efficiency (Allocative ⊂ Productive ⊂ Technical), PPF & 3E Governance",
+                "sourceNote": "Farrell (1957) · Kozuń-Cieślak (2013) · Cookson et al. (2017)",
+                "imageSrc": "assets/images/hs3-concise-fig06.jpg?v=20261128",
+                "imageAlt": "Economic Efficiency Nested Subset Circles, PPF Tangency, Public Management 3E and Equity Guardrail",
+                "caption": "ทุกจุดที่มีประสิทธิภาพการจัดสรร (Allocative / Full Pareto) ต้องตั้งอยู่บนประสิทธิภาพการผลิต (Productive / Farrell) บนเส้น PPF และประสิทธิภาพทางเทคนิคเสมอ ภายใต้กรอบกำกับภาครัฐ 3E และหลักประกันความปลอดภัยและความเป็นธรรม",
+                "nextBtnLabel": "สรุป 4 มิติหลัก (Slide ถัดไป)"
+              }
+            ],
+            "frameworkVisual": {
+              "id": "cs-hs3-eff-fw",
+              "kicker": "Key Takeaway #2 · Economic Efficiency Framework",
+              "badge": "ขั้น ⑤ Key Takeaway #2 (Efficiency Subset & PPF)",
+              "studentBadge": "Key Takeaway #2 · Efficiency Subset & PPF",
+              "shortLabel": "⑤ ภาพ Efficiency",
+              "studentShortLabel": "Framework Efficiency",
+              "stageBtnLabel": "⑤ ภาพ Efficiency",
+              "studentStageBtnLabel": "🖼 ภาพ Efficiency",
+              "title": "ความสัมพันธ์เชิงเซตย่อยของประสิทธิภาพ เส้น PPF และหลักประกันความเป็นธรรม",
+              "enTitle": "Nested Subset Efficiency (Allocative ⊂ Productive ⊂ Technical), PPF & 3E Governance",
+              "sourceNote": "Farrell (1957) · Kozuń-Cieślak (2013) · Cookson et al. (2017)",
+              "imageSrc": "assets/images/hs3-concise-fig06.jpg?v=20261128",
+              "imageAlt": "Economic Efficiency Nested Subset Circles, PPF Tangency, Public Management 3E and Equity Guardrail",
+              "caption": "ทุกจุดที่มีประสิทธิภาพการจัดสรร (Allocative / Full Pareto) ต้องตั้งอยู่บนประสิทธิภาพการผลิต (Productive / Farrell) บนเส้น PPF และประสิทธิภาพทางเทคนิคเสมอ ภายใต้กรอบกำกับภาครัฐ 3E และหลักประกันความปลอดภัยและความเป็นธรรม",
+              "nextBtnLabel": "สรุป 4 มิติหลัก (Slide ถัดไป)"
+            }
           }
         }
       ],
@@ -2736,7 +2772,43 @@ window.RACM_HS_DISCUSSION_DATA = {
             "caseBridge": "ประเมินช่องว่างทั้งด้านปริมาณการเข้าถึงและคุณภาพของการดูแลระยะท้ายตามกรอบ EQESaRR และมิติคุณภาพของ IOM",
             "docId": "HS3-CONCISE",
             "docSec": "3.3",
-            "docLabel": "อ่านเพิ่มเติม HS3 (3.2–3.3)"
+            "docLabel": "อ่านเพิ่มเติม HS3 (3.2–3.3)",
+            "frameworkSynthesisSlides": [
+              {
+                "id": "cs-hs3-ec-fw",
+                "kicker": "Key Takeaway #3 · Effective Coverage Framework",
+                "badge": "ขั้น ⑤ Key Takeaway #3 (Effective Coverage Cascade)",
+                "studentBadge": "Key Takeaway #3 · Effective Coverage Cascade",
+                "shortLabel": "⑤ ภาพ Effective Cov.",
+                "studentShortLabel": "Effective Coverage",
+                "stageBtnLabel": "⑤ ภาพ Effective Cov.",
+                "studentStageBtnLabel": "🖼 ภาพ Effective Cov.",
+                "title": "ความครอบคลุมอย่างมีประสิทธิผล (Need – Use – Quality) และลำดับขั้นบริการ 5 มิติ",
+                "enTitle": "Effective Coverage Framework, Cascade & Application in Thailand",
+                "sourceNote": "วรณัน วิทยาพิภพสกุล และคณะ (2565) · Marsh et al. (2020) · Rajatanavin et al. (2022)",
+                "imageSrc": "assets/images/hs3-concise-fig05.jpg?v=20261128",
+                "imageAlt": "Effective Coverage 3D Nested Blocks, 5-Metric Cascade, and Diabetes Care Cascade in Thailand",
+                "caption": "วัดสัดส่วนประชากรที่มีความจำเป็น (Need) ซึ่งได้รับบริการและเกิดผลดีทางสุขภาพจริง (Quality) ไม่หยุดเพียงการมีสิทธิหรือการได้ใช้บริการเบื้องต้น (Crude Coverage)",
+                "nextBtnLabel": "สรุป 4 มิติหลัก (Slide ถัดไป)"
+              }
+            ],
+            "frameworkVisual": {
+              "id": "cs-hs3-ec-fw",
+              "kicker": "Key Takeaway #3 · Effective Coverage Framework",
+              "badge": "ขั้น ⑤ Key Takeaway #3 (Effective Coverage Cascade)",
+              "studentBadge": "Key Takeaway #3 · Effective Coverage Cascade",
+              "shortLabel": "⑤ ภาพ Effective Cov.",
+              "studentShortLabel": "Effective Coverage",
+              "stageBtnLabel": "⑤ ภาพ Effective Cov.",
+              "studentStageBtnLabel": "🖼 ภาพ Effective Cov.",
+              "title": "ความครอบคลุมอย่างมีประสิทธิผล (Need – Use – Quality) และลำดับขั้นบริการ 5 มิติ",
+              "enTitle": "Effective Coverage Framework, Cascade & Application in Thailand",
+              "sourceNote": "วรณัน วิทยาพิภพสกุล และคณะ (2565) · Marsh et al. (2020) · Rajatanavin et al. (2022)",
+              "imageSrc": "assets/images/hs3-concise-fig05.jpg?v=20261128",
+              "imageAlt": "Effective Coverage 3D Nested Blocks, 5-Metric Cascade, and Diabetes Care Cascade in Thailand",
+              "caption": "วัดสัดส่วนประชากรที่มีความจำเป็น (Need) ซึ่งได้รับบริการและเกิดผลดีทางสุขภาพจริง (Quality) ไม่หยุดเพียงการมีสิทธิหรือการได้ใช้บริการเบื้องต้น (Crude Coverage)",
+              "nextBtnLabel": "สรุป 4 มิติหลัก (Slide ถัดไป)"
+            }
           }
         }
       ],
@@ -2880,7 +2952,43 @@ window.RACM_HS_DISCUSSION_DATA = {
             "caseBridge": "ระบุให้ชัดทั้งพฤติกรรมเสี่ยงเดิมในการใช้สารเคมี และพฤติกรรมเป้าหมายใหม่ที่ต้องการส่งเสริมในระดับบุคคลและกลุ่มเกษตรกร",
             "docId": "HS4-CONCISE",
             "docSec": "2.4",
-            "docLabel": "อ่านเพิ่มเติม HS4 (2.4)"
+            "docLabel": "อ่านเพิ่มเติม HS4 (2.4)",
+            "frameworkSynthesisSlides": [
+              {
+                "id": "cs-hs4-stages-fw",
+                "kicker": "Key Takeaway #1 · Intervention Design Process (3 Stages · 8 Steps)",
+                "badge": "ขั้น ⑤ Key Takeaway #1 (3 Stages · 8 Steps)",
+                "studentBadge": "Key Takeaway #1 · 3 Stages & 8 Steps",
+                "shortLabel": "⑤ ภาพ 8 ขั้นตอน",
+                "studentShortLabel": "8-Step Design",
+                "stageBtnLabel": "⑤ ภาพ 8 ขั้นตอน",
+                "studentStageBtnLabel": "🖼 ภาพ 8 ขั้นตอน",
+                "title": "กระบวนการออกแบบมาตรการปรับเปลี่ยนพฤติกรรม 3 ระยะ 8 ขั้นตอน",
+                "enTitle": "Behavior Change Intervention Design Process (Stage 1 → Stage 2 → Stage 3)",
+                "sourceNote": "Michie, Atkins & West (2014) — The Behaviour Change Wheel",
+                "imageSrc": "assets/images/hs4_comb_design_3stages_8steps.jpg?v=20261128",
+                "imageAlt": "Behavior Change Intervention Design Process: Stage 1 Understand the behaviour (Steps 1-4), Stage 2 Identify intervention options (Steps 5-6), Stage 3 Identify content and implementation options (Steps 7-8)",
+                "caption": "ระยะที่ 1 เริ่มต้นจากการนิยามปัญหาในเชิงพฤติกรรม (Step 1) คัดเลือกและระบุรายละเอียดพฤติกรรมเป้าหมาย (Steps 2–3) ก่อนเข้าสู่การวินิจฉัยสิ่งที่ต้องเปลี่ยนด้วย COM-B (Step 4)",
+                "nextBtnLabel": "สรุปหลักการนิยามพฤติกรรม (Slide ถัดไป)"
+              }
+            ],
+            "frameworkVisual": {
+              "id": "cs-hs4-stages-fw",
+              "kicker": "Key Takeaway #1 · Intervention Design Process (3 Stages · 8 Steps)",
+              "badge": "ขั้น ⑤ Key Takeaway #1 (3 Stages · 8 Steps)",
+              "studentBadge": "Key Takeaway #1 · 3 Stages & 8 Steps",
+              "shortLabel": "⑤ ภาพ 8 ขั้นตอน",
+              "studentShortLabel": "8-Step Design",
+              "stageBtnLabel": "⑤ ภาพ 8 ขั้นตอน",
+              "studentStageBtnLabel": "🖼 ภาพ 8 ขั้นตอน",
+              "title": "กระบวนการออกแบบมาตรการปรับเปลี่ยนพฤติกรรม 3 ระยะ 8 ขั้นตอน",
+              "enTitle": "Behavior Change Intervention Design Process (Stage 1 → Stage 2 → Stage 3)",
+              "sourceNote": "Michie, Atkins & West (2014) — The Behaviour Change Wheel",
+              "imageSrc": "assets/images/hs4_comb_design_3stages_8steps.jpg?v=20261128",
+              "imageAlt": "Behavior Change Intervention Design Process: Stage 1 Understand the behaviour (Steps 1-4), Stage 2 Identify intervention options (Steps 5-6), Stage 3 Identify content and implementation options (Steps 7-8)",
+              "caption": "ระยะที่ 1 เริ่มต้นจากการนิยามปัญหาในเชิงพฤติกรรม (Step 1) คัดเลือกและระบุรายละเอียดพฤติกรรมเป้าหมาย (Steps 2–3) ก่อนเข้าสู่การวินิจฉัยสิ่งที่ต้องเปลี่ยนด้วย COM-B (Step 4)",
+              "nextBtnLabel": "สรุปหลักการนิยามพฤติกรรม (Slide ถัดไป)"
+            }
           }
         },
         {
@@ -3077,7 +3185,94 @@ window.RACM_HS_DISCUSSION_DATA = {
             "caseBridge": "เชื่อมโยงกิจกรรมในกรณีศึกษาเข้ากับองค์ประกอบหลักและองค์ประกอบย่อยของ COM-B พร้อมอธิบายกลไกที่ทำให้เปลี่ยนพฤติกรรมได้สำเร็จ",
             "docId": "HS4-CONCISE",
             "docSec": "2.4",
-            "docLabel": "อ่านเพิ่มเติม HS4 (2.1 & 2.4)"
+            "docLabel": "อ่านเพิ่มเติม HS4 (2.1 & 2.4)",
+            "frameworkSynthesisSlides": [
+              {
+                "id": "cs-hs4-comb-fw-1",
+                "kicker": "Key Takeaway #2 · COM-B & Behaviour Change Wheel (1/4)",
+                "badge": "ขั้น ⑤ Key Takeaway #2 (COM-B & BCW)",
+                "studentBadge": "Key Takeaway #2 · COM-B & BCW (1/4)",
+                "shortLabel": "⑤ COM-B & BCW",
+                "studentShortLabel": "COM-B & BCW",
+                "stageBtnLabel": "⑤ COM-B & BCW",
+                "studentStageBtnLabel": "🖼 COM-B & BCW",
+                "title": "ระบบพฤติกรรม COM-B และวงล้อการปรับเปลี่ยนพฤติกรรม 3 ชั้น",
+                "enTitle": "The COM-B System & Behaviour Change Wheel (Michie et al., 2011)",
+                "sourceNote": "Michie, van Stralen & West (2011)",
+                "imageSrc": "assets/images/hs4_orig_06_bcw_comb.png?v=20261128",
+                "imageAlt": "The COM-B System and Behaviour Change Wheel",
+                "caption": "ความสามารถ (Capability) และโอกาส (Opportunity) ส่งผลต่อแรงจูงใจ (Motivation) จนเกิดเป็นพฤติกรรม (Behaviour) และเชื่อมออกสู่วงกลางหน้าที่มาตรการ 9 ด้าน และวงนอกประเภทนโยบาย 7 ประเภท",
+                "nextBtnLabel": "เมทริกซ์ COM-B × 9 มาตรการ (Slide ถัดไป)"
+              },
+              {
+                "id": "cs-hs4-comb-fw-2",
+                "kicker": "Key Takeaway #2 · COM-B – Intervention Functions Matrix (2/4)",
+                "badge": "ขั้น ⑥ Key Takeaway #2 (COM-B × 9 Functions)",
+                "studentBadge": "Key Takeaway #2 · COM-B × 9 Functions (2/4)",
+                "shortLabel": "⑥ COM-B × มาตรการ",
+                "studentShortLabel": "COM-B × Functions",
+                "stageBtnLabel": "⑥ COM-B × มาตรการ",
+                "studentStageBtnLabel": "🖼 COM-B × มาตรการ",
+                "title": "เมทริกซ์จับคู่องค์ประกอบย่อย COM-B เข้ากับหน้าที่ของมาตรการ 9 ด้าน",
+                "enTitle": "COM-B – Intervention Functions Matrix",
+                "sourceNote": "Michie, Atkins & West (2014)",
+                "imageSrc": "assets/images/hs4_comb_intervention_functions_matrix.jpg?v=20261128",
+                "imageAlt": "COM-B Intervention Functions Matrix",
+                "caption": "การให้ความรู้ (Education) เพียงอย่างเดียวแก้ได้เฉพาะ Psychological Capability และ Reflective Motivation ส่วนอุปสรรคด้านโอกาสและแรงจูงใจอัตโนมัติต้องอาศัย Environmental Restructuring, Restriction, Training, Modelling และ Enablement",
+                "nextBtnLabel": "เมทริกซ์มาตรการ × 7 นโยบาย (Slide ถัดไป)"
+              },
+              {
+                "id": "cs-hs4-comb-fw-3",
+                "kicker": "Key Takeaway #2 · Intervention Functions × Policy Categories (3/4)",
+                "badge": "ขั้น ⑦ Key Takeaway #2 (Table 2.9 Policy Matrix)",
+                "studentBadge": "Key Takeaway #2 · Policy Categories (3/4)",
+                "shortLabel": "⑦ มาตรการ × นโยบาย",
+                "studentShortLabel": "Policy Matrix",
+                "stageBtnLabel": "⑦ มาตรการ × นโยบาย",
+                "studentStageBtnLabel": "🖼 มาตรการ × นโยบาย",
+                "title": "การเชื่อมโยงหน้าที่มาตรการ 9 ด้านสู่ประเภทนโยบายสนับสนุน 7 ประเภท (Table 2.9)",
+                "enTitle": "Matrix of Links Between Intervention Functions & Policy Categories",
+                "sourceNote": "Michie, Atkins & West (2014)",
+                "imageSrc": "assets/images/hs4_comb_policy_categories_matrix.jpg?v=20261128",
+                "imageAlt": "Table 2.9 Matrix of links between intervention functions and policy categories",
+                "caption": "ระบุประเภทนโยบายระดับระบบทั้ง 7 ด้าน (Communication/Marketing, Guidelines, Fiscal Measures, Regulation, Legislation, Environmental/Social Planning, Service Provision) ที่เอื้อให้มาตรการเกิดขึ้นจริง",
+                "nextBtnLabel": "การเชื่อมสู่ TDF & BCTs (Slide ถัดไป)"
+              },
+              {
+                "id": "cs-hs4-comb-fw-4",
+                "kicker": "Key Takeaway #2 · COM-B → TDF → Behaviour Change Techniques (4/4)",
+                "badge": "ขั้น ⑧ Key Takeaway #2 (COM-B → TDF → BCTs)",
+                "studentBadge": "Key Takeaway #2 · TDF & BCTs (4/4)",
+                "shortLabel": "⑧ TDF & BCTs",
+                "studentShortLabel": "TDF & BCTs",
+                "stageBtnLabel": "⑧ TDF & BCTs",
+                "studentStageBtnLabel": "🖼 TDF & BCTs",
+                "title": "การแปลงผลการวินิจฉัย COM-B สู่โดเมน TDF และเทคนิคจำเพาะ (BCTs)",
+                "enTitle": "Linking COM-B Model, Theoretical Domains Framework (TDF) & Behaviour Change Techniques",
+                "sourceNote": "Cane et al. (2012) · Michie et al. (2013) · Michie, Atkins & West (2014)",
+                "imageSrc": "assets/images/hs4_comb_tdf_bct_linkage.jpg?v=20261128",
+                "imageAlt": "Linking Behaviour Change Techniques, Theoretical Domains Framework, and COM-B Model",
+                "caption": "เชื่อมจาก Capability, Motivation, Opportunity สู่โดเมนทางจิตวิทยาและบริบทแวดล้อม (TDF) เพื่อเลือกเทคนิคออกฤทธิ์จำเพาะ (BCTs) เช่น Shaping knowledge, Feedback & monitoring, Goals & planning, Social support, Regulation และ Antecedents",
+                "nextBtnLabel": "สรุปองค์ประกอบ COM-B (Slide ถัดไป)"
+              }
+            ],
+            "frameworkVisual": {
+              "id": "cs-hs4-comb-fw-1",
+              "kicker": "Key Takeaway #2 · COM-B & Behaviour Change Wheel (1/4)",
+              "badge": "ขั้น ⑤ Key Takeaway #2 (COM-B & BCW)",
+              "studentBadge": "Key Takeaway #2 · COM-B & BCW (1/4)",
+              "shortLabel": "⑤ COM-B & BCW",
+              "studentShortLabel": "COM-B & BCW",
+              "stageBtnLabel": "⑤ COM-B & BCW",
+              "studentStageBtnLabel": "🖼 COM-B & BCW",
+              "title": "ระบบพฤติกรรม COM-B และวงล้อการปรับเปลี่ยนพฤติกรรม 3 ชั้น",
+              "enTitle": "The COM-B System & Behaviour Change Wheel (Michie et al., 2011)",
+              "sourceNote": "Michie, van Stralen & West (2011)",
+              "imageSrc": "assets/images/hs4_orig_06_bcw_comb.png?v=20261128",
+              "imageAlt": "The COM-B System and Behaviour Change Wheel",
+              "caption": "ความสามารถ (Capability) และโอกาส (Opportunity) ส่งผลต่อแรงจูงใจ (Motivation) จนเกิดเป็นพฤติกรรม (Behaviour) และเชื่อมออกสู่วงกลางหน้าที่มาตรการ 9 ด้าน และวงนอกประเภทนโยบาย 7 ประเภท",
+              "nextBtnLabel": "เมทริกซ์ COM-B × 9 มาตรการ (Slide ถัดไป)"
+            }
           }
         },
         {
@@ -3241,7 +3436,77 @@ window.RACM_HS_DISCUSSION_DATA = {
             "caseBridge": "ความยั่งยืนของการสร้างเสริมสุขภาพเกิดจากการประสานกลยุทธ์หลายด้านของกฎบัตรออตตาวาเข้าด้วยกัน ไม่พึ่งพาการอบรมให้ความรู้เพียงมิติเดียว",
             "docId": "HS4-CONCISE",
             "docSec": "4.2",
-            "docLabel": "อ่านเพิ่มเติม HS4 (4.1–4.2)"
+            "docLabel": "อ่านเพิ่มเติม HS4 (4.1–4.2)",
+            "frameworkSynthesisSlides": [
+              {
+                "id": "cs-hs4-ottawa-fw-1",
+                "kicker": "Key Takeaway #3 · Ottawa Charter × Health Determinants (1/3)",
+                "badge": "ขั้น ⑤ Key Takeaway #3 (Determinants × 5 Actions)",
+                "studentBadge": "Key Takeaway #3 · Determinants × 5 Actions (1/3)",
+                "shortLabel": "⑤ ผังเชื่อมปัจจัยฯ",
+                "studentShortLabel": "Determinants Map",
+                "stageBtnLabel": "⑤ ผังเชื่อมปัจจัยฯ",
+                "studentStageBtnLabel": "🖼 ผังเชื่อมปัจจัยฯ",
+                "title": "การเชื่อมโยงกรอบปัจจัยกำหนดสุขภาพและระบบบริการสุขภาพกับ 5 ด้านปฏิบัติการกฎบัตรออตตาวา",
+                "enTitle": "Mapping the Conceptual Framework of Health Determinants with 5 Key Action Areas in HP",
+                "sourceNote": "RACM 303 Community Medicine · WHO Ottawa Charter (1986)",
+                "imageSrc": "assets/images/hs4_ottawa_determinants_mapping.jpg?v=20261128",
+                "imageAlt": "Mapping the Conceptual Framework of Health Determinants with 5 Key Action Areas in HP (Ottawa Charter)",
+                "caption": "(1) Build healthy public policy → Structural Determinants · (2) Create supportive environment → Social Determinants (SDH) · (3) Strengthen community action → Potential of community · (4) Develop personal skills → Individual/community lifestyle · (5) Reorient health services → Health Services Systems (6 Building Blocks)",
+                "nextBtnLabel": "ภาพสรุป 5 กิจกรรม & 3 กลยุทธ์ (Slide ถัดไป)"
+              },
+              {
+                "id": "cs-hs4-ottawa-fw-2",
+                "kicker": "Key Takeaway #3 · 5 กิจกรรมหลัก & 3 กลยุทธ์พื้นฐาน (2/3)",
+                "badge": "ขั้น ⑥ Key Takeaway #3 (5 กิจกรรม & 3 กลยุทธ์)",
+                "studentBadge": "Key Takeaway #3 · 5 กิจกรรม & 3 กลยุทธ์ (2/3)",
+                "shortLabel": "⑥ 5 กิจกรรม · 3 กลยุทธ์",
+                "studentShortLabel": "5 Actions · 3 Strategies",
+                "stageBtnLabel": "⑥ 5 กิจกรรม · 3 กลยุทธ์",
+                "studentStageBtnLabel": "🖼 5 กิจกรรม · 3 กลยุทธ์",
+                "title": "การสร้างเสริมสุขภาพตามกฎบัตรออตตาวา: นิยาม · 5 กิจกรรมหลัก · 3 กลยุทธ์พื้นฐาน",
+                "enTitle": "Ottawa Charter for Health Promotion — 5 Key Action Areas & 3 Basic Strategies",
+                "sourceNote": "WHO (1986) & ThaiHealth Academy (สสส.)",
+                "imageSrc": "assets/images/hs4_concept_08_ottawa_charter.jpg?v=20261128",
+                "imageAlt": "การสร้างเสริมสุขภาพตามกฎบัตรออตตาวา 5 กิจกรรมสร้างเสริมสุขภาพ และ 3 กลยุทธ์พื้นฐาน",
+                "caption": "บูรณาการครบ 5 กิจกรรมหลัก (สร้างนโยบายสาธารณะ สิ่งแวดล้อมเอื้อ ชุมชนเข้มแข็ง ทักษะส่วนบุคคล ปรับระบบบริการสุขภาพ) ขับเคลื่อนด้วย 3 กลยุทธ์พื้นฐาน ได้แก่ Enable (สร้างเสริมความสามารถ), Mediate (เป็นสื่อกลาง) และ Advocate (ชี้แนะผลักดัน)",
+                "nextBtnLabel": "สัญลักษณ์กฎบัตรออตตาวา WHO (Slide ถัดไป)"
+              },
+              {
+                "id": "cs-hs4-ottawa-fw-3",
+                "kicker": "Key Takeaway #3 · WHO Ottawa Charter Emblem (3/3)",
+                "badge": "ขั้น ⑦ Key Takeaway #3 (WHO Emblem 1986)",
+                "studentBadge": "Key Takeaway #3 · WHO Emblem (3/3)",
+                "shortLabel": "⑦ สัญลักษณ์ WHO",
+                "studentShortLabel": "WHO Emblem",
+                "stageBtnLabel": "⑦ สัญลักษณ์ WHO",
+                "studentStageBtnLabel": "🖼 สัญลักษณ์ WHO",
+                "title": "สัญลักษณ์ต้นฉบับของการสร้างเสริมสุขภาพตามกฎบัตรออตตาวา ค.ศ. 1986",
+                "enTitle": "WHO Ottawa Charter for Health Promotion Emblem (1986)",
+                "sourceNote": "World Health Organization (1986)",
+                "imageSrc": "assets/images/hs4_orig_08_ottawa_emblem.png?v=20261128",
+                "imageAlt": "WHO Ottawa Charter 1986 Health Promotion Emblem",
+                "caption": "วงกลมด้านในแทนกลยุทธ์พื้นฐาน 3 ข้อ (Enable · Mediate · Advocate) ปีกทั้งสามแทนปฏิบัติการสร้างเสริมสุขภาพ และวงกลมสีแดงรอบนอกแทนการสร้างนโยบายสาธารณะเพื่อสุขภาพ (Build Healthy Public Policy) ที่โอบอุ้มทุกด้านเข้าด้วยกัน",
+                "nextBtnLabel": "สรุป 5 ด้านปฏิบัติการ (Slide ถัดไป)"
+              }
+            ],
+            "frameworkVisual": {
+              "id": "cs-hs4-ottawa-fw-1",
+              "kicker": "Key Takeaway #3 · Ottawa Charter × Health Determinants (1/3)",
+              "badge": "ขั้น ⑤ Key Takeaway #3 (Determinants × 5 Actions)",
+              "studentBadge": "Key Takeaway #3 · Determinants × 5 Actions (1/3)",
+              "shortLabel": "⑤ ผังเชื่อมปัจจัยฯ",
+              "studentShortLabel": "Determinants Map",
+              "stageBtnLabel": "⑤ ผังเชื่อมปัจจัยฯ",
+              "studentStageBtnLabel": "🖼 ผังเชื่อมปัจจัยฯ",
+              "title": "การเชื่อมโยงกรอบปัจจัยกำหนดสุขภาพและระบบบริการสุขภาพกับ 5 ด้านปฏิบัติการกฎบัตรออตตาวา",
+              "enTitle": "Mapping the Conceptual Framework of Health Determinants with 5 Key Action Areas in HP",
+              "sourceNote": "RACM 303 Community Medicine · WHO Ottawa Charter (1986)",
+              "imageSrc": "assets/images/hs4_ottawa_determinants_mapping.jpg?v=20261128",
+              "imageAlt": "Mapping the Conceptual Framework of Health Determinants with 5 Key Action Areas in HP (Ottawa Charter)",
+              "caption": "(1) Build healthy public policy → Structural Determinants · (2) Create supportive environment → Social Determinants (SDH) · (3) Strengthen community action → Potential of community · (4) Develop personal skills → Individual/community lifestyle · (5) Reorient health services → Health Services Systems (6 Building Blocks)",
+              "nextBtnLabel": "ภาพสรุป 5 กิจกรรม & 3 กลยุทธ์ (Slide ถัดไป)"
+            }
           }
         }
       ],
