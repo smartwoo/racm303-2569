@@ -2559,6 +2559,9 @@
 
   window.addEventListener("hashchange", () => {
     const rawHash = (window.location.hash || "").replace(/^#/, "");
+    if (/^panel-(?:qa|global(?:-qa)?|dhs|6bb|policy)$/i.test(rawHash)) {
+      return;
+    }
     if (ROLE === "student" && /^hs-discussion(?:-(HS[1-6]))?$/i.test(rawHash) && !state.isPptSlideSharePopup) {
       const mMod = rawHash.match(/HS[1-6]/i);
       enterStudentCaseDiscussionBreakoutLobby(mMod ? mMod[0].toUpperCase() : state.activeHsModule || "HS1");
