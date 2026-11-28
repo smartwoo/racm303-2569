@@ -13741,19 +13741,6 @@
       )
     );
 
-    if (ROLE === "faculty") {
-      tabsRow.appendChild(
-        makeTabBtn(`📕 คู่มือผู้สอน (${mod.code})`, "faculty-docs", true, () => {
-          state.activeHsModule = mod.code;
-          if (typeof openFacultyGuideForHsModule === "function") {
-            openFacultyGuideForHsModule(mod.code);
-          } else {
-            switchTab("faculty-docs");
-          }
-        })
-      );
-    }
-
     banner.appendChild(tabsRow);
     return banner;
   }
@@ -14118,38 +14105,6 @@
           searchText: `${m.code} ${m.title} ${vdoFileName} vdo lecture video วิดีโอบรรยาย รอแขวน vdo ${lecturer}`.toLocaleLowerCase("th"),
           onOpen: () => openHsVdoLecture(m.code)
         });
-
-        // 7. Faculty Guide & Teacher Answer Key (Faculty Portal Only)
-        if (ROLE === "faculty") {
-          const facFileName = `07_${m.code}_คู่มือผู้สอนและเฉลย_(Teacher_Key).gdoc`;
-          out.push({
-            uid: `facguide:${m.id}`,
-            entryType: "faculty-guide",
-            typeGroup: "faculty-guide",
-            mod: m,
-            fileName: facFileName,
-            kicker: "📕 คู่มือผู้สอน & เฉลย Teacher Key",
-            chipLabel: "เฉพาะคณาจารย์ · เฉลยครบ",
-            headCls: "is-faculty",
-            subDesc: `แนวทางนำอภิปรายกลุ่มย่อย ประเด็นเฉลย 4 ขั้น และจุดเน้นออกข้อสอบสำหรับอาจารย์ประจำคาบ ${m.code}`,
-            headings: [
-              `แผนนำอภิปรายกลุ่มย่อยคาบ ${m.code}`,
-              `แนวคำตอบ Teacher Answer Key ครบทุกข้อย่อย`,
-              `จุดเชื่อมโยงข้อสอบ Open Note (${m.examWeight || ""})`
-            ],
-            lecturer,
-            shortDate,
-            searchText: `${m.code} ${m.title} ${facFileName} คู่มือผู้สอน เฉลย teacher key faculty guide ${lecturer}`.toLocaleLowerCase("th"),
-            onOpen: () => {
-              state.activeHsModule = m.code;
-              if (typeof openFacultyGuideForHsModule === "function") {
-                openFacultyGuideForHsModule(m.code);
-              } else {
-                switchTab("faculty-docs");
-              }
-            }
-          });
-        }
       });
 
       return out.filter((item) => {
@@ -14277,10 +14232,10 @@
           uid: "course:faculty-all",
           icoCls: "is-faculty",
           icoTxt: "📕",
-          fileName: "RACM303_คู่มือผู้สอนและเฉลยรวม_Teacher_Key_HS1-HS6.gdoc",
-          kicker: "📕 คู่มือผู้สอนและต้นฉบับ (Faculty)",
+          fileName: "RACM303_เฉลยรวม_Discussion_Teacher_Key_HS1-HS6.gdoc",
+          kicker: "📕 เฉลยรวม Discussion & ต้นฉบับ (Faculty)",
           headCls: "is-faculty",
-          title: "รวมคู่มือผู้สอน แนวทางนำอภิปราย และเฉลย Teacher Answer Key",
+          title: "เฉลยและคู่มือนำอภิปราย Discussion ระบบสุขภาพ HS1–HS6 (ครบ 12 กรณีศึกษา)",
           subDesc: "เอกสารเฉพาะคณาจารย์และผู้ประสานงานรายวิชา ครบทั้งแผนนำอภิปรายและเกณฑ์ประเมิน",
           chipLabel: "เฉพาะคณาจารย์",
           meta: "Faculty Member Portal",
@@ -15079,7 +15034,6 @@
               ? `<span class="gdrive-folder-tag is-uploaded-slide">⑥ VDO Lecture (✓ ${escapeHtml(fVdo.extBadge)})</span>`
               : `<span class="gdrive-folder-tag is-pending">⑥ VDO Lecture (รอแขวน VDO)</span>`
           );
-          if (ROLE === "faculty") tagParts.push(`<span class="gdrive-folder-tag is-faculty">📕 คู่มือผู้สอน</span>`);
 
           fCard.innerHTML =
             `<div class="gdrive-folder-head">` +
@@ -15122,7 +15076,7 @@
             `<span class="gdrive-folder-tag is-full">📘 คู่มือวิชา 17 บท</span>` +
             `<span class="gdrive-folder-tag is-concise">📜 ใบงานรวม (Web/PDF/W)</span>` +
             `<span class="gdrive-folder-tag is-quiz">🧠 60 Self-Quiz · 111 คำศัพท์</span>` +
-            (ROLE === "faculty" ? `<span class="gdrive-folder-tag is-faculty">📕 คู่มือผู้สอนรวม</span>` : "") +
+            (ROLE === "faculty" ? `<span class="gdrive-folder-tag is-faculty">📕 เฉลย Discussion รวม</span>` : "") +
             `</div>` +
             `<div class="gdrive-folder-foot">` +
             `<span>${courseRootCount} ไฟล์รวมทั้งรายวิชา</span>` +
@@ -15462,14 +15416,6 @@
           onClick: makeFilterToggle("vdo-lecture")
         }
       ];
-      if (ROLE === "faculty") {
-        typeChips.push({
-          id: "faculty-guide",
-          active: scope !== "folders" && fmtChip === "faculty-guide",
-          label: "📕 คู่มือผู้สอน",
-          onClick: makeFilterToggle("faculty-guide")
-        });
-      }
 
       typeChips.forEach((cd) => {
         const cb = make("button", `${cd.active ? "✓ " : ""}${cd.label}`, `gdrive-chip${cd.active ? " is-active" : ""}`);
@@ -37650,7 +37596,7 @@
         },
         {
           title: "สารบัญลิงก์ต้นฉบับ Google Drive / Docs / ข้อสอบ",
-          sub: "รวมลิงก์แก้ไขเอกสาร HS1–HS6 คู่มือผู้สอน และคลังข้อสอบสำหรับคณาจารย์",
+          sub: "รวมลิงก์แก้ไขเอกสาร HS1–HS6 และคลังข้อสอบสำหรับคณาจารย์",
           badge: "Admin ลิงก์ต้นฉบับ",
           defaultShow: true,
           run: () => {
@@ -37827,10 +37773,10 @@
           cat: "docs",
           icon: "🔐",
           title: fd.title,
-          sub: "คู่มือผู้สอนและบันทึกตรวจทานสำหรับคณาจารย์",
-          badge: "Teacher Guide",
+          sub: "เอกสารเฉพาะคณาจารย์ผู้สอน (เฉลย Discussion HS1–HS6 และโครงสร้างหลักสูตร)",
+          badge: "Faculty Key",
           defaultShow: false,
-          searchHay: `${fd.id} ${fd.title} teacher guide คู่มือผู้สอน`.toLocaleLowerCase("th"),
+          searchHay: `${fd.id} ${fd.title} teacher key เฉลยอภิปราย หลักสูตร`.toLocaleLowerCase("th"),
           run: () => {
             state.facultySub = "guides";
             state.activeFacultyDocId = fd.id;
