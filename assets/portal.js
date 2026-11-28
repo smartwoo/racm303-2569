@@ -12106,7 +12106,7 @@
           renderDeckSlide(activeSlideIdx, 0);
         });
 
-        midGroup.append(buildUnavPairDOM({ compact: true }), jumpSel, toSorterBtn, theaterBtn);
+        midGroup.append(jumpSel, toSorterBtn, theaterBtn);
 
         const nextBtn = make("button", "สไลด์ถัดไป ›", "btn sm primary");
         nextBtn.type = "button";
@@ -13560,6 +13560,11 @@
     }
     banner.appendChild(infoWrap);
 
+    const isDriveUi = state.hsUiMode === "drive";
+    if (isAllActive || isBeyondActive || (effectiveFormat === "docs" && !isDriveUi)) {
+      return banner;
+    }
+
     const tabsRow = make("div", null, "hs-unified-format-tabs header-actions hsd-no-print");
     tabsRow.setAttribute("role", "tablist");
     tabsRow.setAttribute("aria-label", `สลับขั้นตอนการเรียนรู้ 6 ขั้นและเวทีคิดเชิงระบบของ ${isAllActive || isBeyondActive ? "HS1–HS6" : mod.code}`);
@@ -13603,7 +13608,6 @@
       return b;
     };
 
-    const isDriveUi = state.hsUiMode === "drive";
     const showAllTag = isAllActive || isBeyondActive;
     const modTag = showAllTag ? "HS1–HS6" : mod.code;
 
@@ -13728,19 +13732,6 @@
         "",
         vdoPillLabel,
         { slidePending: !isVdoUploaded, slideUploaded: isVdoUploaded }
-      )
-    );
-
-    // Beyond the Exam: Systems Thinking, Expert Panels & Policy Exercise (6 Core Sessions)
-    tabsRow.appendChild(
-      makeTabBtn(
-        tr("🧭 เวทีคิดเชิงระบบ & เสวนา", "🧭 Systems Thinking & Panels"),
-        "systems-forum",
-        true,
-        () => openSystemsForum(""),
-        "",
-        tr("6 คาบสำคัญ", "6 Key Sessions"),
-        "hs-tab-beyond-pill"
       )
     );
 
@@ -16304,7 +16295,6 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
     heroTop.append(
-      buildUnavPairDOM({ compact: true, darkHud: true }),
       backBtn,
       make("span", `${sess.code} · ${tr(sess.kindLabel, sess.kindLabelEn)}`, "tv-hero-kicker"),
       make("span", `${sess.weekLabel} · ${sess.hours} · เช็คชื่อ Onsite`, "tv-hero-kicker")
@@ -16765,7 +16755,7 @@
       const dlPdfBtn = make("button", "⬇ ดาวน์โหลด PDF", "btn sm teal");
       dlPdfBtn.type = "button";
       dlPdfBtn.addEventListener("click", () => openSessionSlide(sess.id, true));
-      pdfActs.append(buildUnavPairDOM({ compact: true }), fsPdfBtn, newTabBtn, dlPdfBtn);
+      pdfActs.append(fsPdfBtn, newTabBtn, dlPdfBtn);
       pdfHead.appendChild(pdfActs);
 
       const iframe = document.createElement("iframe");
@@ -17826,7 +17816,6 @@
       window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId: state.activeTab, role: ROLE } }));
     });
     heroTop.append(
-      buildUnavPairDOM({ compact: true, darkHud: true }),
       backAllBtn,
       make("span", `🧭 เส้นทางการเรียนรู้ 6 ขั้นตอน · ${curMod.code} · สอบ ${curMod.examWeight || ""}`, "tv-hero-kicker")
     );
@@ -18386,7 +18375,6 @@
       window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId: state.activeTab, role: ROLE } }));
     });
     heroTop.append(
-      buildUnavPairDOM({ compact: true, darkHud: true }),
       backAllBtn,
       make("span", `🖥️ STEP 04 · SLIDE อาจารย์ (${curMod.code})`, "tv-hero-kicker"),
       sInfo.uploaded
@@ -18747,7 +18735,7 @@
       const dlPdfBtn = make("button", "⬇ ดาวน์โหลด PDF", "btn sm teal");
       dlPdfBtn.type = "button";
       dlPdfBtn.addEventListener("click", () => openSessionSlide(sInfo.sessionId, true));
-      pdfActs.append(buildUnavPairDOM({ compact: true }), fsPdfBtn, newTabBtn, dlPdfBtn);
+      pdfActs.append(fsPdfBtn, newTabBtn, dlPdfBtn);
       if (rec.driveUrl) {
         const gDriveBtn = make("a", "🔗 Google Drive ↗", "btn sm");
         gDriveBtn.href = rec.driveUrl;
@@ -18937,7 +18925,6 @@
       window.dispatchEvent(new CustomEvent("racm:tabchange", { detail: { tabId: state.activeTab, role: ROLE } }));
     });
     heroTop.append(
-      buildUnavPairDOM({ compact: true, darkHud: true }),
       backAllBtn,
       make("span", `🎬 STEP 06 · VDO LECTURE (${curMod.code})`, "tv-hero-kicker"),
       vInfo.uploaded
@@ -19208,7 +19195,6 @@
     backFlowBtn.type = "button";
     backFlowBtn.addEventListener("click", () => openTextbookDriveFolder(curMod.code));
     heroTop.append(
-      buildUnavPairDOM({ compact: true, darkHud: true }),
       backFlowBtn,
       make(
         "span",
@@ -19635,7 +19621,7 @@
       );
       backDriveBtn.type = "button";
       backDriveBtn.addEventListener("click", () => openTextbookDriveFolder(baseMod));
-      backGroup.append(buildUnavPairDOM({ compact: true }), backAllBtn, backDriveBtn);
+      backGroup.append(backAllBtn, backDriveBtn);
       readerBar.appendChild(backGroup);
 
       const fileSwitchGroup = make("div", null, "tb-drive-file-pills");
@@ -33748,7 +33734,6 @@
     // 1. Clean Microsoft PowerPoint Menu Tab Strip
     const menuBar = make("div", null, "ppt-menubar hsd-no-print");
     const tabsLeft = make("div", null, "ppt-menu-tabs");
-    tabsLeft.appendChild(buildUnavPairDOM({ compact: true }));
     const menuDefs = [
       { id: "file", label: "ไฟล์", isFile: true },
       { id: "home", label: "หน้าแรก" },
@@ -36078,7 +36063,6 @@
 
         const leftWrap = make("div", null, "hsd-drr-left");
         leftWrap.append(
-          buildUnavPairDOM({ compact: true }),
           make("span", `📍 ${rMeta.pinCode} · ห้อง ${rMeta.roomCode}`, "hsd-drr-pill"),
           make(
             "span",
