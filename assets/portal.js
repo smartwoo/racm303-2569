@@ -2050,15 +2050,8 @@
     let fileName = "RACM303_2569_HS1_Answer_Key_16x9.pdf";
     if (!isAll) {
       const cleanMod = /^HS[1-6]$/.test(rawMod) ? rawMod : getActiveSlideSessionMod() || "HS1";
-      const rNum = Number(roomIdOpt) || 0;
-      if (rNum >= 1 && rNum <= 6 && window.RACM_HSD_ROOM_QR && typeof window.RACM_HSD_ROOM_QR.getRoomMeta === "function") {
-        const rm = window.RACM_HSD_ROOM_QR.getRoomMeta(cleanMod, rNum);
-        href = rm.staticRoomPdfHref;
-        fileName = rm.roomPdfFileName;
-      } else {
-        fileName = `RACM303_2569_${cleanMod}_Blank_Worksheet_16x9.pdf`;
-        href = `exports/pdf/${fileName}`;
-      }
+      fileName = `RACM303_2569_${cleanMod}_Blank_Worksheet_16x9.pdf`;
+      href = `exports/pdf/${fileName}`;
     }
     const a = document.createElement("a");
     a.href = href;
@@ -35940,15 +35933,11 @@
           window.RACM_HSD_ROOM_QR.openRoomQrZoomModal(effModForGate, effRoomForGate);
         });
 
-        const dlPdfRoomBtn = make("a", `⬇ .PDF ห้อง ${rMeta.roomId} (16:9)`, "hsd-drr-btn");
-        dlPdfRoomBtn.href = rMeta.staticRoomPdfHref;
-        dlPdfRoomBtn.setAttribute("download", rMeta.roomPdfFileName);
-
-        const dlPdfCentralBtn = make("a", `⬇ PDF กลางรวม ${effModForGate}`, "hsd-drr-btn");
+        const dlPdfCentralBtn = make("a", `⬇ PDF ใบงานเปล่า ${effModForGate} (16:9)`, "hsd-drr-btn");
         dlPdfCentralBtn.href = rMeta.centralModulePdfHref;
         dlPdfCentralBtn.setAttribute("download", rMeta.centralModulePdfFileName);
 
-        rightWrap.append(qrZoomBtn, dlPdfRoomBtn, dlPdfCentralBtn);
+        rightWrap.append(qrZoomBtn, dlPdfCentralBtn);
         if (/^HS[1-6]$/.test(effModForGate) && rMeta.answerKeyPdfHref) {
           if (rMeta.answerKeyUnlocked) {
             const dlPdfModAkBtn = make("a", `⬇ PDF พร้อม Answer Key ${effModForGate} (16:9)`, "hsd-drr-btn");
