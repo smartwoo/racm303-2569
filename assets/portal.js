@@ -142,6 +142,7 @@
     hsdFacultyMode: "teacher", // teacher | projector | student
     hsdLiveWallMode: localStorage.getItem("racm303_hsd_live_wall_mode") || "sheet", // sheet | people | demo
     hsdDrafts: {},
+    hsdDraftUpdatedMs: {},
     hsdSubmittedQuestions: {},
     hsdRevealedKeys: new Set(),
     hsdDriveFolderOpen: false,
@@ -1903,11 +1904,19 @@
     if (mRoomDirect) {
       const modUpper = mRoomDirect[1].toUpperCase();
       let rNum = Number(mRoomDirect[2]);
+      const modOrTabChanged =
+        String(state.hsdModule || "").toUpperCase() !== modUpper ||
+        state.activeTab !== "hs-discussion" ||
+        Boolean(state.hsdDriveFolderOpen);
       state.activeHsModule = modUpper;
       state.hsdModule = modUpper;
       state.hsdSlideDeckMod = modUpper;
       state.hsdViewMode = "slide";
       state.hsdDriveFolderOpen = false;
+      if (modOrTabChanged) {
+        state.hsdSlideIdx = getSavedSlideIdxForModule(modUpper);
+        state.hsdLastSelectedQId = "";
+      }
       if (LIVE && typeof LIVE.setActiveModule === "function") {
         LIVE.setActiveModule(modUpper);
       }
@@ -2508,7 +2517,7 @@
     state.hsdLockedRoomId = rNum;
     state.hsdViewMode = "slide";
     state.hsdDriveFolderOpen = false;
-    state.hsdSlideIdx = 0;
+    state.hsdSlideIdx = ROLE === "student" ? getSavedSlideIdxForModule(cleanMod, effStu) : 0;
     state.hsdLastSelectedQId = "";
     if (LIVE && typeof LIVE.setActiveModule === "function") {
       LIVE.setActiveModule(cleanMod);
@@ -20480,16 +20489,53 @@
     return sid ? `racm303_hs_disc_drafts_stu_${sid}` : "";
   }
 
+  function getStudentScopedDraftTsKey(stuOpt) {
+    const sid = String((stuOpt && stuOpt.id) || (state.myStudent && state.myStudent.id) || "").trim();
+    return sid ? `racm303_hs_disc_draft_ts_stu_${sid}` : "";
+  }
+
   function getStudentScopedSubmittedQKey(stuOpt) {
     const sid = String((stuOpt && stuOpt.id) || (state.myStudent && state.myStudent.id) || "").trim();
     return sid ? `racm303_hs_disc_submitted_q_stu_${sid}` : "";
   }
 
+  function getStudentSlidePosStorageKey(modCode, stuOpt) {
+    const cleanMod = /^HS[1-6]$/i.test(String(modCode || "").trim()) ? String(modCode).trim().toUpperCase() : "";
+    if (!cleanMod) return "";
+    const effStu = stuOpt || (state.myStudent && state.myStudent.id ? state.myStudent : resolveKnownStudentForHsd());
+    const sid = effStu && effStu.id ? String(effStu.id).trim() : "guest";
+    return `racm303_hsd_last_slide_${sid}_${cleanMod}`;
+  }
+
+  function getSavedSlideIdxForModule(modCode, stuOpt) {
+    try {
+      const k = getStudentSlidePosStorageKey(modCode, stuOpt);
+      if (!k) return 0;
+      const raw = localStorage.getItem(k);
+      if (raw === null || raw === undefined || raw === "") return 0;
+      const n = parseInt(raw, 10);
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function saveLastSlideIdxForModule(modCode, slideIdx, stuOpt) {
+    try {
+      const k = getStudentSlidePosStorageKey(modCode, stuOpt);
+      if (!k) return;
+      const n = Math.max(0, Math.floor(Number(slideIdx) || 0));
+      localStorage.setItem(k, String(n));
+    } catch (_) {}
+  }
+
   function saveActiveHsdDraftsMap() {
     try {
       const dKey = getStudentScopedDraftStorageKey();
+      const tsKey = getStudentScopedDraftTsKey();
       if (dKey) {
         localStorage.setItem(dKey, JSON.stringify(state.hsdDrafts || {}));
+        if (tsKey) localStorage.setItem(tsKey, JSON.stringify(state.hsdDraftUpdatedMs || {}));
       } else {
         sessionStorage.setItem("racm303_hs_disc_drafts_guest_session", JSON.stringify(state.hsdDrafts || {}));
       }
@@ -20500,6 +20546,7 @@
     const cfg = opts || {};
     if (!stuObj || !stuObj.id) {
       state.hsdDrafts = {};
+      state.hsdDraftUpdatedMs = {};
       state.hsdSubmittedQuestions = {};
       try {
         sessionStorage.removeItem("racm303_hs_disc_drafts_guest_session");
@@ -20508,24 +20555,34 @@
       return;
     }
     const dKey = getStudentScopedDraftStorageKey(stuObj);
+    const tsKey = getStudentScopedDraftTsKey(stuObj);
     const sqKey = getStudentScopedSubmittedQKey(stuObj);
     let nextDrafts = {};
+    let nextDraftTs = {};
     let nextSubQ = {};
     try {
       nextDrafts = JSON.parse((dKey && localStorage.getItem(dKey)) || "{}") || {};
     } catch (_) {
       nextDrafts = {};
     }
+    try {
+      nextDraftTs = JSON.parse((tsKey && localStorage.getItem(tsKey)) || "{}") || {};
+    } catch (_) {
+      nextDraftTs = {};
+    }
     if (cfg.mergeGuestSession) {
       try {
         const guestMap = JSON.parse(sessionStorage.getItem("racm303_hs_disc_drafts_guest_session") || "{}") || {};
+        const nowMerge = Date.now();
         Object.keys(guestMap).forEach((k) => {
           if (!String(nextDrafts[k] || "").trim() && String(guestMap[k] || "").trim()) {
             nextDrafts[k] = guestMap[k];
+            nextDraftTs[k] = nowMerge;
           }
         });
         sessionStorage.removeItem("racm303_hs_disc_drafts_guest_session");
         if (dKey) localStorage.setItem(dKey, JSON.stringify(nextDrafts));
+        if (tsKey) localStorage.setItem(tsKey, JSON.stringify(nextDraftTs));
       } catch (_) {}
     }
     try {
@@ -20534,8 +20591,50 @@
       nextSubQ = {};
     }
     state.hsdDrafts = nextDrafts;
+    state.hsdDraftUpdatedMs = nextDraftTs;
     state.hsdSubmittedQuestions = nextSubQ;
     refreshHsdModuleProgressBadges();
+  }
+
+  function syncLocalModuleDraftsToLive(modCodeOpt) {
+    if (ROLE !== "student" || !LIVE || !state.hsdSessionJoined || !state.myStudent || !state.myStudent.id) return;
+    if (typeof LIVE.flushLiveTyping !== "function" || typeof LIVE.getMyTeamResponse !== "function") return;
+    const cleanMod = /^HS[1-6]$/i.test(String(modCodeOpt || state.hsdModule || ""))
+      ? String(modCodeOpt || state.hsdModule).toUpperCase()
+      : "";
+    if (!cleanMod || !HSD_DATA || !Array.isArray(HSD_DATA.cases)) return;
+    const mySid = String(state.myStudent.id);
+    HSD_DATA.cases.forEach((c) => {
+      if (String(c.module || "").toUpperCase() !== cleanMod) return;
+      (c.questions || []).forEach((qObj) => {
+        if (!qObj || !qObj.id || !qObj.worksheet || !Array.isArray(qObj.worksheet.rows)) return;
+        const ownRec = LIVE.getMyTeamResponse(qObj.id);
+        const ownCells = ownRec && String(ownRec.studentId || "") === mySid && ownRec.cells ? ownRec.cells : {};
+        const ownCellTs =
+          ownRec && String(ownRec.studentId || "") === mySid && ownRec.cellUpdatedMs ? ownRec.cellUpdatedMs : {};
+        const cellsToSync = {};
+        let hasNewerLocal = false;
+        qObj.worksheet.rows.forEach((r) => {
+          (r.cells || []).forEach((cell) => {
+            if (!cell || !cell.inputId) return;
+            const cid = cell.inputId;
+            const localVal = String(state.hsdDrafts[cid] || "");
+            if (!localVal.trim()) return;
+            cellsToSync[cid] = localVal;
+            const remoteVal = String(ownCells[cid] || "");
+            const lTs = Number(state.hsdDraftUpdatedMs[cid] || 0);
+            const rTs = Number(ownCellTs[cid] || (ownRec && ownRec.updatedWallMs) || 0);
+            if (!remoteVal.trim() || (localVal !== remoteVal && lTs > rTs)) {
+              hasNewerLocal = true;
+            }
+          });
+        });
+        if (hasNewerLocal && Object.keys(cellsToSync).length > 0) {
+          ensureLiveStudentProfileBound();
+          LIVE.flushLiveTyping(qObj.id, cellsToSync);
+        }
+      });
+    });
   }
 
   function ensureLiveStudentProfileBound() {
@@ -20551,11 +20650,14 @@
     }
   }
 
-  function persistHsdDraft(inputId, val) {
+  function persistHsdDraft(inputId, val, tsOpt) {
+    const stamp = Number(tsOpt) > 0 ? Number(tsOpt) : Date.now();
     if (String(val || "").trim()) {
       state.hsdDrafts[inputId] = val;
+      state.hsdDraftUpdatedMs[inputId] = stamp;
     } else {
       delete state.hsdDrafts[inputId];
+      state.hsdDraftUpdatedMs[inputId] = stamp;
     }
     saveActiveHsdDraftsMap();
     const ind = $("hsdSaveIndicator");
@@ -23207,7 +23309,7 @@
     state.hsdSlideDeckMod = cleanMod;
     state.hsdViewMode = "slide";
     state.hsdDriveFolderOpen = false;
-    state.hsdSlideIdx = 0;
+    state.hsdSlideIdx = ROLE === "student" ? getSavedSlideIdxForModule(cleanMod, knownStu) : 0;
     state.hsdLastSelectedQId = "";
     state.hsdSinglePaneOverride = "";
     state.hsdFocusedConceptStep = 0;
@@ -23236,6 +23338,15 @@
       }
     }
     if ($("hsdModuleSelect")) $("hsdModuleSelect").value = cleanMod;
+    if (state.activeTab !== "hs-discussion" && !window.RACM_HSD_ROOM_PAGE) {
+      const rSfx = state.hsdLockedRoomId ? `-R${state.hsdLockedRoomId}` : "";
+      switchTab(`hs-discussion-${cleanMod}${rSfx}`, false);
+      if (!state.isPptSlideSharePopup) {
+        history.replaceState(null, "", `#hs-discussion-${cleanMod}${rSfx}`);
+      }
+      broadcastPptPresentationState();
+      return;
+    }
     if (!state.isPptSlideSharePopup && !window.RACM_HSD_ROOM_PAGE) {
       const rSfx = state.hsdLockedRoomId ? `-R${state.hsdLockedRoomId}` : "";
       history.replaceState(null, "", `#hs-discussion-${cleanMod}${rSfx}`);
@@ -23601,11 +23712,14 @@
         if (!window.confirm("ต้องการล้างร่างคำตอบส่วนตัวของคุณในใบงาน Discussion ทั้งหมดหรือไม่?")) return;
         const prevRef = captureSlideRef(getActiveSlideDeckContext().cur) || state.hsdCurrentSlideRef;
         state.hsdDrafts = {};
+        state.hsdDraftUpdatedMs = {};
         state.hsdSubmittedQuestions = {};
         try {
           const dKey = getStudentScopedDraftStorageKey();
+          const tsKey = getStudentScopedDraftTsKey();
           const sqKey = getStudentScopedSubmittedQKey();
           if (dKey) localStorage.removeItem(dKey);
+          if (tsKey) localStorage.removeItem(tsKey);
           if (sqKey) localStorage.removeItem(sqKey);
           sessionStorage.removeItem("racm303_hs_disc_drafts_guest_session");
           localStorage.removeItem("racm303_hs_disc_drafts_v1");
@@ -24242,19 +24356,27 @@
       if (!ownRec || !ownRec.cells || String(ownRec.studentId || "") !== mySid) return;
       const qObj = findHsQuestionById(qid);
       if (!qObj || !qObj.worksheet || !Array.isArray(qObj.worksheet.rows)) return;
+      const ownCellTsMap = ownRec.cellUpdatedMs && typeof ownRec.cellUpdatedMs === "object" ? ownRec.cellUpdatedMs : {};
 
       qObj.worksheet.rows.forEach((r) => {
         (r.cells || []).forEach((cell) => {
           if (!cell || !cell.inputId) return;
-          const remoteVal = ownRec.cells[cell.inputId];
+          const cid = cell.inputId;
+          const remoteVal = ownRec.cells[cid];
           if (remoteVal === undefined) return;
           const clamped = enforceA4ConciseText(String(remoteVal), cell, false);
-          document.querySelectorAll(`[data-input-id="${cell.inputId}"]`).forEach((ta) => {
+          if (!clamped.trim()) return;
+          const remoteTs = Number(ownCellTsMap[cid] || ownRec.updatedWallMs || 0);
+          const localTs = Number(state.hsdDraftUpdatedMs[cid] || 0);
+          const curLocal = String(state.hsdDrafts[cid] || "");
+          const shouldAcceptRemote = !curLocal.trim() || (clamped !== curLocal && remoteTs > localTs);
+
+          document.querySelectorAll(`[data-input-id="${cid}"]`).forEach((ta) => {
             if (ta.id && ta.id.startsWith("demo_")) return;
             if (document.activeElement === ta) return;
-            if (!ta.value.trim() && clamped) {
+            if ((!ta.value.trim() || shouldAcceptRemote) && ta.value !== clamped) {
               ta.value = clamped;
-              persistHsdDraft(cell.inputId, clamped);
+              persistHsdDraft(cid, clamped, remoteTs || Date.now());
               if (typeof ta._refreshFromTeamSync === "function") {
                 ta._refreshFromTeamSync();
               }
@@ -24262,8 +24384,8 @@
               ta._refreshFromTeamSync();
             }
           });
-          if (!document.querySelector(`[data-input-id="${cell.inputId}"]`) && !state.hsdDrafts[cell.inputId] && clamped) {
-            persistHsdDraft(cell.inputId, clamped);
+          if (!document.querySelector(`[data-input-id="${cid}"]`) && shouldAcceptRemote) {
+            persistHsdDraft(cid, clamped, remoteTs || Date.now());
           }
         });
       });
@@ -24773,8 +24895,14 @@
         ownRecOnMount && ownRecOnMount.cells && ownRecOnMount.cells[cid]
           ? String(ownRecOnMount.cells[cid])
           : "";
-      if (!state.hsdDrafts[cid] && ownRemoteVal) {
-        state.hsdDrafts[cid] = ownRemoteVal;
+      const rTs = Number(
+        (ownRecOnMount && ownRecOnMount.cellUpdatedMs && ownRecOnMount.cellUpdatedMs[cid]) ||
+          (ownRecOnMount && ownRecOnMount.updatedWallMs) ||
+          0
+      );
+      const lTs = Number(state.hsdDraftUpdatedMs[cid] || 0);
+      if (ownRemoteVal && (!state.hsdDrafts[cid] || (ownRemoteVal !== state.hsdDrafts[cid] && rTs > lTs))) {
+        persistHsdDraft(cid, ownRemoteVal, rTs || Date.now());
       }
     });
 
@@ -25204,8 +25332,17 @@
             ownRecOnMount && ownRecOnMount.cells && ownRecOnMount.cells[cell.inputId]
               ? String(ownRecOnMount.cells[cell.inputId])
               : "";
-          if (!state.hsdDrafts[cell.inputId] && ownRemoteVal) {
-            state.hsdDrafts[cell.inputId] = ownRemoteVal;
+          const rTs = Number(
+            (ownRecOnMount && ownRecOnMount.cellUpdatedMs && ownRecOnMount.cellUpdatedMs[cell.inputId]) ||
+              (ownRecOnMount && ownRecOnMount.updatedWallMs) ||
+              0
+          );
+          const lTs = Number(state.hsdDraftUpdatedMs[cell.inputId] || 0);
+          if (
+            ownRemoteVal &&
+            (!state.hsdDrafts[cell.inputId] || (ownRemoteVal !== state.hsdDrafts[cell.inputId] && rTs > lTs))
+          ) {
+            persistHsdDraft(cell.inputId, ownRemoteVal, rTs || Date.now());
           }
           const savedVal = enforceA4ConciseText(
             state.hsdDrafts[cell.inputId] || ownRemoteVal || "",
@@ -27111,6 +27248,14 @@
     const curAtIdx = slides[state.hsdSlideIdx];
     if (curAtIdx && curAtIdx.qObj) {
       state.hsdLastSelectedQId = curAtIdx.qObj.id;
+    }
+    if (
+      ROLE === "student" &&
+      !state.hsdDriveFolderOpen &&
+      (state.activeTab === "hs-discussion" || Boolean(window.RACM_HSD_ROOM_PAGE)) &&
+      /^HS[1-6]$/i.test(String(state.hsdModule || ""))
+    ) {
+      saveLastSlideIdxForModule(state.hsdModule, state.hsdSlideIdx);
     }
     return { matchedCases, slides, cur: slides[state.hsdSlideIdx] };
   }
@@ -35959,6 +36104,7 @@
           }
         }
         if (!wasOnlineHere) {
+          syncLocalModuleDraftsToLive(effModForGate);
           renderHsLiveClassroomBar();
         }
       }
